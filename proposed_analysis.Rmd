@@ -391,24 +391,24 @@ DF <- dtg
 
 # Terminology
 
-Individual endorsement: ratings on DHF for how much the norms endorses each item
+Individual endorsement: Ratings on DHF for how much an individual endorses each item
 
 Cultural norms: ratings on DHF for how much the person believes the country cultural norms represent endorsement on each item
 
 Individual-level: using each participant's scores to represent the variable
 
-Sample-level: using an average score by the country to represent the variable
+Sample-level: using an average score by country to represent the variable
 
-Level 1: [within] analysis at the norms data points in a multilevel analysis 
+Level 1: [within] Analysis in multilevel models using the DHF data points for each participant (i.e., using each person’s scores as the level of analysis) 
 
-Level 2: [cluster] the data points nested or clustered by the indicated variable (i.e., basically the average score for each item across the cluster variable as the level of analysis)
+Level 2: [cluster] Analysis in multilevel models using the data points nested or clustered by the indicated variable (i.e., basically the average score for each item across the cluster variable as the level of analysis)
 
 # Overall Model Comments
 
 In each structural model, we may find the following issues:
 
   - Heywood cases:
-    - Too high correlations: we will consider combining factors when correlations betwen latent variables are too high if they theoretically make sense.  
+    - Too high correlations: we will consider combining factors when correlations between latent variables are too high if they theoretically make sense.  
     - Negative variances: we will set the variance to a small positive number based on the variances of other items or latent variables 
   - Non-convergence: 
     - We will try to find the issue of non-convergence - for example, if the country level does not have enough variability, we may remove the clustering effect to show convergence. 
@@ -437,17 +437,7 @@ Test 2: Level 1 will include only the saturated model of observed variable corre
 
 *Model Evaluation*:
 
-Item evaluation: 
-
-  - If a given item does not significantly load on the respective factor AND the model fit improves after removing the item, or the item loads in the opposite to expected direction, the items will be removed. Otherwise, the item will be retained.
-  - If modification indices suggest a strong residual correlation between items AND this correlation is theoretically justified, a residual correlation will be added. 
-  
-Model evaluation:
-
-- We will consider the model to have a good fit to the data if RMSEA < .08 and SRMR_within < .08. If ICC < .10, we will additionally use CFI > .90, and SRMR_between < .08 as criteria.
-- If .08 < RMSEA < .10, .08 < SRMR < .10, and .85 < CFI < .90, we will consider the model acceptable, unless there are specific issues with items as described above.
-- If RMSEA > .10, SRMR > .10, CFI < .85, we will consider the model unacceptable. 
-All model fit indices will be considered together, and if the majority of indices suggest acceptable fit, a single indicator will not be considered sufficient to reject the model.
+The model will converge. The model will be compared to the models below (see notes below). After model selection, we will use the guidelines in the model improvement and alignment section to improve model fit. 
 
 ## Data Simulation
 
@@ -708,7 +698,7 @@ H1b-H1c: The bifactor model will fit the data better than the more restrictive c
 
 Individual endorsement and cultural norms will be tested separately. For each model, country will be used as a cluster variable. 
 
-Factor structure: Multilevel CFA using a six-factor correlated model of each latent variable (DHF) separated by self/other distinction, and three-factor correlated model of the DHF latent variables will be analyzed. The same item removal and correlated residuals will be retained from H1A. 
+Factor structure: Multilevel CFA using a six-factor correlated model of each latent variable (DHF) separated by self/other distinction, and three-factor correlated model of the DHF latent variables will be analyzed. 
 
 Test 1: Level 1 will include the proposed factor structure, and Level 2 will include only the saturated model where all observed variables are intercorrelated. 
 
@@ -911,27 +901,6 @@ threefactor.individual.test2.fitindices
 # pick a model based on the rules above 
 ```
 
-### Model Improvement
-
-```{r individual-model-improve, eval = F}
-# we will examine the parameters to ensure they are significant
-# if one is poor remove and retest model fit 
-  # remove if poor AND model fit goes up
-# remove items with negative loadings 
-# only do this for the final chosen model 
-
-# for example 
-bifactor.individual.test1.fit
-
-# examine modification indices
-modificationindices(bifactor.individual.test1.fit)
-
-# examine new model fits
-  # rerun models as above
-  # check the fit outputs 
-bifactor.individual.test1.fitindices
-```
-
 ## H1B Norms
 
 ### 6-factor Norms Test 1
@@ -1095,7 +1064,57 @@ threefactor.norms.test2.fitindices
 # pick a model based on the rules above 
 ```
 
-### Model Improvement
+# Model Improvement
+
+*Hypothesis*: 
+
+See hypotheses above. 
+
+*Analysis Plan*:
+
+The final model will be examined for:
+  - Poorly loading items.
+  - Modification indices.
+  - Model fit. 
+  - Group alignment. 
+
+*Model Evaluation*:
+
+Item evaluation: 
+
+  - If a given item does not significantly load on the respective factor AND the model fit improves after removing the item, or the item loads in the opposite to expected direction, the items will be removed. Otherwise, the item will be retained.
+  - If modification indices suggest a strong residual correlation between items AND this correlation is theoretically justified, a residual correlation will be added. 
+  
+Model evaluation:
+
+  - We will consider the model to have a good fit to the data if RMSEA < .08 and SRMR_within < .08. If ICC < .10, we will additionally use CFI > .90, and SRMR_between < .08 as criteria.
+  - If .08 < RMSEA < .10, .08 < SRMR < .10, and .85 < CFI < .90, we will consider the model acceptable, unless there are specific issues with items as described above.
+  - If RMSEA > .10, SRMR > .10, CFI < .85, we will consider the model unacceptable. 
+
+All model fit indices will be considered together, and if the majority of indices suggest acceptable fit, a single indicator will not be considered sufficient to reject the model.
+
+## Model Improvement: Individual
+
+```{r individual-model-improve, eval = F}
+# we will examine the parameters to ensure they are significant
+# if one is poor remove and retest model fit 
+  # remove if poor AND model fit goes up
+# remove items with negative loadings 
+# only do this for the final chosen model 
+
+# for example 
+bifactor.individual.test1.fit
+
+# examine modification indices
+modificationindices(bifactor.individual.test1.fit)
+
+# examine new model fits
+  # rerun models as above
+  # check the fit outputs 
+bifactor.individual.test1.fitindices
+```
+
+## Model Improvement: Norms
 
 ```{r norms-model-improve, eval = F}
 # we will examine the parameters to ensure they are significant

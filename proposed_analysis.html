@@ -11,7 +11,7 @@
 
 <meta name="author" content="Erin M. Buchanan" />
 
-<meta name="date" content="2024-03-05" />
+<meta name="date" content="2024-03-06" />
 
 <title>Proposed Code: JTF002: DHF</title>
 
@@ -1481,7 +1481,7 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">Proposed Code: JTF002: DHF</h1>
 <h4 class="author">Erin M. Buchanan</h4>
-<h4 class="date">2024-03-05</h4>
+<h4 class="date">2024-03-06</h4>
 
 </div>
 
@@ -2605,19 +2605,21 @@ DF &lt;- dtg</code></pre>
 </div>
 <div id="terminology" class="section level1">
 <h1>Terminology</h1>
-<p>Individual endorsement: ratings on DHF for how much the norms
+<p>Individual endorsement: Ratings on DHF for how much an individual
 endorses each item</p>
 <p>Cultural norms: ratings on DHF for how much the person believes the
 country cultural norms represent endorsement on each item</p>
 <p>Individual-level: using each participant’s scores to represent the
 variable</p>
-<p>Sample-level: using an average score by the country to represent the
+<p>Sample-level: using an average score by country to represent the
 variable</p>
-<p>Level 1: [within] analysis at the norms data points in a multilevel
-analysis</p>
-<p>Level 2: [cluster] the data points nested or clustered by the
-indicated variable (i.e., basically the average score for each item
-across the cluster variable as the level of analysis)</p>
+<p>Level 1: [within] Analysis in multilevel models using the DHF data
+points for each participant (i.e., using each person’s scores as the
+level of analysis)</p>
+<p>Level 2: [cluster] Analysis in multilevel models using the data
+points nested or clustered by the indicated variable (i.e., basically
+the average score for each item across the cluster variable as the level
+of analysis)</p>
 </div>
 <div id="overall-model-comments" class="section level1">
 <h1>Overall Model Comments</h1>
@@ -2626,7 +2628,7 @@ across the cluster variable as the level of analysis)</p>
 <li>Heywood cases:
 <ul>
 <li>Too high correlations: we will consider combining factors when
-correlations betwen latent variables are too high if they theoretically
+correlations between latent variables are too high if they theoretically
 make sense.<br />
 </li>
 <li>Negative variances: we will set the variance to a small positive
@@ -2674,29 +2676,10 @@ intercorrelated.</p>
 variable correlations, and Level 2 will include the proposed factor
 structure.</p>
 <p><em>Model Evaluation</em>:</p>
-<p>Item evaluation:</p>
-<ul>
-<li>If a given item does not significantly load on the respective factor
-AND the model fit improves after removing the item, or the item loads in
-the opposite to expected direction, the items will be removed.
-Otherwise, the item will be retained.</li>
-<li>If modification indices suggest a strong residual correlation
-between items AND this correlation is theoretically justified, a
-residual correlation will be added.</li>
-</ul>
-<p>Model evaluation:</p>
-<ul>
-<li>We will consider the model to have a good fit to the data if RMSEA
-&lt; .08 and SRMR_within &lt; .08. If ICC &lt; .10, we will additionally
-use CFI &gt; .90, and SRMR_between &lt; .08 as criteria.</li>
-<li>If .08 &lt; RMSEA &lt; .10, .08 &lt; SRMR &lt; .10, and .85 &lt; CFI
-&lt; .90, we will consider the model acceptable, unless there are
-specific issues with items as described above.</li>
-<li>If RMSEA &gt; .10, SRMR &gt; .10, CFI &lt; .85, we will consider the
-model unacceptable. All model fit indices will be considered together,
-and if the majority of indices suggest acceptable fit, a single
-indicator will not be considered sufficient to reject the model.</li>
-</ul>
+<p>The model will converge. The model will be compared to the models
+below (see notes below). After model selection, we will use the
+guidelines in the model improvement and alignment section to improve
+model fit.</p>
 <div id="data-simulation" class="section level2">
 <h2>Data Simulation</h2>
 <pre class="r"><code>DF_individual &lt;- DF %&gt;% 
@@ -3107,8 +3090,7 @@ For each model, country will be used as a cluster variable.</p>
 <p>Factor structure: Multilevel CFA using a six-factor correlated model
 of each latent variable (DHF) separated by self/other distinction, and
 three-factor correlated model of the DHF latent variables will be
-analyzed. The same item removal and correlated residuals will be
-retained from H1A.</p>
+analyzed.</p>
 <p>Test 1: Level 1 will include the proposed factor structure, and Level
 2 will include only the saturated model where all observed variables are
 intercorrelated.</p>
@@ -3459,25 +3441,6 @@ threefactor.individual.test2.fitindices
 
 # pick a model based on the rules above </code></pre>
 </div>
-<div id="model-improvement" class="section level3">
-<h3>Model Improvement</h3>
-<pre class="r"><code># we will examine the parameters to ensure they are significant
-# if one is poor remove and retest model fit 
-  # remove if poor AND model fit goes up
-# remove items with negative loadings 
-# only do this for the final chosen model 
-
-# for example 
-bifactor.individual.test1.fit
-
-# examine modification indices
-modificationindices(bifactor.individual.test1.fit)
-
-# examine new model fits
-  # rerun models as above
-  # check the fit outputs 
-bifactor.individual.test1.fitindices</code></pre>
-</div>
 </div>
 <div id="h1b-norms" class="section level2">
 <h2>H1B Norms</h2>
@@ -3633,8 +3596,61 @@ threefactor.norms.test2.fitindices
 
 # pick a model based on the rules above </code></pre>
 </div>
-<div id="model-improvement-1" class="section level3">
-<h3>Model Improvement</h3>
+</div>
+</div>
+<div id="model-improvement" class="section level1">
+<h1>Model Improvement</h1>
+<p><em>Hypothesis</em>:</p>
+<p>See hypotheses above.</p>
+<p><em>Analysis Plan</em>:</p>
+<p>The final model will be examined for: - Poorly loading items. -
+Modification indices. - Model fit. - Group alignment.</p>
+<p><em>Model Evaluation</em>:</p>
+<p>Item evaluation:</p>
+<ul>
+<li>If a given item does not significantly load on the respective factor
+AND the model fit improves after removing the item, or the item loads in
+the opposite to expected direction, the items will be removed.
+Otherwise, the item will be retained.</li>
+<li>If modification indices suggest a strong residual correlation
+between items AND this correlation is theoretically justified, a
+residual correlation will be added.</li>
+</ul>
+<p>Model evaluation:</p>
+<ul>
+<li>We will consider the model to have a good fit to the data if RMSEA
+&lt; .08 and SRMR_within &lt; .08. If ICC &lt; .10, we will additionally
+use CFI &gt; .90, and SRMR_between &lt; .08 as criteria.</li>
+<li>If .08 &lt; RMSEA &lt; .10, .08 &lt; SRMR &lt; .10, and .85 &lt; CFI
+&lt; .90, we will consider the model acceptable, unless there are
+specific issues with items as described above.</li>
+<li>If RMSEA &gt; .10, SRMR &gt; .10, CFI &lt; .85, we will consider the
+model unacceptable.</li>
+</ul>
+<p>All model fit indices will be considered together, and if the
+majority of indices suggest acceptable fit, a single indicator will not
+be considered sufficient to reject the model.</p>
+<div id="model-improvement-individual" class="section level2">
+<h2>Model Improvement: Individual</h2>
+<pre class="r"><code># we will examine the parameters to ensure they are significant
+# if one is poor remove and retest model fit 
+  # remove if poor AND model fit goes up
+# remove items with negative loadings 
+# only do this for the final chosen model 
+
+# for example 
+bifactor.individual.test1.fit
+
+# examine modification indices
+modificationindices(bifactor.individual.test1.fit)
+
+# examine new model fits
+  # rerun models as above
+  # check the fit outputs 
+bifactor.individual.test1.fitindices</code></pre>
+</div>
+<div id="model-improvement-norms" class="section level2">
+<h2>Model Improvement: Norms</h2>
 <pre class="r"><code># we will examine the parameters to ensure they are significant
 # if one is poor remove and retest model fit 
   # remove if poor AND model fit goes up
@@ -3651,7 +3667,6 @@ modificationindices(bifactor.norms.test1.fit)
   # rerun models as above
   # check the fit outputs 
 bifactor.norms.test1.fitindices</code></pre>
-</div>
 </div>
 </div>
 <div id="alignment-procedure" class="section level1">
@@ -4078,9 +4093,9 @@ summary(mod1)</code></pre>
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-03-05 22:04:33.450349 
-## Time difference of 0.00357008 secs
-## Computation Time: 0.00357008 
+## Date of Analysis: 2024-03-06 09:19:21.088465 
+## Time difference of 0.003731966 secs
+## Computation Time: 0.003731966 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.327 
@@ -4631,9 +4646,9 @@ summary(mod1)</code></pre>
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-03-05 22:04:34.586209 
-## Time difference of 0.00317812 secs
-## Computation Time: 0.00317812 
+## Date of Analysis: 2024-03-06 09:19:22.354588 
+## Time difference of 0.003564119 secs
+## Computation Time: 0.003564119 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.923 
