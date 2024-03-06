@@ -1,0 +1,1778 @@
+---
+title: "Proposed Code: JTF002: DHF"
+author: "Erin M. Buchanan"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libraries
+
+```{r libraries}
+library(rio)
+library(dplyr)
+library(lavaan)
+library(semPlot)
+library(faux)
+library(broom)
+library(semPower)
+library(lme4)
+library(lmerTest)
+library(psych)
+library(sirt)
+library(tidyr)
+library(stringr)
+library(parameters)
+library(visualizemi) # devtools::install_github("doomlab/visualizemi")
+
+set.seed(48299439)
+```
+
+# Variable Definition
+
+```{r overall-variables}
+corr_error <- '
+  D_self1 ~~ D_self2+D_self3+D_self4+D_self5 + D_other1+D_other2+D_other3+D_other4+D_other5 + H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  D_self2 ~~ D_self3+D_self4+D_self5 + D_other1+D_other2+D_other3+D_other4+D_other5 + H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  D_self3 ~~ D_self4+D_self5 + D_other1+D_other2+D_other3+D_other4+D_other5 + H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  D_self4 ~~ D_self5 + D_other1+D_other2+D_other3+D_other4+D_other5 + H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  D_self5 ~~ D_other1+D_other2+D_other3+D_other4+D_other5 + H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  D_other1 ~~ D_other2+D_other3+D_other4+D_other5 + H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+  
+  D_other2 ~~ D_other3+D_other4+D_other5 + H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+  
+  D_other3 ~~ D_other4+D_other5 + H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  D_other4 ~~ D_other5 + H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+  
+  D_other5 ~~ H_self1+H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+  
+  H_self1 ~~ H_self2+H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+    
+  H_self2 ~~ H_self3+H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+      
+  H_self3 ~~ H_self4+H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+        
+  H_self4 ~~ H_self5 + H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+          
+  H_self5 ~~ H_other1+H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+            
+  H_other1 ~~ H_other2+H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+              
+  H_other2 ~~ H_other3+H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+                
+  H_other3 ~~ H_other4+H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+                  
+  H_other4 ~~ H_other5 + F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+                    
+  H_other5 ~~ F_self1+F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+  
+  F_self1 ~~ F_self2+F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  F_self2 ~~ F_self3+F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  F_self3 ~~ F_self4+F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  F_self4 ~~ F_self5 + F_other1+F_other2+F_other3+F_other4+F_other5
+
+  F_self5 ~~ F_other1+F_other2+F_other3+F_other4+F_other5
+
+  F_other1 ~~ F_other2+F_other3+F_other4+F_other5
+
+  F_other2 ~~ F_other3+F_other4+F_other5
+
+  F_other3 ~~ F_other4+F_other5
+
+  F_other4 ~~ F_other5'
+```
+
+# Data
+
+```{r import-data}
+# pilot data
+DF <- import("pilot_study/DHF_PSA_Pilot_May 10, 2023_12.10.csv")
+
+# example data structure 
+names(DF)
+```
+
+# Data Cleaning
+
+Step 1. Data preparation 
+
+- (Re)code all variables, check distributions and missing values. 
+
+## Socio-demographics 
+
+```{r demographic-clean}
+dt <- DF
+
+# Socio-demographics ----
+
+# refactor gender, age, education, state, race, migration 
+dt[,c(9,11:14)] <- lapply(dt[,c(9,11:14)], as.factor)
+dt[,c(10)] <- as.numeric(dt[,c(10)])
+
+# review data 
+table(dt$Gender, useNA = "ifany") 
+describe(dt$Age) 
+table(dt$Education, useNA = "ifany")
+table(dt$`US state`, useNA = "ifany")
+table(dt$`Race/ethnicity`, useNA = "ifany")
+table(dt$Migration, useNA = "ifany")
+```
+
+## DHF 
+
+```{r dhf-clean}
+# DHF ----
+
+# look at the scaling 
+table(dt$DHF_endorsement_3, useNA = "ifany")
+
+# rescore the variables into numbers
+dt <- dt %>%
+  mutate_at(vars(15:74),~dplyr::recode(., "Strongly disagree"=1, 
+                                       "Disagree"=2,"Somewhat disagree"=3,
+                                       "Somewhat agree"=4,"Agree"=5,
+                                       "Strongly agree"=6))
+# examine data
+describe(dt[,c(15:74)])
+```
+
+## Reciprocity
+
+```{r reciprocity-clean}
+# Reciprocity ----
+
+# look at the scoring
+table(dt$Reciprocity_1, useNA = "ifany")
+
+# recode
+dt <- dt %>%
+  mutate_at(vars(75:80),~dplyr::recode(., "Does not apply to me at all\n1\n"=1, 
+                                       "2"=2,"3"=3,"4"=4,"5"=5,"6"=6,
+                                       "Applies to me perfectly\n7\n"=7))
+# examine data
+describe(dt[,c(75:80)])
+
+# review alpha 
+psych::alpha(dt[c("Reciprocity_1","Reciprocity_2","Reciprocity_3")]) 
+psych::alpha(dt[c("Reciprocity_4","Reciprocity_5","Reciprocity_6")]) 
+
+# calculate positive and negative reciprocity  
+dt$PosRec <- rowMeans(dt[c("Reciprocity_1","Reciprocity_2","Reciprocity_3")],na.rm=TRUE)
+describe(dt$PosRec)
+dt$NegRec <- rowMeans(dt[c("Reciprocity_4","Reciprocity_5","Reciprocity_6")],na.rm=TRUE)
+describe(dt$NegRec)
+```
+
+## Self-Construal
+
+```{r self-construal-clean}
+
+# Self-construal ----
+
+# look at the scoring 
+table(dt$`Self-construal_1`, useNA = "ifany")
+
+# recode 
+dt <- dt %>%
+  mutate_at(vars(81:104),~dplyr::recode(., "Doesn’t describe me at all\n1\n"=1, 
+                                       "1½"=2,"Describes me a little\n2\n"=3,
+                                       "2½"=4,"Describes me moderately\n3\n"=5,
+                                       "3½"=6,"Describes me very well\n4\n"=7,
+                                       "4½"=8,"Describes me exactly\n5\n"=9))
+
+#examine data 
+describe(dt[,c(81:104)])
+
+# all variables are recoded in the direction of independence
+# Difference versus similarity: 5, 19, 22 	
+dt$`Self-construal_19R`<-10-dt$`Self-construal_19`
+psych::alpha(dt[c("Self-construal_5","Self-construal_19R","Self-construal_22")]) #a=.66
+dt$SC_simdif <- rowMeans(dt[c("Self-construal_5","Self-construal_19R","Self-construal_22")],na.rm=TRUE)
+describe(dt$SC_simdif)
+
+# Self-containment versus connection to others: 8, 11, 14
+dt$`Self-construal_11R`<-10-dt$`Self-construal_11`
+dt$`Self-construal_14R`<-10-dt$`Self-construal_14`
+psych::alpha(dt[c("Self-construal_8","Self-construal_11R","Self-construal_14R")]) #a=.47
+dt$SC_scont <- rowMeans(dt[c("Self-construal_8","Self-construal_11R","Self-construal_14R")],na.rm=TRUE)
+describe(dt$SC_scont)
+
+# Self-direction versus receptiveness to influence: 12, 16, 21
+dt$`Self-construal_12R`<-10-dt$`Self-construal_12`
+dt$`Self-construal_16R`<-10-dt$`Self-construal_16`
+psych::alpha(dt[c("Self-construal_12R","Self-construal_16R","Self-construal_21")]) #a=.51
+dt$SC_sdir <- rowMeans(dt[c("Self-construal_12R","Self-construal_16R","Self-construal_21")],na.rm=TRUE)
+describe(dt$SC_sdir)
+
+# Self-reliance versus dependence on others: 2, 15, 23 
+dt$`Self-construal_2R`<-10-dt$`Self-construal_2`
+psych::alpha(dt[c("Self-construal_2R","Self-construal_15","Self-construal_23")]) #a=.70
+dt$SC_srel <- rowMeans(dt[c("Self-construal_2R","Self-construal_15","Self-construal_23")],na.rm=TRUE)
+describe(dt$SC_srel)
+
+# Consistency versus variability: 1, 4, 13			
+dt$`Self-construal_4R`<-10-dt$`Self-construal_4`
+dt$`Self-construal_13R`<-10-dt$`Self-construal_13`
+psych::alpha(dt[c("Self-construal_1","Self-construal_4R","Self-construal_13R")]) #a=.79
+dt$SC_cons <- rowMeans(dt[c("Self-construal_1","Self-construal_4R","Self-construal_13R")],na.rm=TRUE)
+describe(dt$SC_cons)
+
+# Self-expression versus harmony: 7, 17, 20								
+dt$`Self-construal_20R`<-10-dt$`Self-construal_20`
+psych::alpha(dt[c("Self-construal_7","Self-construal_17","Self-construal_20R")]) #a=.58
+dt$SC_sexp <- rowMeans(dt[c("Self-construal_7","Self-construal_17","Self-construal_20R")],na.rm=TRUE)
+describe(dt$SC_sexp)
+
+# Self-Interest versus Commitment to Others: 3, 6, 24 
+dt$`Self-construal_3R`<-10-dt$`Self-construal_3`
+psych::alpha(dt[c("Self-construal_3R","Self-construal_6","Self-construal_24")]) #a=.51
+dt$SC_sint <- rowMeans(dt[c("Self-construal_3R","Self-construal_6","Self-construal_24")],na.rm=TRUE)
+describe(dt$SC_sint)
+
+# Contextualized vs. decontextualized self: 9, 10, 18
+dt$`Self-construal_10R`<-10-dt$`Self-construal_10`
+dt$`Self-construal_18R`<-10-dt$`Self-construal_18`
+psych::alpha(dt[c("Self-construal_9","Self-construal_10R","Self-construal_18R")]) #a=.58
+dt$SC_dec <- rowMeans(dt[c("Self-construal_9","Self-construal_10R","Self-construal_18R")],na.rm=TRUE)
+describe(dt$SC_dec)
+```
+
+## Behavior 
+
+```{r behavior-clean}
+# Behavior ----
+
+# dictator=universal prosociality
+dt$prosocial <- as.numeric(dt$Dictator_decision)
+describe(dt$prosocial) 
+
+# ultimatum_receiver=negative reciprocity
+a <- dt[c(8,118:128)]
+b <- a %>%
+  pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
+  
+b$change <- ifelse(b$decision=="I accept" & 
+                     (((b$decision != dplyr::lag(b$decision))==TRUE)|
+                        (b$proposed=="Ultimatum Receiver_1")),1,0)
+b$proposed <- str_remove(b$proposed, "Ultimatum Receiver_")
+b$UG_negrec <- ifelse(b$change==1,b$proposed,0)
+c <- subset(b, b$UG_negrec!=0)
+c$dupl <- ifelse(duplicated(c$ResponseId)==TRUE,1,0)
+c <- subset(c, c$dupl==0)
+c <- c[,c(1,5)]
+dtg <- merge(dt,c,by="ResponseId")
+dtg$UG_negrec <- as.numeric(dtg$UG_negrec)
+
+# examine data
+100*table(dtg$`Ultimatum Receiver_1`)%>% prop.table() 
+100*table(dtg$`Ultimatum Receiver_2`)%>% prop.table() 
+100*table(dtg$`Ultimatum Receiver_3`)%>% prop.table() 
+100*table(dtg$`Ultimatum Receiver_4`)%>% prop.table() 
+100*table(dtg$`Ultimatum Receiver_5`)%>% prop.table() 
+
+# ultimatum_proposer=positive reciprocity
+a <- dt[c(8,129:139)]
+b <- a %>%
+  pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
+b$proposed <- str_remove(b$proposed, "Ultimatum Proposer_")
+b[,c(2,3)]<-lapply(b[,c(2,3)],as.numeric)
+b$proposed <- b$proposed-1
+cor.test(b$proposed,b$decision) #r between proposal to and from = .54***  
+describe(b$decision) #m=4.78 (4.78/11*100=43%)
+
+b$pr <- ifelse(b$decision>=b$proposed,1,0)
+c <- aggregate(b$pr,by=list(b$ResponseId), FUN=sum)
+c$UG_posrec <- (c$x/11)*100
+c$ResponseId <- c$Group.1
+c <- c[3:4]
+
+# create merged dataset
+dtg <- merge(dtg, c, by="ResponseId")
+
+# examine correlations
+cor.test(dtg$PosRec,dtg$UG_posrec) 
+cor.test(dtg$NegRec,dtg$UG_negrec) 
+cor.test(dtg$PosRec,dtg$UG_negrec) 
+cor.test(dtg$NegRec,dtg$UG_posrec) 
+```
+
+## Expectations
+
+```{r expectations-clean}
+# Expectations----
+
+a <- dt[c(8,140:150)]
+
+b <- a %>%
+  pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
+
+b$change <- ifelse(b$decision=="The other person would accept" & 
+                     (((b$decision != dplyr::lag(b$decision))==TRUE)|
+                        (b$proposed=="Ultimatum expect_1")),1,0)
+b$proposed <- str_remove(b$proposed, "Ultimatum expect_")
+b$UG_expect <- ifelse(b$change==1,b$proposed,0)
+c <- subset(b, b$UG_expect!=0)
+c$dupl <- ifelse(duplicated(c$ResponseId)==TRUE,1,0)
+c <- subset(c, c$dupl==0)
+c <- c[,c(1,5)]
+dtg <- merge(dtg,c,by="ResponseId")
+dtg$UG_expect <- as.numeric(dtg$UG_expect)
+```
+
+- Exclude participants who failed two or three attention checks (dt1). This dataset will be used for all analyses that do not involve the games.
+
+```{r exclude-inattention}
+
+```
+
+- Create a second dataset excluding participants who failed to correctly answer the comprehension questions in the dictator and/or ultimatum games (dt2). This dataset will be used for all analyses that involve the games. 
+
+```{r exclude-comprehension}
+
+```
+
+- Randomly match participants within countries and calculate their hypothetical earnings based on their decisions in the economic games.
+
+```{r decision-matching}
+
+```
+
+- Merge all country datasets (dt1 and dt2). 
+
+```{r merge-all-data}
+
+```
+
+- Calculate alpha reliability coefficients by country for each secondary measure (self-reported positive and negative reciprocity, attitude toward violence (three subscales and the total scale), self-face and other-face concern, reactions to provocation (three subscales), values (four higher-order value subscales), moral foundations (five subscales), intrinsic religiosity from DUREL, SWLS). If alpha is >.60, calculate the index. If alpha is < .60, consider modifications. Items will be removed only if the removal of the item improves alpha by > .10 points in at least half of the countries.
+
+```{r reliability}
+
+```
+
+- Merge with secondary country-level data on GDP per capita, inequality (Gini), HDI, GII, Democracy and Global freedom indicators. 
+
+```{r merge-country-level}
+
+```
+
+- Merge with secondary historical country-level data on population density-1500 and 2000, pathogen prevalence, resource scarcity, war, and territorial threats.
+
+```{r merge-country-level2}
+
+```
+
+- Merge with country-level secondary data on cultural dimensions normsism-collectivism, flexibility-monumentalism, tightness-looseness, relational mobility, and Schwartz country-level value scores. 
+
+```{r merge-country-level3}
+
+```
+
+```{r temp-data}
+# temp rename data 
+DF <- dtg
+```
+
+# Terminology
+
+Individual endorsement: ratings on DHF for how much the norms endorses each item
+
+Cultural norms: ratings on DHF for how much the person believes the country cultural norms represent endorsement on each item
+
+Individual-level: using each participant's scores to represent the variable
+
+Sample-level: using an average score by the country to represent the variable
+
+Level 1: [within] analysis at the norms data points in a multilevel analysis 
+
+Level 2: [cluster] the data points nested or clustered by the indicated variable (i.e., basically the average score for each item across the cluster variable as the level of analysis)
+
+# Overall Model Comments
+
+In each structural model, we may find the following issues:
+
+  - Heywood cases:
+    - Too high correlations: we will consider combining factors when correlations betwen latent variables are too high if they theoretically make sense.  
+    - Negative variances: we will set the variance to a small positive number based on the variances of other items or latent variables 
+  - Non-convergence: 
+    - We will try to find the issue of non-convergence - for example, if the country level does not have enough variability, we may remove the clustering effect to show convergence. 
+    - For bifactor models, we will consider setting all exogenous only correlations to 0 - rather than the proposed model below - to ensure identification. 
+    - For all models, we will investigate just the level 1 factor structure of the model to determine model misspecification. 
+    - For all models, we will investigate each country separately to determine if one sample creates the specific non-convergence issue (in the full model or just level 1 factor structure). 
+    - We will also consider testing level-1 and level-2 for each model separately if they cannot be combined with convergence. 
+    
+*Note*: code below is the pre-registered models. They currently do not run because of convergence issues, but these have not been edited because they are the planned models with larger samples. 
+
+# H1A
+
+*Hypothesis*:
+
+H1A: A bifactor model with three general factors of dignity, honor, and face, and six factors representing the self-concern and other-concern facet of each, will appropriately describe the data.
+
+*Analysis Plan*: 
+
+Individual endorsement and cultural norms will be tested separately. For each model, country will be used as a cluster variable. 
+
+Factor structure: Multilevel confirmatory factor analysis (CFA), specifying a bifactor model with three correlated latent factors representing dignity, honor, and face, and six latent factors representing the self-concern and other-concern facets of each. The self- and other-facets of the three constructs will correlate. 
+
+Test 1: Level 1 will include the proposed factor structure, and Level 2 will include only the saturated model where all observed variables are intercorrelated. 
+
+Test 2: Level 1 will include only the saturated model of observed variable correlations, and Level 2 will include the proposed factor structure. 
+
+*Model Evaluation*:
+
+Item evaluation: 
+
+  - If a given item does not significantly load on the respective factor AND the model fit improves after removing the item, or the item loads in the opposite to expected direction, the items will be removed. Otherwise, the item will be retained.
+  - If modification indices suggest a strong residual correlation between items AND this correlation is theoretically justified, a residual correlation will be added. 
+  
+Model evaluation:
+
+- We will consider the model to have a good fit to the data if RMSEA < .08 and SRMR_within < .08. If ICC < .10, we will additionally use CFI > .90, and SRMR_between < .08 as criteria.
+- If .08 < RMSEA < .10, .08 < SRMR < .10, and .85 < CFI < .90, we will consider the model acceptable, unless there are specific issues with items as described above.
+- If RMSEA > .10, SRMR > .10, CFI < .85, we will consider the model unacceptable. 
+All model fit indices will be considered together, and if the majority of indices suggest acceptable fit, a single indicator will not be considered sufficient to reject the model.
+
+## Data Simulation
+
+```{r data-simulation-bifactor}
+DF_individual <- DF %>% 
+  filter(`US state` == "Texas" | `US state` == "New York") %>% 
+  dplyr::rename(country = `US state`) %>% 
+  mutate(country = droplevels(country)) %>% 
+  select(DHF_endorsement_1:DHF_endorsement_30, country)
+
+colnames(DF_individual) <- c(paste0(
+  rep(c("D_self", "D_other", "H_self", 
+        "H_other", "F_self", "F_other"), 
+      each = 5),
+  rep(1:5)), "country")
+
+DF_norms <- DF %>% 
+  filter(`US state` == "Texas" | `US state` == "New York") %>% 
+  dplyr::rename(country = `US state`) %>% 
+  mutate(country = droplevels(country)) %>% 
+  select(DHF_Norms_1:DHF_Norms_30, country)
+
+colnames(DF_norms) <- c(paste0(
+  rep(c("D_self", "D_other", "H_self", 
+        "H_other", "F_self", "F_other"), 
+      each = 5),
+  rep(1:5)), "country")
+```
+
+## Power
+
+```{r power-bifactor}
+p <- 30 # number of observed variables 
+k <- 618 # number of estimated parameters 
+# you don't divide by 2 because you have it for the within and between covariance matrices 
+df <- p*(p - 1) - 618
+df
+semPower(type = 'a-priori', 
+         effect = .08,
+         effect.measure = "RMSEA",
+         alpha = .05, 
+         power = .90, 
+         df = df,
+         p = 30
+         )
+```
+
+```{r power-bifactor2}
+semPower(type = 'a-priori', 
+         effect = .90,
+         effect.measure = "AGFI",
+         alpha = .05, 
+         power = .90, 
+         df = df,
+         p = 30
+         )
+```
+
+## H1A Individual 
+
+### Bifactor Individual Test 1
+
+```{r individual-bifactor-test1, eval = F}
+bifactor.model.test1 <- 
+paste0(' 
+Level: 1
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+  
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
+  D_other2+D_other3+D_other4+D_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+  F_other1+F_other2+F_other3+F_other4+F_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+  H_other1+H_other2+H_other3+H_other4+H_other5
+  
+  D_self ~~ 0*D_other
+  H_self ~~ 0*H_other
+  F_self ~~ 0*F_other
+  
+Level: 2
+', 
+corr_error)
+
+bifactor.individual.test1.fit <- cfa(model = bifactor.model.test1,
+                    data = DF_individual,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(bifactor.individual.test1.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+bifactor.individual.test1.fitindices <- tidy(fitmeasures(bifactor.individual.test1.fit))
+bifactor.individual.test1.params <- tidy(bifactor.individual.test1.fit)
+```
+
+### Bifactor Individual Test 2
+
+```{r individual-bifactor-test2, eval = F}
+bifactor.model.test2 <- 
+paste0(' 
+Level: 1', 
+corr_error, 
+'
+Level: 2 
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+  
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
+  D_other2+D_other3+D_other4+D_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+  F_other1+F_other2+F_other3+F_other4+F_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+  H_other1+H_other2+H_other3+H_other4+H_other5
+  
+  D_self ~~ 0*D_other
+  H_self ~~ 0*H_other
+  F_self ~~ 0*F_other
+')
+
+bifactor.individual.test2.fit <- cfa(model = bifactor.model.test2,
+                    data = DF_individual,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(bifactor.individual.test2.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+bifactor.individual.test2.fitindices <- tidy(fitmeasures(bifactor.individual.test2.fit))
+bifactor.individual.test2.params <- tidy(bifactor.individual.test2.fit)
+```
+
+## H1A Norms
+
+### Bifactor Norms Test 1
+
+```{r norms-bifactor-test1, eval = F}
+bifactor.model.test1 <- 
+paste0(' 
+Level: 1
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+  
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
+  D_other2+D_other3+D_other4+D_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+  F_other1+F_other2+F_other3+F_other4+F_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+  H_other1+H_other2+H_other3+H_other4+H_other5
+  
+  D_self ~~ 0*D_other
+  H_self ~~ 0*H_other
+  F_self ~~ 0*F_other
+  
+Level: 2
+', 
+corr_error)
+
+bifactor.norms.test1.fit <- cfa(model = bifactor.model.test1,
+                    data = DF_norms,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(bifactor.norms.test1.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+bifactor.norms.test1.fitindices <- tidy(fitmeasures(bifactor.norms.test1.fit))
+bifactor.norms.test1.params <- tidy(bifactor.norms.test1.fit)
+```
+
+### Bifactor Norms Test 2
+
+```{r norms-bifactor-test2, eval = F}
+bifactor.model.test2 <- 
+paste0(' 
+Level: 1', 
+corr_error, 
+'
+Level: 2 
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+  
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
+  D_other2+D_other3+D_other4+D_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+  F_other1+F_other2+F_other3+F_other4+F_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+  H_other1+H_other2+H_other3+H_other4+H_other5
+  
+  D_self ~~ 0*D_other
+  H_self ~~ 0*H_other
+  F_self ~~ 0*F_other
+')
+
+bifactor.norms.test2.fit <- cfa(model = bifactor.model.test2,
+                    data = DF_norms,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(bifactor.norms.test2.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+bifactor.norms.test2.fitindices <- tidy(fitmeasures(bifactor.norms.test2.fit))
+bifactor.norms.test2.params <- tidy(bifactor.norms.test2.fit)
+```
+
+# H1B-C
+
+*Hypothesis*:
+
+H1b-H1c: The bifactor model will fit the data better than the more restrictive correlated 6-factor model (H1b), or a 3-factor model (H1c).
+
+*Analysis Plan*: 
+
+Individual endorsement and cultural norms will be tested separately. For each model, country will be used as a cluster variable. 
+
+Factor structure: Multilevel CFA using a six-factor correlated model of each latent variable (DHF) separated by self/other distinction, and three-factor correlated model of the DHF latent variables will be analyzed. The same item removal and correlated residuals will be retained from H1A. 
+
+Test 1: Level 1 will include the proposed factor structure, and Level 2 will include only the saturated model where all observed variables are intercorrelated. 
+
+Test 2: Level 1 will include only the saturated model of observed variable correlations, and Level 2 will include the proposed factor structure. 
+
+*Model Evaluation*:
+
+The model will be considered significantly better than an alternative if:
+  - AIC is lower
+  - BIC is lower
+  - ΔCFI > .010 (the model with higher CFA is better)
+  - ΔRMSEA > .015 (the model with lower RMSEA is better)
+  - Chen (2007)
+
+All these criteria will be considered together, and if the majority of them are fulfilled, the model will be considered significantly better than the alternative. If models are not significantly different from each other, the theoretically hypothesized bifactor model will be preferred.
+
+## Power
+
+```{r power-comparison}
+k2 <- 570 # number of parameters in 6 factor
+k3 <- 558 # number of parameters in 3 factor
+
+df2 <- p*(p-1) - k2
+df3 <- p*(p-1) - k3
+semPower.aPriori(
+  effect = c(.08-.015, .08),
+  effect.measure = "RMSEA",
+  alpha = .05, 
+  power = .90, 
+  df = c(df2, df))
+
+semPower.aPriori(
+  effect = c(.08-.015, .08),
+  effect.measure = "RMSEA",
+  alpha = .05, 
+  power = .90, 
+  df = c(df3, df))
+```
+
+## H1B Individual
+
+### 6-factor Individual Test 1
+
+```{r individual-sixfactor-test1, eval = F}
+sixfactor.model.test1 <- 
+paste0(' 
+Level: 1
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+
+Level: 2
+', 
+corr_error)
+
+sixfactor.individual.test1.fit <- cfa(model = sixfactor.model.test1,
+                    data = DF_individual,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(sixfactor.individual.test1.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+sixfactor.individual.test1.fitindices <- tidy(fitmeasures(sixfactor.individual.test1.fit))
+sixfactor.individual.test1.params <- tidy(sixfactor.individual.test1.fit)
+```
+
+### 6-Factor Individual Test 2
+
+```{r individual-sixfactor-test2, eval = F}
+sixfactor.model.test2 <- 
+paste0(' 
+Level: 1', 
+corr_error, 
+'
+Level: 2 
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+
+')
+
+sixfactor.individual.test2.fit <- cfa(model = sixfactor.model.test2,
+                    data = DF_individual,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(sixfactor.individual.test2.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+sixfactor.individual.test2.fitindices <- tidy(fitmeasures(sixfactor.individual.test2.fit))
+sixfactor.individual.test2.params <- tidy(sixfactor.individual.test2.fit)
+```
+
+## H1C Individual
+
+### 3-factor Individual Test 1
+
+```{r individual-threefactor-test1, eval = F}
+threefactor.model.test1 <- 
+paste0(' 
+Level: 1
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+
+    D_other1+D_other2+D_other3+D_other4+D_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+    H_other1+H_other2+H_other3+H_other4+H_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+   F_other1+F_other2+F_other3+F_other4+F_other5
+
+Level: 2
+', 
+corr_error)
+
+threefactor.individual.test1.fit <- cfa(model = threefactor.model.test1,
+                    data = DF_individual,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(threefactor.individual.test1.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+threefactor.individual.test1.fitindices <- tidy(fitmeasures(threefactor.individual.test1.fit))
+threefactor.individual.test1.params <- tidy(threefactor.individual.test1.fit)
+```
+
+### 3-Factor Individual Test 2
+
+```{r individual-threefactor-test2, eval = F}
+threefactor.model.test2 <- 
+paste0(' 
+Level: 1', 
+corr_error, 
+'
+Level: 2 
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+
+    D_other1+D_other2+D_other3+D_other4+D_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+    H_other1+H_other2+H_other3+H_other4+H_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+   F_other1+F_other2+F_other3+F_other4+F_other5
+
+')
+
+threefactor.individual.test2.fit <- cfa(model = threefactor.model.test2,
+                    data = DF_individual,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(threefactor.individual.test2.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+threefactor.individual.test2.fitindices <- tidy(fitmeasures(threefactor.individual.test2.fit))
+threefactor.individual.test2.params <- tidy(threefactor.individual.test2.fit)
+```
+
+### Comparison Individual
+
+```{r model-comparison-individual, eval = F}
+bifactor.individual.test1.fitindices
+bifactor.individual.test2.fitindices
+sixfactor.individual.test1.fitindices
+sixfactor.individual.test2.fitindices
+threefactor.individual.test1.fitindices
+threefactor.individual.test2.fitindices
+
+# pick a model based on the rules above 
+```
+
+### Model Improvement
+
+```{r individual-model-improve, eval = F}
+# we will examine the parameters to ensure they are significant
+# if one is poor remove and retest model fit 
+  # remove if poor AND model fit goes up
+# remove items with negative loadings 
+# only do this for the final chosen model 
+
+# for example 
+bifactor.individual.test1.fit
+
+# examine modification indices
+modificationindices(bifactor.individual.test1.fit)
+
+# examine new model fits
+  # rerun models as above
+  # check the fit outputs 
+bifactor.individual.test1.fitindices
+```
+
+## H1B Norms
+
+### 6-factor Norms Test 1
+
+```{r norms-sixfactor-test1, eval = F}
+sixfactor.model.test1 <- 
+paste0(' 
+Level: 1
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+
+Level: 2
+', 
+corr_error)
+
+sixfactor.norms.test1.fit <- cfa(model = sixfactor.model.test1,
+                    data = DF_norms,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(sixfactor.norms.test1.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+sixfactor.norms.test1.fitindices <- tidy(fitmeasures(sixfactor.norms.test1.fit))
+sixfactor.norms.test1.params <- tidy(sixfactor.norms.test1.fit)
+```
+
+### 6-Factor Norms Test 2
+
+```{r norms-sixfactor-test2, eval = F}
+sixfactor.model.test2 <- 
+paste0(' 
+Level: 1', 
+corr_error, 
+'
+Level: 2 
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+
+')
+
+sixfactor.norms.test2.fit <- cfa(model = sixfactor.model.test2,
+                    data = DF_norms,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(sixfactor.norms.test2.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+sixfactor.norms.test2.fitindices <- tidy(fitmeasures(sixfactor.norms.test2.fit))
+sixfactor.norms.test2.params <- tidy(sixfactor.norms.test2.fit)
+```
+
+## H1C Norms
+
+### 3-factor Norms Test 1
+
+```{r norms-threefactor-test1, eval = F}
+threefactor.model.test1 <- 
+paste0(' 
+Level: 1
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+
+    D_other1+D_other2+D_other3+D_other4+D_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+    H_other1+H_other2+H_other3+H_other4+H_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+   F_other1+F_other2+F_other3+F_other4+F_other5
+
+Level: 2
+', 
+corr_error)
+
+threefactor.norms.test1.fit <- cfa(model = threefactor.model.test1,
+                    data = DF_norms,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(threefactor.norms.test1.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+threefactor.norms.test1.fitindices <- tidy(fitmeasures(threefactor.norms.test1.fit))
+threefactor.norms.test1.params <- tidy(threefactor.norms.test1.fit)
+```
+
+### 3-Factor Norms Test 2
+
+```{r norms-threefactor-test2, eval = F}
+threefactor.model.test2 <- 
+paste0(' 
+Level: 1', 
+corr_error, 
+'
+Level: 2 
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+
+    D_other1+D_other2+D_other3+D_other4+D_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+    H_other1+H_other2+H_other3+H_other4+H_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+   F_other1+F_other2+F_other3+F_other4+F_other5
+
+')
+
+threefactor.norms.test2.fit <- cfa(model = threefactor.model.test2,
+                    data = DF_norms,
+                    cluster = "country"
+                    # options to consider
+                    #optim.method = "em", 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(threefactor.norms.test2.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+threefactor.norms.test2.fitindices <- tidy(fitmeasures(threefactor.norms.test2.fit))
+threefactor.norms.test2.params <- tidy(threefactor.norms.test2.fit)
+```
+
+### Comparison Norms
+
+```{r model-comparison-norms, eval = F}
+bifactor.norms.test1.fitindices
+bifactor.norms.test2.fitindices
+sixfactor.norms.test1.fitindices
+sixfactor.norms.test2.fitindices
+threefactor.norms.test1.fitindices
+threefactor.norms.test2.fitindices
+
+# pick a model based on the rules above 
+```
+
+### Model Improvement
+
+```{r norms-model-improve, eval = F}
+# we will examine the parameters to ensure they are significant
+# if one is poor remove and retest model fit 
+  # remove if poor AND model fit goes up
+# remove items with negative loadings 
+# only do this for the final chosen model 
+
+# for example 
+bifactor.norms.test1.fit
+
+# examine modification indices
+modificationindices(bifactor.norms.test1.fit)
+
+# examine new model fits
+  # rerun models as above
+  # check the fit outputs 
+bifactor.norms.test1.fitindices
+```
+
+# Alignment Procedure
+
+## Individual
+
+```{r alignment-individual}
+# testing just the three factor structure with level 1 only to show how this procedure works 
+bifactor.align.model <- '
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
+  D_other2+D_other3+D_other4+D_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+  F_other1+F_other2+F_other3+F_other4+F_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+  H_other1+H_other2+H_other3+H_other4+H_other5
+'
+
+# temp <- cfa(model = bifactor.align.model,
+#             data = DF_individual,
+#             orthogonal = TRUE)
+# summary(temp, standardized = TRUE)
+
+# calculate MGCFA
+bifactor.mgcfa.fit <- mgcfa(
+  model = bifactor.align.model,
+  data = DF_individual, 
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  check.gradient = FALSE,
+  orthogonal = TRUE
+)
+
+summary(bifactor.mgcfa.fit$model_overall)
+summary(bifactor.mgcfa.fit$model_configural)
+bifactor.mgcfa.fit$model_fit
+
+# extract item parameters separate group analyses
+ipars <- lavaan::parameterEstimates(bifactor.mgcfa.fit$model_configural)
+# extract lambda's: groups are in rows, items in columns
+# nrow is the number of groups
+lambda <- matrix(ipars[ ipars$op=="=~", "est"], 
+                  nrow = 2, byrow = TRUE)
+colnames(lambda) <- ipars[ ipars$op=="=~", "rhs"][1:(length(ipars[ ipars$op=="=~", "rhs"])/2)]
+# extract nu's
+nu <- matrix( ipars[ ipars$op=="~1"  & ipars$se !=0, "est" ], 
+              nrow = 2,  byrow = TRUE)
+colnames(nu) <- ipars[ ipars$op=="~1"  & ipars$se !=0, "lhs" ][1:(length(ipars[ ipars$op=="~1"  & ipars$se !=0, "est" ])/2)]
+
+Ng <-  unlist(bifactor.mgcfa.fit$model_configural@SampleStats@nobs)
+wgt <- matrix( sqrt(Ng), length(Ng), ncol(nu) )
+
+
+mod1 <- sirt::invariance.alignment(lambda, nu, wgt, align.pow=c(2,2))
+summary(mod1)
+```
+
+## Norms
+
+```{r alignment-norms}
+# testing just the three factor structure with level 1 only to show how this procedure works 
+bifactor.align.model <- '
+  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
+  D_other2+D_other3+D_other4+D_other5
+  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
+  F_other1+F_other2+F_other3+F_other4+F_other5
+  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
+  H_other1+H_other2+H_other3+H_other4+H_other5
+'
+
+# temp <- cfa(model = bifactor.align.model,
+#             data = DF_norms,
+#             orthogonal = TRUE)
+# summary(temp, standardized = TRUE)
+
+# calculate MGCFA
+bifactor.mgcfa.fit <- mgcfa(
+  model = bifactor.align.model,
+  data = DF_norms, 
+  group = "country",
+  group.equal = c("loadings", "intercepts"),
+  check.gradient = FALSE,
+  orthogonal = TRUE
+)
+
+summary(bifactor.mgcfa.fit$model_overall)
+summary(bifactor.mgcfa.fit$model_configural)
+bifactor.mgcfa.fit$model_fit
+
+# extract item parameters separate group analyses
+ipars <- lavaan::parameterEstimates(bifactor.mgcfa.fit$model_configural)
+# extract lambda's: groups are in rows, items in columns
+# nrow is the number of groups
+lambda <- matrix(ipars[ ipars$op=="=~", "est"], 
+                  nrow = 2, byrow = TRUE)
+colnames(lambda) <- ipars[ ipars$op=="=~", "rhs"][1:(length(ipars[ ipars$op=="=~", "rhs"])/2)]
+# extract nu's
+nu <- matrix( ipars[ ipars$op=="~1"  & ipars$se !=0, "est" ], 
+              nrow = 2,  byrow = TRUE)
+colnames(nu) <- ipars[ ipars$op=="~1"  & ipars$se !=0, "lhs" ][1:(length(ipars[ ipars$op=="~1"  & ipars$se !=0, "est" ])/2)]
+
+Ng <-  unlist(bifactor.mgcfa.fit$model_configural@SampleStats@nobs)
+wgt <- matrix( sqrt(Ng), length(Ng), ncol(nu) )
+
+
+mod1 <- sirt::invariance.alignment(lambda, nu, wgt, align.pow=c(2,2))
+summary(mod1)
+```
+
+# H2
+
+*Hypothesis*:
+
+H2: The individual endorsement of the other-concern facet of all three cultural logics will predict more prosocial behavior.
+
+*Analysis Plan*:
+
+A multilevel model predicting prosociality from six or three cultural logic indices (depending on the best fitting model in H1b) with random intercept for country. 
+
+*Evaluation*: 
+
+A significant positive effect (p < .05) of the other-concern facet of each cultural logic will support the hypotheses. Significant effects for some but no effect for other other-facets will be interpreted as partial support for the hypothesis. Null effects for any or negative effects for some will be interpreted as evidence against the hypothesis.
+
+If the 3-factor model is used (dignity, honor, face), the test will be exploratory.
+
+## Data Simulation
+
+DHF indices will be calculated based on the best performing model for each level. Individual-level DHF endorsement scores will be calculated as averages of individual endorsement items, and country-level DHF norms scores will be calculated as averages of norms items, aggregated at country level (see below for H3). 
+
+```{r h2-data-simulation}
+DF_individual_H2 <- DF %>% 
+  filter(`US state` == "Texas" | `US state` == "New York") %>% 
+  dplyr::rename(country = `US state`) %>% 
+  select(DHF_endorsement_1:DHF_endorsement_30,
+         DHF_Norms_1:DHF_Norms_30, 
+         prosocial,
+         country, 
+         ResponseId) %>% 
+  group_by(ResponseId) %>% 
+  mutate(
+    D_self_individual = mean(DHF_endorsement_1:DHF_endorsement_5),
+    D_other_individual = mean(DHF_endorsement_6:DHF_endorsement_10),
+    H_self_individual = mean(DHF_endorsement_11:DHF_endorsement_15),
+    H_other_individual = mean(DHF_endorsement_16:DHF_endorsement_20),
+    F_self_individual = mean(DHF_endorsement_21:DHF_endorsement_25),
+    F_other_individual = mean(DHF_endorsement_26:DHF_endorsement_30),
+    D_individual = mean(DHF_endorsement_1:DHF_endorsement_10),
+    H_individual = mean(DHF_endorsement_11:DHF_endorsement_20),
+    F_individual = mean(DHF_endorsement_21:DHF_endorsement_30)
+  ) %>% 
+  ungroup() 
+
+DF_H2 <- sim_df(data = DF_individual_H2 %>% 
+                  select(prosocial, country, D_self_individual:F_individual), 
+                n = 300,
+                between = "country")
+```
+
+## Proposed Model
+
+```{r h2-model}
+# six factors - current pilot data 
+h2.fit <- lmer(prosocial ~ D_self_individual + D_other_individual + 
+                    H_self_individual + H_other_individual + 
+                    F_self_individual + F_other_individual +
+                 (1|country), 
+                  data = DF_H2)
+
+parameters(h2.fit)
+```
+
+## Power
+
+```{r h2-power-sim, eval = F}
+# power simulation
+n_people <- seq(20, 100, by = 10)
+
+power.save <- list()
+start.number <- 1
+
+for (i in 1:1000){ # how many times to run the power 
+  for (p in n_people){ # how many participants 
+    
+    # random effect of country
+    country_ran_eff <- data.frame(
+      country = 1:50,
+      ran_eff = rnorm(n = 50, mean = .31, sd = .05)
+    )
+    
+    # simulate a dataset with 50 countries by the number of people 
+    DF <- DF_individual %>% 
+      # get variables
+      select(prosocial, D_self_individual:F_individual) %>% 
+      # make enough data to make correlation work
+      sim_df(., n = 50*p) %>% 
+      # create fake countries
+      mutate(country = rep(1:50, length.out = nrow(.))) %>% 
+      # merge with fake random intercept effects 
+      left_join(country_ran_eff, by = "country") %>% 
+      group_by(country) %>% 
+      # create fixed effects prosocial
+      mutate(
+        # intercept * random intercept effect 
+        prosocial = 4.20*ran_eff + 
+          # fixed effects 
+          rnorm(1, mean = .07, sd = .10)*D_self_individual + 
+          rnorm(1, mean = .20, sd = .10)*D_other_individual + 
+          rnorm(1, mean = .20, sd = .10)*H_self_individual + 
+          rnorm(1, mean = .20, sd = .10)*H_other_individual + 
+          rnorm(1, mean = -.29, sd = .10)*F_self_individual + 
+          rnorm(1, mean = .20, sd = .10)*F_other_individual + 
+          # small error sigma for each person
+          rnorm(1, mean = 2, sd = 1)
+        ) 
+      
+    power.model <- lmer(
+      prosocial ~ D_self_individual + D_other_individual + 
+        H_self_individual + H_other_individual + 
+        F_self_individual + F_other_individual +
+        (1|country), data = DF)
+    
+    coef.model <- as.data.frame(summary(power.model)[["coefficients"]])
+    # underestimating variance here 
+    coef.model$`Std. Error` <- coef.model$`Std. Error`*10  
+    # recalc t and p
+    coef.model$`t value` <- coef.model$Estimate / coef.model$`Std. Error`
+    coef.model$`Pr(>|t|)` <- pt(coef.model$`t value`, df = coef.model$df, lower.tail = FALSE)*2
+
+    power.save[[start.number]] <- c(p, i, coef.model$`Pr(>|t|)`[3], 
+                                  coef.model$`Pr(>|t|)`[5], 
+                                  coef.model$`Pr(>|t|)`[7])
+    power.save[[start.number]] <- as.data.frame(t(power.save[[start.number]]))
+    colnames(power.save[[start.number]]) <- c("sample_size", "run", 
+                                              "d_other", "h_other", "f_other")
+    start.number <- start.number + 1
+    
+  }
+  
+}
+
+power.save.df <- bind_rows(power.save) %>% 
+  mutate(all_three = d_other <= .05 & h_other <= .05 & f_other <=.05) %>% 
+  group_by(sample_size) %>% 
+  summarize(power = sum(all_three) / n())
+
+export(power.save.df, "power/h2_power_summary.csv", row.names = F)
+```
+
+```{r h2-show-power}
+power.save.df <- import("power/h2_power_summary.csv")
+
+power.save.df
+```
+
+# H3
+
+*Hypothesis*:
+
+H3a: Higher country-level honor logic scores will predict higher positive reciprocity. 
+
+H3b: Higher country-level face logic scores will predict higher positive reciprocity. 
+
+H3c: Higher country-level honor logic scores will predict higher negative reciprocity. 
+
+*Analysis Plan*:
+
+A multilevel, random-intercept path model predicting universal prosociality and positive and negative reciprocity from individual-level and sample-level DHF norm scores. The models below and in further hypotheses use 3 factors at the individual and 3 factors at the sample level; this is conditional upon the higher-order DHF factors showing appropriate fit in for both endorsement and sample measures.
+
+Country will be used as the cluster variable for random intercepts. 
+
+Level 1: prosocial, positive reciprocity, and negative reciprocity will be predicted by DHF scores for individual endorsement.
+
+Level 2: prosocial, positive reciprocity, and negative reciprocity will be predicted by DHF scores for sample aggregated norms.
+
+*Evaluation*: 
+
+A significant positive effect (p<.05) of sample-level honor logic on positive reciprocity will support the hypothesis. Non-significant effect or an effect in the opposite direction will provide evidence against the hypothesis.  
+
+A significant positive effect (p<.05) of sample-level face logic on positive reciprocity will support the hypothesis. Non-significant effect or an effect in the opposite direction will provide evidence against the hypothesis. 
+
+A significant positive effect (p<.05) of sample-level honor logic on negative reciprocity will support the hypothesis. Non-significant effect or an effect in the opposite direction will provide evidence against the hypothesis. 
+
+## Data Simulation
+
+```{r h3-data-simulation}
+DF_final_H345 <- DF %>% 
+  filter(`US state` == "Texas" | `US state` == "New York") %>% 
+  dplyr::rename(country = `US state`) %>% 
+  mutate(country = as.factor(country)) %>% 
+  mutate(country = droplevels(country)) %>% 
+  select(DHF_endorsement_1:DHF_endorsement_30,
+         DHF_Norms_1:DHF_Norms_30, 
+         prosocial,
+         PosRec,
+         NegRec,
+         country, 
+         ResponseId) %>% 
+  group_by(ResponseId) %>% 
+  mutate(
+    D_individual = mean(DHF_endorsement_1:DHF_endorsement_10),
+    H_individual = mean(DHF_endorsement_11:DHF_endorsement_20),
+    F_individual = mean(DHF_endorsement_21:DHF_endorsement_30),
+    D_sample = mean(DHF_Norms_1:DHF_Norms_10),
+    H_sample = mean(DHF_Norms_11:DHF_Norms_20),
+    F_sample = mean(DHF_Norms_21:DHF_Norms_30)) %>% 
+  ungroup() 
+
+DF_final_H <- sim_df(data = DF_final_H345 %>% 
+                  select(prosocial, country, PosRec, NegRec, 
+                         D_individual:F_sample) %>% 
+                    mutate(country = rep(1:5, length.out = nrow(DF_final_H345))), 
+                n = 300,
+                between = c("country"))
+
+# for this model, the D_sample, etc. have to be aggregates
+DF_final_H3 <- DF_final_H %>% 
+  left_join(
+    DF_final_H %>% 
+      group_by(country) %>% 
+      summarize(D_sample_agg = mean(D_sample),
+                H_sample_agg = mean(H_sample),
+                F_sample_agg = mean(F_sample)),
+    by = "country"
+  )
+```
+  
+## Power 
+
+Parameters are based on *z*-score estimation, which do not involve degrees of freedom for significance purposes. If we assume our standard errors are approximate from the sample data (~ .10 across parameters as high estimate with smaller sample size models), we would be able to detect regression loadings of approximately .20 (i.e., 1.96 * SE).
+
+```{r}
+prosocial.model <-'
+  prosocial ~ D_individual + H_individual + F_individual
+  PosRec ~ D_individual + H_individual + F_individual
+  NegRec ~ D_individual + H_individual + F_individual
+'
+  
+prosocial.fit <- sem(
+  model = prosocial.model,
+  data = DF_final_H
+)
+
+tidy(prosocial.fit)
+```
+
+## Proposed Model
+
+```{r h3-model, eval = F}
+prosocial.model <-'
+Level: 1
+  prosocial ~ D_individual + H_individual + F_individual
+  PosRec ~ D_individual + H_individual + F_individual
+  NegRec ~ D_individual + H_individual + F_individual
+Level: 2
+  prosocial ~ D_sample_agg + H_sample_agg + F_sample_agg
+  PosRec ~ D_sample_agg + H_sample_agg + F_sample_agg
+  NegRec ~ D_sample_agg + H_sample_agg + F_sample_agg
+'
+  
+prosocial.fit <- sem(
+  model = prosocial.model,
+  data = DF_final_H3,
+  cluster = "country"
+)
+
+summary(prosocial.fit, 
+        standardized = TRUE,
+        fit.measures = TRUE,
+        rsquare = TRUE)
+
+tidy(fitmeasures(prosocial.fit))
+tidy(prosocial.fit)
+```
+
+# H4
+
+*Hypothesis*:
+
+H4a: Individual endorsement of honor culture will positively predict attitude toward violence. 
+
+H4b: Individual endorsement of face culture will positively predict other-face concern in interpersonal conflict. 
+
+H4c: Individual endorsement of dignity culture will negatively predict other-face concern in interpersonal conflict.
+
+*Analysis Plan*:
+
+H4a: A multilevel, random-intercept model (country) predicting attitude to violence from individual-level endorsement and country-level norm scores for honor, face, and dignity.
+
+H4b-c: A multilevel, random-intercept model (country) predicting other-face concern from individual-level endorsement and country-level norm scores for honor, face, and dignity. 
+
+*Evaluation*: 
+
+H4a: A significant (p<.05) positive effect of individual-level honor will be interpreted as support for the hypothesis. Non-significant effect or an effect in the opposite direction will provide evidence against the hypothesis. 
+
+H4b: A significant (p<.05) positive effect of individual-level face will be interpreted as support for the hypothesis. Non-significant effect or an effect in the opposite direction will provide evidence against the hypothesis. 
+
+H4c: A significant (p<.05) negative effect of individual-level dignity will be interpreted as support for the hypothesis. Non-significant effect or an effect in the opposite direction will provide evidence against the hypothesis. 
+
+## Data Simulation
+
+```{r h4-data-simulation}
+# making up numbers here for each group differently 
+DF_final_H4 <- DF_final_H3 %>% 
+  mutate(attviol = c(rnorm(300, mean = 4, sd = 1), 
+                     rnorm(300, mean = 5.2, sd = 1),
+                     rnorm(300, mean = 4.76, sd = 1), 
+                     rnorm(300, mean = 5.16, sd = 1),
+                     rnorm(300, mean = 4.8, sd = 1)),
+         oface = c(rnorm(300, mean = 3.1, sd = 1), 
+                     rnorm(300, mean = 2.4, sd = 1),
+                     rnorm(300, mean = 3.56, sd = 1), 
+                     rnorm(300, mean = 2.10, sd = 1),
+                     rnorm(300, mean = 2.78, sd = 1))) 
+```
+
+## Proposed Model
+
+```{r h4-model}
+h3.model.a <- lmer(attviol ~ D_individual + H_individual + F_individual + 
+                     D_sample + H_sample + F_sample + (1|country),
+                   data = DF_final_H4,
+                   na.action = "na.omit"
+                   )
+
+summary(h3.model.a)
+
+h3.model.b <- lmer(oface ~ D_individual + H_individual + F_individual + 
+                     D_sample + H_sample + F_sample + (1|country),
+                   data = DF_final_H4, 
+                   na.action = "na.omit")
+
+summary(h3.model.b)
+```
+
+## Power 
+
+```{r h4-calc-power, eval = F}
+# power simulation
+n_people <- seq(20, 100, by = 10)
+
+power.save.h4a <- list()
+power.save.h4b <- list()
+start.number <- 1
+
+for (i in 1:1000){ # how many times to run the power 
+  for (p in n_people){ # how many participants 
+    
+    # random effect of country
+    country_ran_eff <- data.frame(
+      country = 1:50,
+      ran_eff = rnorm(n = 50, mean = .31, sd = .05)
+    )
+    
+    # simulate a dataset with 50 countries by the number of people 
+    DF <- DF_final_H4 %>% 
+      # get variables
+      select(attviol, D_individual, H_individual, 
+             F_individual, D_sample, H_sample, F_sample, 
+             country) %>% 
+      # make enough data to make correlation work
+      sim_df(., n = 50*p) %>% 
+      # create fake countries
+      mutate(country = rep(1:50, length.out = nrow(.))) %>% 
+      # merge with fake random intercept effects 
+      left_join(country_ran_eff, by = "country") %>% 
+      group_by(country) %>% 
+      # create fixed effects prosocial
+      mutate(
+        # intercept * random intercept effect 
+        attviol = 4*ran_eff + 
+          # fixed effects 
+          rnorm(1, mean = -.07, sd = .10)*D_individual + 
+          rnorm(1, mean = .20, sd = .10)*H_individual + 
+          rnorm(1, mean = -.08, sd = .10)*F_individual + 
+          rnorm(1, mean = .10, sd = .10)*D_sample + 
+          rnorm(1, mean = .05, sd = .10)*H_sample + 
+          rnorm(1, mean = -.10, sd = .10)*F_sample + 
+          # small error sigma for each person
+          rnorm(1, mean = 2, sd = 1), 
+        oface = 4*ran_eff + 
+          # fixed effects 
+          rnorm(1, mean = -.20, sd = .10)*D_individual + 
+          rnorm(1, mean = -.08, sd = .10)*H_individual + 
+          rnorm(1, mean = .20, sd = .10)*F_individual + 
+          rnorm(1, mean = -.07, sd = .10)*D_sample + 
+          rnorm(1, mean = -.10, sd = .10)*H_sample + 
+          rnorm(1, mean = .03, sd = .10)*F_sample + 
+          # small error sigma for each person
+          rnorm(1, mean = 2, sd = 1)
+        ) 
+      
+    power.model.h4a <- lmer(
+      attviol ~ D_individual + H_individual + F_individual +
+        D_sample + H_sample + F_sample + (1|country),
+      data = DF)
+    
+    coef.model <- as.data.frame(summary(power.model.h4a)[["coefficients"]])
+    # underestimating variance here 
+    coef.model$`Std. Error` <- coef.model$`Std. Error`*10  
+    # recalc t and p
+    coef.model$`t value` <- coef.model$Estimate / coef.model$`Std. Error`
+    coef.model$`Pr(>|t|)` <- pt(coef.model$`t value`, df = coef.model$df, lower.tail = FALSE)*2
+
+    power.save.h4a[[start.number]] <- c(p, i, coef.model$`Pr(>|t|)`[3])
+    power.save.h4a[[start.number]] <- as.data.frame(t(power.save.h4a[[start.number]]))
+    colnames(power.save.h4a[[start.number]]) <- c("sample_size", "run", 
+                                              "h_individual")
+    
+    power.model.h4b <- lmer(
+      oface ~ D_individual + H_individual + F_individual +
+        D_sample + H_sample + F_sample + (1|country),
+      na.action = "na.omit", 
+      data = DF)
+    
+    coef.model <- as.data.frame(summary(power.model.h4b)[["coefficients"]])
+    # underestimating variance here 
+    coef.model$`Std. Error` <- coef.model$`Std. Error`*10  
+    # recalc t and p
+    coef.model$`t value` <- coef.model$Estimate / coef.model$`Std. Error`
+    coef.model$`Pr(>|t|)` <- pt(abs(coef.model$`t value`), df = coef.model$df, lower.tail = FALSE)*2
+
+    power.save.h4b[[start.number]] <- c(p, i, 
+                                        coef.model$`Pr(>|t|)`[4], 
+                                        coef.model$`Pr(>|t|)`[2])
+    power.save.h4b[[start.number]] <- as.data.frame(t(power.save.h4b[[start.number]]))
+    colnames(power.save.h4b[[start.number]]) <- c("sample_size", "run", 
+                                              "f_individual", "d_individual")
+    start.number <- start.number + 1
+    
+  }
+  
+}
+
+power.save.df.h4a <- bind_rows(power.save.h4a) %>% 
+  mutate(sig = h_individual <= .05) %>% 
+  group_by(sample_size) %>% 
+  summarize(power = sum(sig) / n())
+
+export(power.save.df.h4a, "power/h4a_power_summary.csv", row.names = F)
+
+power.save.df.h4b <- bind_rows(power.save.h4b) %>% 
+  mutate(
+    f_individual = ifelse(f_individual > 1, 1, f_individual),
+    d_individual = ifelse(d_individual > 1, 1, d_individual),
+    sig_hb = f_individual <= .05,
+    sig_hc = d_individual <= .05) %>% 
+  group_by(sample_size) %>% 
+  summarize(power_hb = sum(sig_hb) / n(),
+            power_hc = sum(sig_hc) / n())
+
+export(power.save.df.h4b, "power/h4b_power_summary.csv", row.names = F)
+```
+
+```{r h4-show-power}
+power.save.df.h4a <- import("power/h4a_power_summary.csv")
+
+power.save.df.h4a
+
+power.save.df.h4b <- import("power/h4b_power_summary.csv")
+
+power.save.df.h4b
+```
+
+# H5
+
+*Hypothesis*:
+
+H5a: Individual endorsement of honor culture will positively predict retaliation in response to provocation. 
+
+H5b: Individual endorsement of face culture will positively predict withdrawal in response to provocation. 
+
+H5c: Individual endorsement of dignity culture will positively predict humor in response to provocation. 
+
+*Analysis Plan*:
+
+A multilevel, random-intercept path model predicting retaliation, withdrawal, and humor as reactions to provocation from individual-level endorsement and sample-level aggregate scores for honor, face, and dignity. 
+
+Country will be used as the cluster variable for random intercepts. 
+
+Level 1: Retaliation, withdrawal, and humor will be predicted by DHF scores for individual endorsement.
+
+Level 2: Retaliation, withdrawal, and humor will be predicted by DHF scores for sample aggregated norms.
+
+*Evaluation*: 
+
+A significant positive effect (p<.05) of sample-level honor logic on positive reciprocity will support the hypothesis. Non-significant effect or an effect in the opposite direction will provide evidence against the hypothesis.  
+
+A significant positive effect (p<.05) of sample-level face logic on positive reciprocity will support the hypothesis. Non-significant effect or an effect in the opposite direction will provide evidence against the hypothesis. 
+
+A significant positive effect (p<.05) of sample-level honor logic on negative reciprocity will support the hypothesis. Non-significant effect or an effect in the opposite direction will provide evidence against the hypothesis. 
+
+## Data Simulation
+
+```{r h5-data-simulation}
+DF_final_H5 <- DF_final_H3 %>% 
+  mutate(retaliation = c(rnorm(300, mean = 4, sd = 1), 
+                     rnorm(300, mean = 5.2, sd = 1),
+                     rnorm(300, mean = 4.76, sd = 1), 
+                     rnorm(300, mean = 5.16, sd = 1),
+                     rnorm(300, mean = 4.8, sd = 1)),
+         withdrawal = c(rnorm(300, mean = 3.1, sd = 1), 
+                     rnorm(300, mean = 2.4, sd = 1),
+                     rnorm(300, mean = 3.56, sd = 1), 
+                     rnorm(300, mean = 2.10, sd = 1),
+                     rnorm(300, mean = 2.78, sd = 1)),
+         humor = c(rnorm(300, mean = 4.7, sd = 1), 
+                     rnorm(300, mean = 6.2, sd = 1),
+                     rnorm(300, mean = 3.4, sd = 1), 
+                     rnorm(300, mean = 5.0, sd = 1),
+                     rnorm(300, mean = 5.23, sd = 1))) 
+```
+
+## Power 
+
+Parameters are based on *z*-score estimation, which do not involve degrees of freedom for significance purposes. If we assume our standard errors are approximate from the sample data (~ .10 across parameters as high estimate with smaller sample size models), we would be able to detect regression loadings of approximately .20 (i.e., 1.96 * SE).
+
+```{r}
+provocation.model <-'
+  retaliation ~ D_individual + H_individual + F_individual
+  withdrawal ~ D_individual + H_individual + F_individual
+  humor ~ D_individual + H_individual + F_individual
+'
+  
+provocation.fit <- sem(
+  model = provocation.model,
+  data = DF_final_H5
+)
+
+tidy(provocation.fit)
+```
+
+## Proposed Model
+
+```{r h5-model, eval = F}
+provocation.model <-'
+Level: 1
+  retaliation ~ D_individual + H_individual + F_individual
+  withdrawal ~ D_individual + H_individual + F_individual
+  humor ~ D_individual + H_individual + F_individual
+Level: 2
+  retaliation  ~ D_sample_agg + H _sample_agg + F_sample_agg
+  withdrawal ~ D_sample_agg + H_sample_agg + F_sample_agg 
+  humor ~ D_sample_agg + H _sample_agg + F_sample_agg 
+'
+  
+provocation.fit <- sem(
+  model = provocation.model,
+  data = DF_final_H5,
+  cluster = "country"
+)
+
+summary(provocation.fit, 
+        standardized = TRUE,
+        fit.measures = TRUE,
+        rsquare = TRUE)
+
+tidy(fitmeasures(provocation.fit))
+tidy(provocation.fit)
+```
+
+
+
+
