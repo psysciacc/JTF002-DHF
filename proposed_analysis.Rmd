@@ -336,6 +336,10 @@ dtg <- merge(dtg,c,by="ResponseId")
 dtg$UG_expect <- as.numeric(dtg$UG_expect)
 ```
 
+## Create Datasets
+
+Note: this will be updated with examples from pilot data of the full study. 
+
 - Exclude participants who failed two or three attention checks (dt1). This dataset will be used for all analyses that do not involve the games.
 
 ```{r exclude-inattention}
@@ -360,11 +364,15 @@ dtg$UG_expect <- as.numeric(dtg$UG_expect)
 
 ```
 
+## Calculate Reliability 
+
 - Calculate alpha reliability coefficients by country for each secondary measure (self-reported positive and negative reciprocity, attitude toward violence (three subscales and the total scale), self-face and other-face concern, reactions to provocation (three subscales), values (four higher-order value subscales), moral foundations (five subscales), intrinsic religiosity from DUREL, SWLS). If alpha is >.60, calculate the index. If alpha is < .60, consider modifications. Items will be removed only if the removal of the item improves alpha by > .10 points in at least half of the countries.
 
 ```{r reliability}
 
 ```
+
+## Merge with Country Data 
 
 - Merge with secondary country-level data on GDP per capita, inequality (Gini), HDI, GII, Democracy and Global freedom indicators. 
 
@@ -412,7 +420,7 @@ In each structural model, we may find the following issues:
     - Negative variances: we will set the variance to a small positive number based on the variances of other items or latent variables 
   - Non-convergence: 
     - We will try to find the issue of non-convergence - for example, if the country level does not have enough variability, we may remove the clustering effect to show convergence. 
-    - For bifactor models, we will consider setting all exogenous only correlations to 0 - rather than the proposed model below - to ensure identification. 
+    - For hierarchical models, we will consider setting all exogenous only correlations to 0 - rather than the proposed model below - to ensure identification. 
     - For all models, we will investigate just the level 1 factor structure of the model to determine model misspecification. 
     - For all models, we will investigate each country separately to determine if one sample creates the specific non-convergence issue (in the full model or just level 1 factor structure). 
     - We will also consider testing level-1 and level-2 for each model separately if they cannot be combined with convergence. 
@@ -423,13 +431,13 @@ In each structural model, we may find the following issues:
 
 *Hypothesis*:
 
-H1A: A bifactor model with three general factors of dignity, honor, and face, and six factors representing the self-concern and other-concern facet of each, will appropriately describe the data.
+H1A: A hierarchical model with three general factors of dignity, honor, and face, and six factors representing the self-concern and other-concern facet of each, will appropriately describe the data.
 
 *Analysis Plan*: 
 
 Individual endorsement and cultural norms will be tested separately. For each model, country will be used as a cluster variable. 
 
-Factor structure: Multilevel confirmatory factor analysis (CFA), specifying a bifactor model with three correlated latent factors representing dignity, honor, and face, and six latent factors representing the self-concern and other-concern facets of each. The self- and other-facets of the three constructs will correlate. 
+Factor structure: Multilevel confirmatory factor analysis (CFA), specifying a hierarchical model with three correlated latent factors representing dignity, honor, and face, and six latent factors representing the self-concern and other-concern facets of each. The self- and other-facets of the three constructs will correlate. 
 
 Test 1: Level 1 will include the proposed factor structure, and Level 2 will include only the saturated model where all observed variables are intercorrelated. 
 
@@ -441,7 +449,7 @@ The model will converge. The model will be compared to the models below (see not
 
 ## Data Simulation
 
-```{r data-simulation-bifactor}
+```{r data-simulation-hierarchical}
 DF_individual <- DF %>% 
   filter(`US state` == "Texas" | `US state` == "New York") %>% 
   dplyr::rename(country = `US state`) %>% 
@@ -469,7 +477,7 @@ colnames(DF_norms) <- c(paste0(
 
 ## Power
 
-```{r power-bifactor}
+```{r power-hierarchical}
 p <- 30 # number of observed variables 
 k <- 618 # number of estimated parameters 
 # you don't divide by 2 because you have it for the within and between covariance matrices 
@@ -485,7 +493,7 @@ semPower(type = 'a-priori',
          )
 ```
 
-```{r power-bifactor2}
+```{r power-hierarchical2}
 semPower(type = 'a-priori', 
          effect = .90,
          effect.measure = "AGFI",
@@ -498,10 +506,10 @@ semPower(type = 'a-priori',
 
 ## H1A Individual 
 
-### Bifactor Individual Test 1
+### hierarchical Individual Test 1
 
-```{r individual-bifactor-test1, eval = F}
-bifactor.model.test1 <- 
+```{r individual-hierarchical-test1, eval = F}
+hierarchical.model.test1 <- 
 paste0(' 
 Level: 1
   D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
@@ -511,22 +519,15 @@ Level: 1
   F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
   F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
   
-  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
-  D_other2+D_other3+D_other4+D_other5
-  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
-  F_other1+F_other2+F_other3+F_other4+F_other5
-  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
-  H_other1+H_other2+H_other3+H_other4+H_other5
-  
-  D_self ~~ 0*D_other
-  H_self ~~ 0*H_other
-  F_self ~~ 0*F_other
+  D =~ D_self + D_other
+  F =~ F_self + F_other
+  H =~ H_self + H_other
   
 Level: 2
 ', 
 corr_error)
 
-bifactor.individual.test1.fit <- cfa(model = bifactor.model.test1,
+hierarchical.individual.test1.fit <- cfa(model = hierarchical.model.test1,
                     data = DF_individual,
                     cluster = "country"
                     # options to consider
@@ -536,19 +537,19 @@ bifactor.individual.test1.fit <- cfa(model = bifactor.model.test1,
                     #em.dx.tol = 1e-04
                     )
 
-summary(bifactor.individual.test1.fit,
+summary(hierarchical.individual.test1.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-bifactor.individual.test1.fitindices <- tidy(fitmeasures(bifactor.individual.test1.fit))
-bifactor.individual.test1.params <- tidy(bifactor.individual.test1.fit)
+hierarchical.individual.test1.fitindices <- tidy(fitmeasures(hierarchical.individual.test1.fit))
+hierarchical.individual.test1.params <- tidy(hierarchical.individual.test1.fit)
 ```
 
-### Bifactor Individual Test 2
+### hierarchical Individual Test 2
 
-```{r individual-bifactor-test2, eval = F}
-bifactor.model.test2 <- 
+```{r individual-hierarchical-test2, eval = F}
+hierarchical.model.test2 <- 
 paste0(' 
 Level: 1', 
 corr_error, 
@@ -573,7 +574,7 @@ Level: 2
   F_self ~~ 0*F_other
 ')
 
-bifactor.individual.test2.fit <- cfa(model = bifactor.model.test2,
+hierarchical.individual.test2.fit <- cfa(model = hierarchical.model.test2,
                     data = DF_individual,
                     cluster = "country"
                     # options to consider
@@ -583,21 +584,21 @@ bifactor.individual.test2.fit <- cfa(model = bifactor.model.test2,
                     #em.dx.tol = 1e-04
                     )
 
-summary(bifactor.individual.test2.fit,
+summary(hierarchical.individual.test2.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-bifactor.individual.test2.fitindices <- tidy(fitmeasures(bifactor.individual.test2.fit))
-bifactor.individual.test2.params <- tidy(bifactor.individual.test2.fit)
+hierarchical.individual.test2.fitindices <- tidy(fitmeasures(hierarchical.individual.test2.fit))
+hierarchical.individual.test2.params <- tidy(hierarchical.individual.test2.fit)
 ```
 
 ## H1A Norms
 
-### Bifactor Norms Test 1
+### hierarchical Norms Test 1
 
-```{r norms-bifactor-test1, eval = F}
-bifactor.model.test1 <- 
+```{r norms-hierarchical-test1, eval = F}
+hierarchical.model.test1 <- 
 paste0(' 
 Level: 1
   D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
@@ -622,7 +623,7 @@ Level: 2
 ', 
 corr_error)
 
-bifactor.norms.test1.fit <- cfa(model = bifactor.model.test1,
+hierarchical.norms.test1.fit <- cfa(model = hierarchical.model.test1,
                     data = DF_norms,
                     cluster = "country"
                     # options to consider
@@ -632,19 +633,19 @@ bifactor.norms.test1.fit <- cfa(model = bifactor.model.test1,
                     #em.dx.tol = 1e-04
                     )
 
-summary(bifactor.norms.test1.fit,
+summary(hierarchical.norms.test1.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-bifactor.norms.test1.fitindices <- tidy(fitmeasures(bifactor.norms.test1.fit))
-bifactor.norms.test1.params <- tidy(bifactor.norms.test1.fit)
+hierarchical.norms.test1.fitindices <- tidy(fitmeasures(hierarchical.norms.test1.fit))
+hierarchical.norms.test1.params <- tidy(hierarchical.norms.test1.fit)
 ```
 
-### Bifactor Norms Test 2
+### hierarchical Norms Test 2
 
-```{r norms-bifactor-test2, eval = F}
-bifactor.model.test2 <- 
+```{r norms-hierarchical-test2, eval = F}
+hierarchical.model.test2 <- 
 paste0(' 
 Level: 1', 
 corr_error, 
@@ -669,7 +670,7 @@ Level: 2
   F_self ~~ 0*F_other
 ')
 
-bifactor.norms.test2.fit <- cfa(model = bifactor.model.test2,
+hierarchical.norms.test2.fit <- cfa(model = hierarchical.model.test2,
                     data = DF_norms,
                     cluster = "country"
                     # options to consider
@@ -679,20 +680,20 @@ bifactor.norms.test2.fit <- cfa(model = bifactor.model.test2,
                     #em.dx.tol = 1e-04
                     )
 
-summary(bifactor.norms.test2.fit,
+summary(hierarchical.norms.test2.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-bifactor.norms.test2.fitindices <- tidy(fitmeasures(bifactor.norms.test2.fit))
-bifactor.norms.test2.params <- tidy(bifactor.norms.test2.fit)
+hierarchical.norms.test2.fitindices <- tidy(fitmeasures(hierarchical.norms.test2.fit))
+hierarchical.norms.test2.params <- tidy(hierarchical.norms.test2.fit)
 ```
 
 # H1B-C
 
 *Hypothesis*:
 
-H1b-H1c: The bifactor model will fit the data better than the more restrictive correlated 6-factor model (H1b), or a 3-factor model (H1c).
+H1b-H1c: The hierarchical model will fit the data better than the more restrictive correlated 6-factor model (H1b), or a 3-factor model (H1c).
 
 *Analysis Plan*: 
 
@@ -713,7 +714,7 @@ The model will be considered significantly better than an alternative if:
   - ΔRMSEA > .015 (the model with lower RMSEA is better)
   - Chen (2007)
 
-All these criteria will be considered together, and if the majority of them are fulfilled, the model will be considered significantly better than the alternative. If models are not significantly different from each other, the theoretically hypothesized bifactor model will be preferred.
+All these criteria will be considered together, and if the majority of them are fulfilled, the model will be considered significantly better than the alternative. If models are not significantly different from each other, the theoretically hypothesized hierarchical model will be preferred.
 
 ## Power
 
@@ -891,8 +892,8 @@ threefactor.individual.test2.params <- tidy(threefactor.individual.test2.fit)
 ### Comparison Individual
 
 ```{r model-comparison-individual, eval = F}
-bifactor.individual.test1.fitindices
-bifactor.individual.test2.fitindices
+hierarchical.individual.test1.fitindices
+hierarchical.individual.test2.fitindices
 sixfactor.individual.test1.fitindices
 sixfactor.individual.test2.fitindices
 threefactor.individual.test1.fitindices
@@ -1054,8 +1055,8 @@ threefactor.norms.test2.params <- tidy(threefactor.norms.test2.fit)
 ### Comparison Norms
 
 ```{r model-comparison-norms, eval = F}
-bifactor.norms.test1.fitindices
-bifactor.norms.test2.fitindices
+hierarchical.norms.test1.fitindices
+hierarchical.norms.test2.fitindices
 sixfactor.norms.test1.fitindices
 sixfactor.norms.test2.fitindices
 threefactor.norms.test1.fitindices
@@ -1103,15 +1104,15 @@ All model fit indices will be considered together, and if the majority of indice
 # only do this for the final chosen model 
 
 # for example 
-bifactor.individual.test1.fit
+hierarchical.individual.test1.fit
 
 # examine modification indices
-modificationindices(bifactor.individual.test1.fit)
+modificationindices(hierarchical.individual.test1.fit)
 
 # examine new model fits
   # rerun models as above
   # check the fit outputs 
-bifactor.individual.test1.fitindices
+hierarchical.individual.test1.fitindices
 ```
 
 ## Model Improvement: Norms
@@ -1124,15 +1125,15 @@ bifactor.individual.test1.fitindices
 # only do this for the final chosen model 
 
 # for example 
-bifactor.norms.test1.fit
+hierarchical.norms.test1.fit
 
 # examine modification indices
-modificationindices(bifactor.norms.test1.fit)
+modificationindices(hierarchical.norms.test1.fit)
 
 # examine new model fits
   # rerun models as above
   # check the fit outputs 
-bifactor.norms.test1.fitindices
+hierarchical.norms.test1.fitindices
 ```
 
 # Alignment Procedure
@@ -1141,7 +1142,7 @@ bifactor.norms.test1.fitindices
 
 ```{r alignment-individual}
 # testing just the three factor structure with level 1 only to show how this procedure works 
-bifactor.align.model <- '
+hierarchical.align.model <- '
   D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
   D_other2+D_other3+D_other4+D_other5
   F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
@@ -1150,14 +1151,14 @@ bifactor.align.model <- '
   H_other1+H_other2+H_other3+H_other4+H_other5
 '
 
-# temp <- cfa(model = bifactor.align.model,
+# temp <- cfa(model = hierarchical.align.model,
 #             data = DF_individual,
 #             orthogonal = TRUE)
 # summary(temp, standardized = TRUE)
 
 # calculate MGCFA
-bifactor.mgcfa.fit <- mgcfa(
-  model = bifactor.align.model,
+hierarchical.mgcfa.fit <- mgcfa(
+  model = hierarchical.align.model,
   data = DF_individual, 
   group = "country",
   group.equal = c("loadings", "intercepts"),
@@ -1165,12 +1166,12 @@ bifactor.mgcfa.fit <- mgcfa(
   orthogonal = TRUE
 )
 
-summary(bifactor.mgcfa.fit$model_overall)
-summary(bifactor.mgcfa.fit$model_configural)
-bifactor.mgcfa.fit$model_fit
+summary(hierarchical.mgcfa.fit$model_overall)
+summary(hierarchical.mgcfa.fit$model_configural)
+hierarchical.mgcfa.fit$model_fit
 
 # extract item parameters separate group analyses
-ipars <- lavaan::parameterEstimates(bifactor.mgcfa.fit$model_configural)
+ipars <- lavaan::parameterEstimates(hierarchical.mgcfa.fit$model_configural)
 # extract lambda's: groups are in rows, items in columns
 # nrow is the number of groups
 lambda <- matrix(ipars[ ipars$op=="=~", "est"], 
@@ -1181,7 +1182,7 @@ nu <- matrix( ipars[ ipars$op=="~1"  & ipars$se !=0, "est" ],
               nrow = 2,  byrow = TRUE)
 colnames(nu) <- ipars[ ipars$op=="~1"  & ipars$se !=0, "lhs" ][1:(length(ipars[ ipars$op=="~1"  & ipars$se !=0, "est" ])/2)]
 
-Ng <-  unlist(bifactor.mgcfa.fit$model_configural@SampleStats@nobs)
+Ng <-  unlist(hierarchical.mgcfa.fit$model_configural@SampleStats@nobs)
 wgt <- matrix( sqrt(Ng), length(Ng), ncol(nu) )
 
 
@@ -1193,7 +1194,7 @@ summary(mod1)
 
 ```{r alignment-norms}
 # testing just the three factor structure with level 1 only to show how this procedure works 
-bifactor.align.model <- '
+hierarchical.align.model <- '
   D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
   D_other2+D_other3+D_other4+D_other5
   F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
@@ -1202,14 +1203,14 @@ bifactor.align.model <- '
   H_other1+H_other2+H_other3+H_other4+H_other5
 '
 
-# temp <- cfa(model = bifactor.align.model,
+# temp <- cfa(model = hierarchical.align.model,
 #             data = DF_norms,
 #             orthogonal = TRUE)
 # summary(temp, standardized = TRUE)
 
 # calculate MGCFA
-bifactor.mgcfa.fit <- mgcfa(
-  model = bifactor.align.model,
+hierarchical.mgcfa.fit <- mgcfa(
+  model = hierarchical.align.model,
   data = DF_norms, 
   group = "country",
   group.equal = c("loadings", "intercepts"),
@@ -1217,12 +1218,12 @@ bifactor.mgcfa.fit <- mgcfa(
   orthogonal = TRUE
 )
 
-summary(bifactor.mgcfa.fit$model_overall)
-summary(bifactor.mgcfa.fit$model_configural)
-bifactor.mgcfa.fit$model_fit
+summary(hierarchical.mgcfa.fit$model_overall)
+summary(hierarchical.mgcfa.fit$model_configural)
+hierarchical.mgcfa.fit$model_fit
 
 # extract item parameters separate group analyses
-ipars <- lavaan::parameterEstimates(bifactor.mgcfa.fit$model_configural)
+ipars <- lavaan::parameterEstimates(hierarchical.mgcfa.fit$model_configural)
 # extract lambda's: groups are in rows, items in columns
 # nrow is the number of groups
 lambda <- matrix(ipars[ ipars$op=="=~", "est"], 
@@ -1233,7 +1234,7 @@ nu <- matrix( ipars[ ipars$op=="~1"  & ipars$se !=0, "est" ],
               nrow = 2,  byrow = TRUE)
 colnames(nu) <- ipars[ ipars$op=="~1"  & ipars$se !=0, "lhs" ][1:(length(ipars[ ipars$op=="~1"  & ipars$se !=0, "est" ])/2)]
 
-Ng <-  unlist(bifactor.mgcfa.fit$model_configural@SampleStats@nobs)
+Ng <-  unlist(hierarchical.mgcfa.fit$model_configural@SampleStats@nobs)
 wgt <- matrix( sqrt(Ng), length(Ng), ncol(nu) )
 
 
