@@ -11,7 +11,7 @@
 
 <meta name="author" content="Erin M. Buchanan" />
 
-<meta name="date" content="2024-03-06" />
+<meta name="date" content="2024-08-09" />
 
 <title>Proposed Code: JTF002: DHF</title>
 
@@ -1481,7 +1481,7 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">Proposed Code: JTF002: DHF</h1>
 <h4 class="author">Erin M. Buchanan</h4>
-<h4 class="date">2024-03-06</h4>
+<h4 class="date">2024-08-09</h4>
 
 </div>
 
@@ -1499,7 +1499,7 @@ library(dplyr)</code></pre>
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>library(lavaan)</code></pre>
-<pre><code>## This is lavaan 0.6-17
+<pre><code>## This is lavaan 0.6-18
 ## lavaan is FREE software! Please report any bugs.</code></pre>
 <pre class="r"><code>library(semPlot)
 library(faux)</code></pre>
@@ -1558,7 +1558,15 @@ library(visualizemi) # devtools::install_github(&quot;doomlab/visualizemi&quot;)
 <pre><code>## The following object is masked from &#39;package:parameters&#39;:
 ## 
 ##     bootstrap_model</code></pre>
-<pre class="r"><code>set.seed(48299439)</code></pre>
+<pre class="r"><code>library(ggplot2)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;ggplot2&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:psych&#39;:
+## 
+##     %+%, alpha</code></pre>
+<pre class="r"><code># library(psych)
+
+set.seed(48299439)</code></pre>
 </div>
 <div id="variable-definition" class="section level1">
 <h1>Variable Definition</h1>
@@ -2105,7 +2113,7 @@ psych::alpha(dt[c(&quot;Self-construal_5&quot;,&quot;Self-construal_19R&quot;,&q
 ##  Reliability if an item is dropped:
 ##                    raw_alpha std.alpha G6(smc) average_r  S/N alpha se var.r
 ## Self-construal_5        0.49      0.49    0.33      0.33 0.97    0.058    NA
-## Self-construal_19R      0.71      0.71    0.56      0.56 2.50    0.033    NA
+## Self-construal_19R      0.71      0.71    0.56      0.56 2.51    0.033    NA
 ## Self-construal_22       0.48      0.48    0.32      0.32 0.93    0.060    NA
 ##                    med.r
 ## Self-construal_5    0.33
@@ -2220,7 +2228,7 @@ psych::alpha(dt[c(&quot;Self-construal_2R&quot;,&quot;Self-construal_15&quot;,&q
 ##     &quot;Self-construal_23&quot;)])
 ## 
 ##   raw_alpha std.alpha G6(smc) average_r S/N   ase mean  sd median_r
-##        0.7       0.7    0.64      0.44 2.4 0.031  6.8 1.6     0.39
+##        0.7      0.71    0.65      0.44 2.4 0.031  6.8 1.6     0.39
 ## 
 ##     95% confidence boundaries 
 ##          lower alpha upper
@@ -2229,18 +2237,18 @@ psych::alpha(dt[c(&quot;Self-construal_2R&quot;,&quot;Self-construal_15&quot;,&q
 ## 
 ##  Reliability if an item is dropped:
 ##                   raw_alpha std.alpha G6(smc) average_r  S/N alpha se var.r
-## Self-construal_2R      0.76      0.77    0.62      0.62 3.29    0.027    NA
+## Self-construal_2R      0.76      0.77    0.63      0.63 3.35    0.027    NA
 ## Self-construal_15      0.56      0.56    0.39      0.39 1.28    0.050    NA
 ## Self-construal_23      0.48      0.48    0.32      0.32 0.92    0.060    NA
 ##                   med.r
-## Self-construal_2R  0.62
+## Self-construal_2R  0.63
 ## Self-construal_15  0.39
 ## Self-construal_23  0.32
 ## 
 ##  Item statistics 
 ##                     n raw.r std.r r.cor r.drop mean  sd
 ## Self-construal_2R 301  0.73  0.72  0.45   0.39  6.9 2.1
-## Self-construal_15 301  0.82  0.81  0.70   0.55  6.6 2.1
+## Self-construal_15 301  0.82  0.82  0.70   0.55  6.6 2.1
 ## Self-construal_23 300  0.83  0.85  0.76   0.63  6.9 1.8
 ## 
 ## Non missing response frequency for each item
@@ -2353,11 +2361,11 @@ psych::alpha(dt[c(&quot;Self-construal_3R&quot;,&quot;Self-construal_6&quot;,&qu
 ## 
 ##  Reliability if an item is dropped:
 ##                   raw_alpha std.alpha G6(smc) average_r  S/N alpha se var.r
-## Self-construal_3R      0.63      0.63   0.465     0.465 1.73    0.042    NA
+## Self-construal_3R      0.63      0.63   0.464     0.464 1.73    0.042    NA
 ## Self-construal_6       0.38      0.38   0.236     0.236 0.62    0.071    NA
 ## Self-construal_24      0.10      0.10   0.054     0.054 0.11    0.103    NA
 ##                   med.r
-## Self-construal_3R 0.465
+## Self-construal_3R 0.464
 ## Self-construal_6  0.236
 ## Self-construal_24 0.054
 ## 
@@ -2386,7 +2394,7 @@ psych::alpha(dt[c(&quot;Self-construal_9&quot;,&quot;Self-construal_10R&quot;,&q
 ##     &quot;Self-construal_18R&quot;)])
 ## 
 ##   raw_alpha std.alpha G6(smc) average_r S/N   ase mean  sd median_r
-##       0.58      0.57    0.54      0.31 1.4 0.042  6.2 1.6     0.42
+##       0.58      0.58    0.54      0.31 1.4 0.042  6.2 1.6     0.42
 ## 
 ##     95% confidence boundaries 
 ##          lower alpha upper
@@ -2395,18 +2403,18 @@ psych::alpha(dt[c(&quot;Self-construal_9&quot;,&quot;Self-construal_10R&quot;,&q
 ## 
 ##  Reliability if an item is dropped:
 ##                    raw_alpha std.alpha G6(smc) average_r  S/N alpha se var.r
-## Self-construal_9        0.59      0.59   0.423     0.423 1.47    0.047    NA
+## Self-construal_9        0.59      0.60   0.424     0.424 1.47    0.047    NA
 ## Self-construal_10R      0.12      0.12   0.062     0.062 0.13    0.102    NA
-## Self-construal_18R      0.62      0.62   0.447     0.447 1.62    0.044    NA
+## Self-construal_18R      0.62      0.62   0.448     0.448 1.62    0.044    NA
 ##                    med.r
-## Self-construal_9   0.423
+## Self-construal_9   0.424
 ## Self-construal_10R 0.062
-## Self-construal_18R 0.447
+## Self-construal_18R 0.448
 ## 
 ##  Item statistics 
 ##                      n raw.r std.r r.cor r.drop mean  sd
 ## Self-construal_9   300  0.67  0.68  0.45   0.31  6.1 2.1
-## Self-construal_10R 300  0.85  0.85  0.75   0.60  6.3 2.3
+## Self-construal_10R 300  0.85  0.85  0.76   0.60  6.3 2.3
 ## Self-construal_18R 300  0.68  0.67  0.42   0.29  6.2 2.2
 ## 
 ## Non missing response frequency for each item
@@ -2567,19 +2575,39 @@ c &lt;- subset(c, c$dupl==0)
 c &lt;- c[,c(1,5)]
 dtg &lt;- merge(dtg,c,by=&quot;ResponseId&quot;)
 dtg$UG_expect &lt;- as.numeric(dtg$UG_expect)</code></pre>
+</div>
+<div id="create-datasets" class="section level2">
+<h2>Create Datasets</h2>
+<p>Note: this will be updated with examples from pilot data of the full
+study.</p>
 <ul>
-<li><p>Exclude participants who failed two or three attention checks
-(dt1). This dataset will be used for all analyses that do not involve
-the games.</p></li>
-<li><p>Create a second dataset excluding participants who failed to
+<li>Exclude participants who failed two or three attention checks (dt1).
+This dataset will be used for all analyses that do not involve the
+games.</li>
+</ul>
+<pre class="r"><code># coming based on real dataset</code></pre>
+<ul>
+<li>Create a second dataset excluding participants who failed to
 correctly answer the comprehension questions in the dictator and/or
 ultimatum games (dt2). This dataset will be used for all analyses that
-involve the games.</p></li>
-<li><p>Randomly match participants within countries and calculate their
+involve the games.</li>
+</ul>
+<pre class="r"><code># coming based on real dataset</code></pre>
+<ul>
+<li>Randomly match participants within countries and calculate their
 hypothetical earnings based on their decisions in the economic
-games.</p></li>
-<li><p>Merge all country datasets (dt1 and dt2).</p></li>
-<li><p>Calculate alpha reliability coefficients by country for each
+games.</li>
+</ul>
+<pre class="r"><code># coming based on real dataset</code></pre>
+<ul>
+<li>Merge all country datasets (dt1 and dt2).</li>
+</ul>
+<pre class="r"><code># coming based on real dataset</code></pre>
+</div>
+<div id="calculate-reliability" class="section level2">
+<h2>Calculate Reliability</h2>
+<ul>
+<li>Calculate alpha reliability coefficients by country for each
 secondary measure (self-reported positive and negative reciprocity,
 attitude toward violence (three subscales and the total scale),
 self-face and other-face concern, reactions to provocation (three
@@ -2588,17 +2616,27 @@ foundations (five subscales), intrinsic religiosity from DUREL, SWLS).
 If alpha is &gt;.60, calculate the index. If alpha is &lt; .60, consider
 modifications. Items will be removed only if the removal of the item
 improves alpha by &gt; .10 points in at least half of the
-countries.</p></li>
+countries.</li>
+</ul>
+<pre class="r"><code># secondary measure (self-reported positive and negative reciprocity, attitude toward violence (three subscales and the total scale), self-face and other-face concern, reactions to provocation (three subscales), values (four higher-order value subscales), moral foundations (five subscales), intrinsic religiosity from DUREL, SWLS)</code></pre>
+</div>
+<div id="merge-with-country-data" class="section level2">
+<h2>Merge with Country Data</h2>
+<ul>
 <li><p>Merge with secondary country-level data on GDP per capita,
 inequality (Gini), HDI, GII, Democracy and Global freedom
 indicators.</p></li>
 <li><p>Merge with secondary historical country-level data on population
 density-1500 and 2000, pathogen prevalence, resource scarcity, war, and
 territorial threats.</p></li>
-<li><p>Merge with country-level secondary data on cultural dimensions
-normsism-collectivism, flexibility-monumentalism, tightness-looseness,
-relational mobility, and Schwartz country-level value scores.</p></li>
 </ul>
+<pre class="r"><code># coming based on real dataset</code></pre>
+<ul>
+<li>Merge with country-level secondary data on cultural dimensions
+normsism-collectivism, flexibility-monumentalism, tightness-looseness,
+relational mobility, and Schwartz country-level value scores.</li>
+</ul>
+<pre class="r"><code># coming based on real dataset</code></pre>
 <pre class="r"><code># temp rename data 
 DF &lt;- dtg</code></pre>
 </div>
@@ -2639,7 +2677,7 @@ number based on the variances of other items or latent variables</li>
 <li>We will try to find the issue of non-convergence - for example, if
 the country level does not have enough variability, we may remove the
 clustering effect to show convergence.</li>
-<li>For bifactor models, we will consider setting all exogenous only
+<li>For hierarchical models, we will consider setting all exogenous only
 correlations to 0 - rather than the proposed model below - to ensure
 identification.</li>
 <li>For all models, we will investigate just the level 1 factor
@@ -2658,28 +2696,32 @@ been edited because they are the planned models with larger samples.</p>
 <div id="h1a" class="section level1">
 <h1>H1A</h1>
 <p><em>Hypothesis</em>:</p>
-<p>H1A: A bifactor model with three general factors of dignity, honor,
-and face, and six factors representing the self-concern and
-other-concern facet of each, will appropriately describe the data.</p>
+<p>H1A: A hierarchical model with three higher-order factors of dignity,
+honor, and face, each represented by two facets of self-concern and
+other-concern, will appropriately describe the data.</p>
 <p><em>Analysis Plan</em>:</p>
 <p>Individual endorsement and cultural norms will be tested separately.
 For each model, country will be used as a cluster variable.</p>
-<p>Factor structure: Multilevel confirmatory factor analysis (CFA),
-specifying a bifactor model with three correlated latent factors
-representing dignity, honor, and face, and six latent factors
-representing the self-concern and other-concern facets of each. The
-self- and other-facets of the three constructs will correlate.</p>
+<p>Factor structure (see Fig. 1A): Multilevel confirmatory factor
+analysis (CFA), specifying a hierarchical model with three correlated
+higher-order latent factors representing dignity, honor, and face, each
+with two sub-factors representing the self-concern and other-concern
+facets.</p>
 <p>Test 1: Level 1 will include the proposed factor structure, and Level
 2 will include only the saturated model where all observed variables are
 intercorrelated.</p>
 <p>Test 2: Level 1 will include only the saturated model of observed
 variable correlations, and Level 2 will include the proposed factor
 structure.</p>
+<p>Individual endorsement and cultural norms will be tested separately.
+For each model, country will be used as a cluster variable.</p>
 <p><em>Model Evaluation</em>:</p>
-<p>The model will converge. The model will be compared to the models
-below (see notes below). After model selection, we will use the
-guidelines in the model improvement and alignment section to improve
-model fit.</p>
+<p>If the model converges, it will be compared to the models below (see
+notes below). If the model does not converge after making adjustments as
+described under “Overall model plans”, we will test the simpler
+alternative model with 6 correlated latent factors (see Fig. 1C). After
+model selection, we will use the guidelines in the model improvement and
+alignment section to improve model fit.</p>
 <div id="data-simulation" class="section level2">
 <h2>Data Simulation</h2>
 <pre class="r"><code>DF_individual &lt;- DF %&gt;% 
@@ -2709,11 +2751,11 @@ colnames(DF_norms) &lt;- c(paste0(
 <div id="power" class="section level2">
 <h2>Power</h2>
 <pre class="r"><code>p &lt;- 30 # number of observed variables 
-k &lt;- 618 # number of estimated parameters 
+k &lt;- 564 # number of estimated parameters 
 # you don&#39;t divide by 2 because you have it for the within and between covariance matrices 
-df &lt;- p*(p - 1) - 618
+df &lt;- p*(p - 1) - k
 df</code></pre>
-<pre><code>## [1] 252</code></pre>
+<pre><code>## [1] 306</code></pre>
 <pre class="r"><code>semPower(type = &#39;a-priori&#39;, 
          effect = .08,
          effect.measure = &quot;RMSEA&quot;,
@@ -2735,22 +2777,22 @@ df</code></pre>
 ## [1] 0.9
 ## 
 ## $impliedBeta
-## [1] 0.09709602
+## [1] 0.09008168
 ## 
 ## $impliedPower
-## [1] 0.902904
+## [1] 0.9099183
 ## 
 ## $impliedAbratio
-## [1] 0.5149542
+## [1] 0.5550518
 ## 
 ## $impliedNCP
-## [1] 74.1888
+## [1] 82.2528
 ## 
 ## $fmin
-## [1] 1.6128
+## [1] 1.9584
 ## 
 ## $fmin.g
-## [1] 1.6128
+## [1] 1.9584
 ## 
 ## $effect
 ## [1] 0.08
@@ -2759,19 +2801,19 @@ df</code></pre>
 ## [1] &quot;RMSEA&quot;
 ## 
 ## $requiredN
-## [1] 47
+## [1] 43
 ## 
 ## $requiredN.g
-## [1] 47
+## [1] 43
 ## 
 ## $df
-## [1] 252
+## [1] 306
 ## 
 ## $p
 ## [1] 30
 ## 
 ## $chiCrit
-## [1] 290.0285
+## [1] 347.7963
 ## 
 ## $bPrecisionWarning
 ## [1] FALSE
@@ -2792,13 +2834,13 @@ df</code></pre>
 ## [1] 0.08
 ## 
 ## $mc
-## [1] 0.4464624
+## [1] 0.3756115
 ## 
 ## $gfi
-## [1] 0.9029182
+## [1] 0.8845174
 ## 
 ## $agfi
-## [1] 0.820861
+## [1] 0.8245117
 ## 
 ## attr(,&quot;class&quot;)
 ## [1] &quot;semPower.aPriori&quot;</code></pre>
@@ -2823,22 +2865,22 @@ df</code></pre>
 ## [1] 0.9
 ## 
 ## $impliedBeta
-## [1] 0.0987336
+## [1] 0.09481213
 ## 
 ## $impliedPower
-## [1] 0.9012664
+## [1] 0.9051879
 ## 
 ## $impliedAbratio
-## [1] 0.5064132
+## [1] 0.5273587
 ## 
 ## $impliedNCP
-## [1] 73.91542
+## [1] 81.3605
 ## 
 ## $fmin
-## [1] 0.8594816
+## [1] 1.05663
 ## 
 ## $fmin.g
-## [1] 0.8594816
+## [1] 1.05663
 ## 
 ## $effect
 ## [1] 0.9
@@ -2847,19 +2889,19 @@ df</code></pre>
 ## [1] &quot;AGFI&quot;
 ## 
 ## $requiredN
-## [1] 87
+## [1] 78
 ## 
 ## $requiredN.g
-## [1] 87
+## [1] 78
 ## 
 ## $df
-## [1] 252
+## [1] 306
 ## 
 ## $p
 ## [1] 30
 ## 
 ## $chiCrit
-## [1] 290.0285
+## [1] 347.7963
 ## 
 ## $bPrecisionWarning
 ## [1] FALSE
@@ -2877,13 +2919,13 @@ df</code></pre>
 ## [1] TRUE
 ## 
 ## $rmsea
-## [1] 0.0584007
+## [1] 0.05876256
 ## 
 ## $mc
-## [1] 0.6506777
+## [1] 0.5895977
 ## 
 ## $gfi
-## [1] 0.9458065
+## [1] 0.9341935
 ## 
 ## $agfi
 ## [1] 0.9
@@ -2893,9 +2935,9 @@ df</code></pre>
 </div>
 <div id="h1a-individual" class="section level2">
 <h2>H1A Individual</h2>
-<div id="bifactor-individual-test-1" class="section level3">
-<h3>Bifactor Individual Test 1</h3>
-<pre class="r"><code>bifactor.model.test1 &lt;- 
+<div id="hierarchical-individual-test-1" class="section level3">
+<h3>Hierarchical Individual Test 1</h3>
+<pre class="r"><code>hierarchical.model.test1 &lt;- 
 paste0(&#39; 
 Level: 1
   D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
@@ -2905,42 +2947,35 @@ Level: 1
   F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
   F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
   
-  D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
-  D_other2+D_other3+D_other4+D_other5
-  F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
-  F_other1+F_other2+F_other3+F_other4+F_other5
-  H =~ H_self1+H_self2+H_self3+H_self4+H_self5+
-  H_other1+H_other2+H_other3+H_other4+H_other5
-  
-  D_self ~~ 0*D_other
-  H_self ~~ 0*H_other
-  F_self ~~ 0*F_other
+  D =~ D_self + D_other
+  F =~ F_self + F_other
+  H =~ H_self + H_other
   
 Level: 2
 &#39;, 
 corr_error)
 
-bifactor.individual.test1.fit &lt;- cfa(model = bifactor.model.test1,
+hierarchical.individual.test1.fit &lt;- cfa(model = hierarchical.model.test1,
                     data = DF_individual,
                     cluster = &quot;country&quot;
                     # options to consider
-                    #optim.method = &quot;em&quot;, 
-                    #em.iter.max = 1000
-                    #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
+                    # optim.method = &quot;em&quot;,
+                    # em.iter.max = 1000,
+                    # em.fx.tol = 1e-08, 
+                    # em.dx.tol = 1e-04
                     )
 
-summary(bifactor.individual.test1.fit,
+summary(hierarchical.individual.test1.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-bifactor.individual.test1.fitindices &lt;- tidy(fitmeasures(bifactor.individual.test1.fit))
-bifactor.individual.test1.params &lt;- tidy(bifactor.individual.test1.fit)</code></pre>
+hierarchical.individual.test1.fitindices &lt;- tidy(fitmeasures(hierarchical.individual.test1.fit))
+hierarchical.individual.test1.params &lt;- tidy(hierarchical.individual.test1.fit)</code></pre>
 </div>
-<div id="bifactor-individual-test-2" class="section level3">
-<h3>Bifactor Individual Test 2</h3>
-<pre class="r"><code>bifactor.model.test2 &lt;- 
+<div id="hierarchical-individual-test-2" class="section level3">
+<h3>Hierarchical Individual Test 2</h3>
+<pre class="r"><code>hierarchical.model.test2 &lt;- 
 paste0(&#39; 
 Level: 1&#39;, 
 corr_error, 
@@ -2965,7 +3000,7 @@ Level: 2
   F_self ~~ 0*F_other
 &#39;)
 
-bifactor.individual.test2.fit &lt;- cfa(model = bifactor.model.test2,
+hierarchical.individual.test2.fit &lt;- cfa(model = hierarchical.model.test2,
                     data = DF_individual,
                     cluster = &quot;country&quot;
                     # options to consider
@@ -2975,20 +3010,20 @@ bifactor.individual.test2.fit &lt;- cfa(model = bifactor.model.test2,
                     #em.dx.tol = 1e-04
                     )
 
-summary(bifactor.individual.test2.fit,
+summary(hierarchical.individual.test2.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-bifactor.individual.test2.fitindices &lt;- tidy(fitmeasures(bifactor.individual.test2.fit))
-bifactor.individual.test2.params &lt;- tidy(bifactor.individual.test2.fit)</code></pre>
+hierarchical.individual.test2.fitindices &lt;- tidy(fitmeasures(hierarchical.individual.test2.fit))
+hierarchical.individual.test2.params &lt;- tidy(hierarchical.individual.test2.fit)</code></pre>
 </div>
 </div>
 <div id="h1a-norms" class="section level2">
 <h2>H1A Norms</h2>
-<div id="bifactor-norms-test-1" class="section level3">
-<h3>Bifactor Norms Test 1</h3>
-<pre class="r"><code>bifactor.model.test1 &lt;- 
+<div id="hierarchical-norms-test-1" class="section level3">
+<h3>Hierarchical Norms Test 1</h3>
+<pre class="r"><code>hierarchical.model.test1 &lt;- 
 paste0(&#39; 
 Level: 1
   D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
@@ -3013,7 +3048,7 @@ Level: 2
 &#39;, 
 corr_error)
 
-bifactor.norms.test1.fit &lt;- cfa(model = bifactor.model.test1,
+hierarchical.norms.test1.fit &lt;- cfa(model = hierarchical.model.test1,
                     data = DF_norms,
                     cluster = &quot;country&quot;
                     # options to consider
@@ -3023,17 +3058,17 @@ bifactor.norms.test1.fit &lt;- cfa(model = bifactor.model.test1,
                     #em.dx.tol = 1e-04
                     )
 
-summary(bifactor.norms.test1.fit,
+summary(hierarchical.norms.test1.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-bifactor.norms.test1.fitindices &lt;- tidy(fitmeasures(bifactor.norms.test1.fit))
-bifactor.norms.test1.params &lt;- tidy(bifactor.norms.test1.fit)</code></pre>
+hierarchical.norms.test1.fitindices &lt;- tidy(fitmeasures(hierarchical.norms.test1.fit))
+hierarchical.norms.test1.params &lt;- tidy(hierarchical.norms.test1.fit)</code></pre>
 </div>
-<div id="bifactor-norms-test-2" class="section level3">
-<h3>Bifactor Norms Test 2</h3>
-<pre class="r"><code>bifactor.model.test2 &lt;- 
+<div id="hierarchical-norms-test-2" class="section level3">
+<h3>Hierarchical Norms Test 2</h3>
+<pre class="r"><code>hierarchical.model.test2 &lt;- 
 paste0(&#39; 
 Level: 1&#39;, 
 corr_error, 
@@ -3058,7 +3093,7 @@ Level: 2
   F_self ~~ 0*F_other
 &#39;)
 
-bifactor.norms.test2.fit &lt;- cfa(model = bifactor.model.test2,
+hierarchical.norms.test2.fit &lt;- cfa(model = hierarchical.model.test2,
                     data = DF_norms,
                     cluster = &quot;country&quot;
                     # options to consider
@@ -3068,29 +3103,27 @@ bifactor.norms.test2.fit &lt;- cfa(model = bifactor.model.test2,
                     #em.dx.tol = 1e-04
                     )
 
-summary(bifactor.norms.test2.fit,
+summary(hierarchical.norms.test2.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-bifactor.norms.test2.fitindices &lt;- tidy(fitmeasures(bifactor.norms.test2.fit))
-bifactor.norms.test2.params &lt;- tidy(bifactor.norms.test2.fit)</code></pre>
+hierarchical.norms.test2.fitindices &lt;- tidy(fitmeasures(hierarchical.norms.test2.fit))
+hierarchical.norms.test2.params &lt;- tidy(hierarchical.norms.test2.fit)</code></pre>
 </div>
 </div>
 </div>
-<div id="h1b-c" class="section level1">
-<h1>H1B-C</h1>
+<div id="h1b" class="section level1">
+<h1>H1B</h1>
 <p><em>Hypothesis</em>:</p>
-<p>H1b-H1c: The bifactor model will fit the data better than the more
-restrictive correlated 6-factor model (H1b), or a 3-factor model
-(H1c).</p>
+<p>H1b: The hierarchical model will fit the data better than the
+three-factor model. We will alternatively test a six-factor model in
+case the hierarchical model does not converge.</p>
 <p><em>Analysis Plan</em>:</p>
 <p>Individual endorsement and cultural norms will be tested separately.
 For each model, country will be used as a cluster variable.</p>
-<p>Factor structure: Multilevel CFA using a six-factor correlated model
-of each latent variable (DHF) separated by self/other distinction, and
-three-factor correlated model of the DHF latent variables will be
-analyzed.</p>
+<p>Factor structure (see Fig. 1B): Multilevel CFA with three-factor
+correlated model of the DHF latent variables.</p>
 <p>Test 1: Level 1 will include the proposed factor structure, and Level
 2 will include only the saturated model where all observed variables are
 intercorrelated.</p>
@@ -3105,12 +3138,12 @@ better) - Chen (2007)</p>
 <p>All these criteria will be considered together, and if the majority
 of them are fulfilled, the model will be considered significantly better
 than the alternative. If models are not significantly different from
-each other, the theoretically hypothesized bifactor model will be
+each other, the theoretically hypothesized hierarchical model will be
 preferred.</p>
 <div id="power-1" class="section level2">
 <h2>Power</h2>
-<pre class="r"><code>k2 &lt;- 570 # number of parameters in 6 factor
-k3 &lt;- 558 # number of parameters in 3 factor
+<pre class="r"><code>k2 &lt;- 558 # number of parameters in 3 factor
+k3 &lt;- 570 # number of parameters in 6 factor
 
 df2 &lt;- p*(p-1) - k2
 df3 &lt;- p*(p-1) - k3
@@ -3119,7 +3152,7 @@ semPower.aPriori(
   effect.measure = &quot;RMSEA&quot;,
   alpha = .05, 
   power = .90, 
-  df = c(df2, df))</code></pre>
+  df = c(df2, df)) # compare this model to the original if converge</code></pre>
 <pre><code>## $type
 ## [1] &quot;a-priori&quot;
 ## 
@@ -3133,22 +3166,22 @@ semPower.aPriori(
 ## [1] 0.9
 ## 
 ## $impliedBeta
-## [1] 0.09855874
+## [1] 0.1470263
 ## 
 ## $impliedPower
-## [1] 0.9014413
+## [1] 0.8529737
 ## 
 ## $impliedAbratio
-## [1] 0.5073117
+## [1] 0.3400751
 ## 
 ## $impliedNCP
-## [1] 36.6018
+## [1] 15.3648
 ## 
 ## $fmin
-## [1] 0.3453
+## [1] 0.6402
 ## 
 ## $fmin.g
-## [1] 0.3453
+## [1] 0.6402
 ## 
 ## $effect
 ## [1] 0.065 0.080
@@ -3157,19 +3190,19 @@ semPower.aPriori(
 ## [1] &quot;RMSEA&quot;
 ## 
 ## $requiredN
-## [1] 107
+## [1] 25
 ## 
 ## $requiredN.g
-## [1] 107
+## [1] 25
 ## 
 ## $df
-## [1] 48
+## [1] 6
 ## 
 ## $p
 ## NULL
 ## 
 ## $chiCrit
-## [1] 65.17077
+## [1] 12.59159
 ## 
 ## $bPrecisionWarning
 ## [1] FALSE
@@ -3187,10 +3220,10 @@ semPower.aPriori(
 ## [1] TRUE
 ## 
 ## $rmsea
-## [1] 0.08481598
+## [1] 0.3266497
 ## 
 ## $mc
-## [1] 0.8414321
+## [1] 0.7260764
 ## 
 ## $gfi
 ## NULL
@@ -3205,7 +3238,7 @@ semPower.aPriori(
   effect.measure = &quot;RMSEA&quot;,
   alpha = .05, 
   power = .90, 
-  df = c(df3, df))</code></pre>
+  df = c(df3, df2)) # only compare this model to three-factor</code></pre>
 <pre><code>## $type
 ## [1] &quot;a-priori&quot;
 ## 
@@ -3219,22 +3252,22 @@ semPower.aPriori(
 ## [1] 0.9
 ## 
 ## $impliedBeta
-## [1] 0.09822357
+## [1] 0.09923951
 ## 
 ## $impliedPower
-## [1] 0.9017764
+## [1] 0.9007605
 ## 
 ## $impliedAbratio
-## [1] 0.5090428
+## [1] 0.5038316
 ## 
 ## $impliedNCP
-## [1] 40.0656
+## [1] 21.879
 ## 
 ## $fmin
-## [1] 0.2946
+## [1] 0.7293
 ## 
 ## $fmin.g
-## [1] 0.2946
+## [1] 0.7293
 ## 
 ## $effect
 ## [1] 0.065 0.080
@@ -3243,19 +3276,19 @@ semPower.aPriori(
 ## [1] &quot;RMSEA&quot;
 ## 
 ## $requiredN
-## [1] 137
+## [1] 31
 ## 
 ## $requiredN.g
-## [1] 137
+## [1] 31
 ## 
 ## $df
-## [1] 60
+## [1] 12
 ## 
 ## $p
 ## NULL
 ## 
 ## $chiCrit
-## [1] 79.08194
+## [1] 21.02607
 ## 
 ## $bPrecisionWarning
 ## [1] FALSE
@@ -3273,10 +3306,10 @@ semPower.aPriori(
 ## [1] TRUE
 ## 
 ## $rmsea
-## [1] 0.07007139
+## [1] 0.2465259
 ## 
 ## $mc
-## [1] 0.863035
+## [1] 0.6944397
 ## 
 ## $gfi
 ## NULL
@@ -3290,78 +3323,6 @@ semPower.aPriori(
 <div id="h1b-individual" class="section level2">
 <h2>H1B Individual</h2>
 <div id="factor-individual-test-1" class="section level3">
-<h3>6-factor Individual Test 1</h3>
-<pre class="r"><code>sixfactor.model.test1 &lt;- 
-paste0(&#39; 
-Level: 1
-  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
-  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
-  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
-  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
-  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
-  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
-
-Level: 2
-&#39;, 
-corr_error)
-
-sixfactor.individual.test1.fit &lt;- cfa(model = sixfactor.model.test1,
-                    data = DF_individual,
-                    cluster = &quot;country&quot;
-                    # options to consider
-                    #optim.method = &quot;em&quot;, 
-                    #em.iter.max = 1000
-                    #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-summary(sixfactor.individual.test1.fit,
-        fit.measures = TRUE,
-        rsquare = TRUE,
-        standardized = TRUE)
-
-sixfactor.individual.test1.fitindices &lt;- tidy(fitmeasures(sixfactor.individual.test1.fit))
-sixfactor.individual.test1.params &lt;- tidy(sixfactor.individual.test1.fit)</code></pre>
-</div>
-<div id="factor-individual-test-2" class="section level3">
-<h3>6-Factor Individual Test 2</h3>
-<pre class="r"><code>sixfactor.model.test2 &lt;- 
-paste0(&#39; 
-Level: 1&#39;, 
-corr_error, 
-&#39;
-Level: 2 
-  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
-  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
-  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
-  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
-  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
-  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
-
-&#39;)
-
-sixfactor.individual.test2.fit &lt;- cfa(model = sixfactor.model.test2,
-                    data = DF_individual,
-                    cluster = &quot;country&quot;
-                    # options to consider
-                    #optim.method = &quot;em&quot;, 
-                    #em.iter.max = 1000
-                    #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-summary(sixfactor.individual.test2.fit,
-        fit.measures = TRUE,
-        rsquare = TRUE,
-        standardized = TRUE)
-
-sixfactor.individual.test2.fitindices &lt;- tidy(fitmeasures(sixfactor.individual.test2.fit))
-sixfactor.individual.test2.params &lt;- tidy(sixfactor.individual.test2.fit)</code></pre>
-</div>
-</div>
-<div id="h1c-individual" class="section level2">
-<h2>H1C Individual</h2>
-<div id="factor-individual-test-1-1" class="section level3">
 <h3>3-factor Individual Test 1</h3>
 <pre class="r"><code>threefactor.model.test1 &lt;- 
 paste0(&#39; 
@@ -3395,7 +3356,7 @@ summary(threefactor.individual.test1.fit,
 threefactor.individual.test1.fitindices &lt;- tidy(fitmeasures(threefactor.individual.test1.fit))
 threefactor.individual.test1.params &lt;- tidy(threefactor.individual.test1.fit)</code></pre>
 </div>
-<div id="factor-individual-test-2-1" class="section level3">
+<div id="factor-individual-test-2" class="section level3">
 <h3>3-Factor Individual Test 2</h3>
 <pre class="r"><code>threefactor.model.test2 &lt;- 
 paste0(&#39; 
@@ -3430,22 +3391,11 @@ summary(threefactor.individual.test2.fit,
 threefactor.individual.test2.fitindices &lt;- tidy(fitmeasures(threefactor.individual.test2.fit))
 threefactor.individual.test2.params &lt;- tidy(threefactor.individual.test2.fit)</code></pre>
 </div>
-<div id="comparison-individual" class="section level3">
-<h3>Comparison Individual</h3>
-<pre class="r"><code>bifactor.individual.test1.fitindices
-bifactor.individual.test2.fitindices
-sixfactor.individual.test1.fitindices
-sixfactor.individual.test2.fitindices
-threefactor.individual.test1.fitindices
-threefactor.individual.test2.fitindices
-
-# pick a model based on the rules above </code></pre>
 </div>
-</div>
-<div id="h1b-norms" class="section level2">
-<h2>H1B Norms</h2>
-<div id="factor-norms-test-1" class="section level3">
-<h3>6-factor Norms Test 1</h3>
+<div id="h1b-individual-alternative" class="section level2">
+<h2>H1B Individual (Alternative)</h2>
+<div id="factor-individual-test-1-1" class="section level3">
+<h3>6-factor Individual Test 1</h3>
 <pre class="r"><code>sixfactor.model.test1 &lt;- 
 paste0(&#39; 
 Level: 1
@@ -3460,8 +3410,8 @@ Level: 2
 &#39;, 
 corr_error)
 
-sixfactor.norms.test1.fit &lt;- cfa(model = sixfactor.model.test1,
-                    data = DF_norms,
+sixfactor.individual.test1.fit &lt;- cfa(model = sixfactor.model.test1,
+                    data = DF_individual,
                     cluster = &quot;country&quot;
                     # options to consider
                     #optim.method = &quot;em&quot;, 
@@ -3470,16 +3420,16 @@ sixfactor.norms.test1.fit &lt;- cfa(model = sixfactor.model.test1,
                     #em.dx.tol = 1e-04
                     )
 
-summary(sixfactor.norms.test1.fit,
+summary(sixfactor.individual.test1.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-sixfactor.norms.test1.fitindices &lt;- tidy(fitmeasures(sixfactor.norms.test1.fit))
-sixfactor.norms.test1.params &lt;- tidy(sixfactor.norms.test1.fit)</code></pre>
+sixfactor.individual.test1.fitindices &lt;- tidy(fitmeasures(sixfactor.individual.test1.fit))
+sixfactor.individual.test1.params &lt;- tidy(sixfactor.individual.test1.fit)</code></pre>
 </div>
-<div id="factor-norms-test-2" class="section level3">
-<h3>6-Factor Norms Test 2</h3>
+<div id="factor-individual-test-2-1" class="section level3">
+<h3>6-Factor Individual Test 2</h3>
 <pre class="r"><code>sixfactor.model.test2 &lt;- 
 paste0(&#39; 
 Level: 1&#39;, 
@@ -3495,8 +3445,8 @@ Level: 2
 
 &#39;)
 
-sixfactor.norms.test2.fit &lt;- cfa(model = sixfactor.model.test2,
-                    data = DF_norms,
+sixfactor.individual.test2.fit &lt;- cfa(model = sixfactor.model.test2,
+                    data = DF_individual,
                     cluster = &quot;country&quot;
                     # options to consider
                     #optim.method = &quot;em&quot;, 
@@ -3505,18 +3455,31 @@ sixfactor.norms.test2.fit &lt;- cfa(model = sixfactor.model.test2,
                     #em.dx.tol = 1e-04
                     )
 
-summary(sixfactor.norms.test2.fit,
+summary(sixfactor.individual.test2.fit,
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
 
-sixfactor.norms.test2.fitindices &lt;- tidy(fitmeasures(sixfactor.norms.test2.fit))
-sixfactor.norms.test2.params &lt;- tidy(sixfactor.norms.test2.fit)</code></pre>
+sixfactor.individual.test2.fitindices &lt;- tidy(fitmeasures(sixfactor.individual.test2.fit))
+sixfactor.individual.test2.params &lt;- tidy(sixfactor.individual.test2.fit)</code></pre>
+</div>
+<div id="comparison-individual" class="section level3">
+<h3>Comparison Individual</h3>
+<pre class="r"><code>hierarchical.individual.test1.fitindices
+hierarchical.individual.test2.fitindices
+threefactor.individual.test1.fitindices
+threefactor.individual.test2.fitindices
+
+# if necessary
+sixfactor.individual.test1.fitindices
+sixfactor.individual.test2.fitindices
+
+# pick a model based on the rules above </code></pre>
 </div>
 </div>
-<div id="h1c-norms" class="section level2">
-<h2>H1C Norms</h2>
-<div id="factor-norms-test-1-1" class="section level3">
+<div id="h1b-norms" class="section level2">
+<h2>H1B Norms</h2>
+<div id="factor-norms-test-1" class="section level3">
 <h3>3-factor Norms Test 1</h3>
 <pre class="r"><code>threefactor.model.test1 &lt;- 
 paste0(&#39; 
@@ -3550,7 +3513,7 @@ summary(threefactor.norms.test1.fit,
 threefactor.norms.test1.fitindices &lt;- tidy(fitmeasures(threefactor.norms.test1.fit))
 threefactor.norms.test1.params &lt;- tidy(threefactor.norms.test1.fit)</code></pre>
 </div>
-<div id="factor-norms-test-2-1" class="section level3">
+<div id="factor-norms-test-2" class="section level3">
 <h3>3-Factor Norms Test 2</h3>
 <pre class="r"><code>threefactor.model.test2 &lt;- 
 paste0(&#39; 
@@ -3585,14 +3548,88 @@ summary(threefactor.norms.test2.fit,
 threefactor.norms.test2.fitindices &lt;- tidy(fitmeasures(threefactor.norms.test2.fit))
 threefactor.norms.test2.params &lt;- tidy(threefactor.norms.test2.fit)</code></pre>
 </div>
+</div>
+<div id="h1b-norms-alternative" class="section level2">
+<h2>H1B Norms (Alternative)</h2>
+<div id="factor-norms-test-1-1" class="section level3">
+<h3>6-factor Norms Test 1</h3>
+<pre class="r"><code>sixfactor.model.test1 &lt;- 
+paste0(&#39; 
+Level: 1
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+
+Level: 2
+&#39;, 
+corr_error)
+
+sixfactor.norms.test1.fit &lt;- cfa(model = sixfactor.model.test1,
+                    data = DF_norms,
+                    cluster = &quot;country&quot;
+                    # options to consider
+                    #optim.method = &quot;em&quot;, 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(sixfactor.norms.test1.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+sixfactor.norms.test1.fitindices &lt;- tidy(fitmeasures(sixfactor.norms.test1.fit))
+sixfactor.norms.test1.params &lt;- tidy(sixfactor.norms.test1.fit)</code></pre>
+</div>
+<div id="factor-norms-test-2-1" class="section level3">
+<h3>6-Factor Norms Test 2</h3>
+<pre class="r"><code>sixfactor.model.test2 &lt;- 
+paste0(&#39; 
+Level: 1&#39;, 
+corr_error, 
+&#39;
+Level: 2 
+  D_self =~ D_self1+D_self2+D_self3+D_self4+D_self5
+  D_other =~ D_other1+D_other2+D_other3+D_other4+D_other5
+  H_self =~ H_self1+H_self2+H_self3+H_self4+H_self5
+  H_other =~ H_other1+H_other2+H_other3+H_other4+H_other5
+  F_self =~ F_self1+F_self2+F_self3+F_self4+F_self5
+  F_other =~ F_other1+F_other2+F_other3+F_other4+F_other5
+
+&#39;)
+
+sixfactor.norms.test2.fit &lt;- cfa(model = sixfactor.model.test2,
+                    data = DF_norms,
+                    cluster = &quot;country&quot;
+                    # options to consider
+                    #optim.method = &quot;em&quot;, 
+                    #em.iter.max = 1000
+                    #em.fx.tol = 1e-08, 
+                    #em.dx.tol = 1e-04
+                    )
+
+summary(sixfactor.norms.test2.fit,
+        fit.measures = TRUE,
+        rsquare = TRUE,
+        standardized = TRUE)
+
+sixfactor.norms.test2.fitindices &lt;- tidy(fitmeasures(sixfactor.norms.test2.fit))
+sixfactor.norms.test2.params &lt;- tidy(sixfactor.norms.test2.fit)</code></pre>
+</div>
 <div id="comparison-norms" class="section level3">
 <h3>Comparison Norms</h3>
-<pre class="r"><code>bifactor.norms.test1.fitindices
-bifactor.norms.test2.fitindices
-sixfactor.norms.test1.fitindices
-sixfactor.norms.test2.fitindices
+<pre class="r"><code>hierarchical.norms.test1.fitindices
+hierarchical.norms.test2.fitindices
 threefactor.norms.test1.fitindices
 threefactor.norms.test2.fitindices
+
+# if necessary
+sixfactor.norms.test1.fitindices
+sixfactor.norms.test2.fitindices
 
 # pick a model based on the rules above </code></pre>
 </div>
@@ -3639,15 +3676,15 @@ be considered sufficient to reject the model.</p>
 # only do this for the final chosen model 
 
 # for example 
-bifactor.individual.test1.fit
+hierarchical.individual.test1.fit
 
 # examine modification indices
-modificationindices(bifactor.individual.test1.fit)
+modificationindices(hierarchical.individual.test1.fit)
 
 # examine new model fits
   # rerun models as above
   # check the fit outputs 
-bifactor.individual.test1.fitindices</code></pre>
+hierarchical.individual.test1.fitindices</code></pre>
 </div>
 <div id="model-improvement-norms" class="section level2">
 <h2>Model Improvement: Norms</h2>
@@ -3658,15 +3695,15 @@ bifactor.individual.test1.fitindices</code></pre>
 # only do this for the final chosen model 
 
 # for example 
-bifactor.norms.test1.fit
+hierarchical.norms.test1.fit
 
 # examine modification indices
-modificationindices(bifactor.norms.test1.fit)
+modificationindices(hierarchical.norms.test1.fit)
 
 # examine new model fits
   # rerun models as above
   # check the fit outputs 
-bifactor.norms.test1.fitindices</code></pre>
+hierarchical.norms.test1.fitindices</code></pre>
 </div>
 </div>
 <div id="alignment-procedure" class="section level1">
@@ -3674,7 +3711,7 @@ bifactor.norms.test1.fitindices</code></pre>
 <div id="individual" class="section level2">
 <h2>Individual</h2>
 <pre class="r"><code># testing just the three factor structure with level 1 only to show how this procedure works 
-bifactor.align.model &lt;- &#39;
+hierarchical.align.model &lt;- &#39;
   D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
   D_other2+D_other3+D_other4+D_other5
   F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
@@ -3683,14 +3720,14 @@ bifactor.align.model &lt;- &#39;
   H_other1+H_other2+H_other3+H_other4+H_other5
 &#39;
 
-# temp &lt;- cfa(model = bifactor.align.model,
+# temp &lt;- cfa(model = hierarchical.align.model,
 #             data = DF_individual,
 #             orthogonal = TRUE)
 # summary(temp, standardized = TRUE)
 
 # calculate MGCFA
-bifactor.mgcfa.fit &lt;- mgcfa(
-  model = bifactor.align.model,
+hierarchical.mgcfa.fit &lt;- mgcfa(
+  model = hierarchical.align.model,
   data = DF_individual, 
   group = &quot;country&quot;,
   group.equal = c(&quot;loadings&quot;, &quot;intercepts&quot;),
@@ -3698,8 +3735,8 @@ bifactor.mgcfa.fit &lt;- mgcfa(
   orthogonal = TRUE
 )
 
-summary(bifactor.mgcfa.fit$model_overall)</code></pre>
-<pre><code>## lavaan 0.6.17 ended normally after 49 iterations
+summary(hierarchical.mgcfa.fit$model_overall)</code></pre>
+<pre><code>## lavaan 0.6-18 ended normally after 49 iterations
 ## 
 ##   Estimator                                         ML
 ##   Optimization method                           NLMINB
@@ -3798,8 +3835,8 @@ summary(bifactor.mgcfa.fit$model_overall)</code></pre>
 ##     D                 0.059    0.023    2.632    0.008
 ##     F                 0.591    0.123    4.813    0.000
 ##     H                 0.349    0.070    5.003    0.000</code></pre>
-<pre class="r"><code>summary(bifactor.mgcfa.fit$model_configural)</code></pre>
-<pre><code>## lavaan 0.6.17 ended normally after 103 iterations
+<pre class="r"><code>summary(hierarchical.mgcfa.fit$model_configural)</code></pre>
+<pre><code>## lavaan 0.6-18 ended normally after 103 iterations
 ## 
 ##   Estimator                                         ML
 ##   Optimization method                           NLMINB
@@ -4055,7 +4092,7 @@ summary(bifactor.mgcfa.fit$model_overall)</code></pre>
 ##     D                 0.079    0.037    2.135    0.033
 ##     F                 0.591    0.175    3.372    0.001
 ##     H                 0.424    0.113    3.764    0.000</code></pre>
-<pre class="r"><code>bifactor.mgcfa.fit$model_fit</code></pre>
+<pre class="r"><code>hierarchical.mgcfa.fit$model_fit</code></pre>
 <pre><code>## # A tibble: 6 × 18
 ##    agfi    AIC    BIC   cfi chisq  npar rmsea rmsea.conf.high  srmr   tli
 ##   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;           &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
@@ -4068,7 +4105,7 @@ summary(bifactor.mgcfa.fit$model_overall)</code></pre>
 ## # ℹ 8 more variables: converged &lt;lgl&gt;, estimator &lt;chr&gt;, ngroups &lt;int&gt;,
 ## #   missing_method &lt;chr&gt;, nobs &lt;int&gt;, norig &lt;int&gt;, nexcluded &lt;int&gt;, model &lt;chr&gt;</code></pre>
 <pre class="r"><code># extract item parameters separate group analyses
-ipars &lt;- lavaan::parameterEstimates(bifactor.mgcfa.fit$model_configural)
+ipars &lt;- lavaan::parameterEstimates(hierarchical.mgcfa.fit$model_configural)
 # extract lambda&#39;s: groups are in rows, items in columns
 # nrow is the number of groups
 lambda &lt;- matrix(ipars[ ipars$op==&quot;=~&quot;, &quot;est&quot;], 
@@ -4079,7 +4116,7 @@ nu &lt;- matrix( ipars[ ipars$op==&quot;~1&quot;  &amp; ipars$se !=0, &quot;est&
               nrow = 2,  byrow = TRUE)
 colnames(nu) &lt;- ipars[ ipars$op==&quot;~1&quot;  &amp; ipars$se !=0, &quot;lhs&quot; ][1:(length(ipars[ ipars$op==&quot;~1&quot;  &amp; ipars$se !=0, &quot;est&quot; ])/2)]
 
-Ng &lt;-  unlist(bifactor.mgcfa.fit$model_configural@SampleStats@nobs)
+Ng &lt;-  unlist(hierarchical.mgcfa.fit$model_configural@SampleStats@nobs)
 wgt &lt;- matrix( sqrt(Ng), length(Ng), ncol(nu) )
 
 
@@ -4087,15 +4124,15 @@ mod1 &lt;- sirt::invariance.alignment(lambda, nu, wgt, align.pow=c(2,2))
 summary(mod1)</code></pre>
 <pre><code>## -----------------------------------------------------------------
 ## sirt 4.1-15 (2024-02-06 00:05:40) 
-## R version 4.3.2 (2023-10-31) aarch64, darwin20 | nodename=Erins-MacBook-Pro.local | login=root 
+## R version 4.4.1 (2024-06-14) aarch64, darwin20 | nodename=Erins-MBP | login=root 
 ## 
 ## Call:
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-03-06 09:19:21.088465 
-## Time difference of 0.003731966 secs
-## Computation Time: 0.003731966 
+## Date of Analysis: 2024-08-09 07:51:47.642269 
+## Time difference of 0.003508806 secs
+## Computation Time: 0.003508806 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.327 
@@ -4227,7 +4264,7 @@ summary(mod1)</code></pre>
 <div id="norms" class="section level2">
 <h2>Norms</h2>
 <pre class="r"><code># testing just the three factor structure with level 1 only to show how this procedure works 
-bifactor.align.model &lt;- &#39;
+hierarchical.align.model &lt;- &#39;
   D =~ D_self1+D_self2+D_self3+D_self4+D_self5+D_other1+
   D_other2+D_other3+D_other4+D_other5
   F =~ F_self1+F_self2+F_self3+F_self4+F_self5+
@@ -4236,14 +4273,14 @@ bifactor.align.model &lt;- &#39;
   H_other1+H_other2+H_other3+H_other4+H_other5
 &#39;
 
-# temp &lt;- cfa(model = bifactor.align.model,
+# temp &lt;- cfa(model = hierarchical.align.model,
 #             data = DF_norms,
 #             orthogonal = TRUE)
 # summary(temp, standardized = TRUE)
 
 # calculate MGCFA
-bifactor.mgcfa.fit &lt;- mgcfa(
-  model = bifactor.align.model,
+hierarchical.mgcfa.fit &lt;- mgcfa(
+  model = hierarchical.align.model,
   data = DF_norms, 
   group = &quot;country&quot;,
   group.equal = c(&quot;loadings&quot;, &quot;intercepts&quot;),
@@ -4251,8 +4288,8 @@ bifactor.mgcfa.fit &lt;- mgcfa(
   orthogonal = TRUE
 )
 
-summary(bifactor.mgcfa.fit$model_overall)</code></pre>
-<pre><code>## lavaan 0.6.17 ended normally after 51 iterations
+summary(hierarchical.mgcfa.fit$model_overall)</code></pre>
+<pre><code>## lavaan 0.6-18 ended normally after 51 iterations
 ## 
 ##   Estimator                                         ML
 ##   Optimization method                           NLMINB
@@ -4351,8 +4388,8 @@ summary(bifactor.mgcfa.fit$model_overall)</code></pre>
 ##     D                 0.216    0.046    4.688    0.000
 ##     F                 0.276    0.076    3.645    0.000
 ##     H                 0.430    0.096    4.499    0.000</code></pre>
-<pre class="r"><code>summary(bifactor.mgcfa.fit$model_configural)</code></pre>
-<pre><code>## lavaan 0.6.17 ended normally after 108 iterations
+<pre class="r"><code>summary(hierarchical.mgcfa.fit$model_configural)</code></pre>
+<pre><code>## lavaan 0.6-18 ended normally after 108 iterations
 ## 
 ##   Estimator                                         ML
 ##   Optimization method                           NLMINB
@@ -4608,7 +4645,7 @@ summary(bifactor.mgcfa.fit$model_overall)</code></pre>
 ##     D                 0.159    0.052    3.071    0.002
 ##     F                 0.166    0.089    1.873    0.061
 ##     H                 0.636    0.163    3.898    0.000</code></pre>
-<pre class="r"><code>bifactor.mgcfa.fit$model_fit</code></pre>
+<pre class="r"><code>hierarchical.mgcfa.fit$model_fit</code></pre>
 <pre><code>## # A tibble: 6 × 18
 ##    agfi    AIC    BIC   cfi chisq  npar rmsea rmsea.conf.high  srmr   tli
 ##   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;           &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
@@ -4621,7 +4658,7 @@ summary(bifactor.mgcfa.fit$model_overall)</code></pre>
 ## # ℹ 8 more variables: converged &lt;lgl&gt;, estimator &lt;chr&gt;, ngroups &lt;int&gt;,
 ## #   missing_method &lt;chr&gt;, nobs &lt;int&gt;, norig &lt;int&gt;, nexcluded &lt;int&gt;, model &lt;chr&gt;</code></pre>
 <pre class="r"><code># extract item parameters separate group analyses
-ipars &lt;- lavaan::parameterEstimates(bifactor.mgcfa.fit$model_configural)
+ipars &lt;- lavaan::parameterEstimates(hierarchical.mgcfa.fit$model_configural)
 # extract lambda&#39;s: groups are in rows, items in columns
 # nrow is the number of groups
 lambda &lt;- matrix(ipars[ ipars$op==&quot;=~&quot;, &quot;est&quot;], 
@@ -4632,7 +4669,7 @@ nu &lt;- matrix( ipars[ ipars$op==&quot;~1&quot;  &amp; ipars$se !=0, &quot;est&
               nrow = 2,  byrow = TRUE)
 colnames(nu) &lt;- ipars[ ipars$op==&quot;~1&quot;  &amp; ipars$se !=0, &quot;lhs&quot; ][1:(length(ipars[ ipars$op==&quot;~1&quot;  &amp; ipars$se !=0, &quot;est&quot; ])/2)]
 
-Ng &lt;-  unlist(bifactor.mgcfa.fit$model_configural@SampleStats@nobs)
+Ng &lt;-  unlist(hierarchical.mgcfa.fit$model_configural@SampleStats@nobs)
 wgt &lt;- matrix( sqrt(Ng), length(Ng), ncol(nu) )
 
 
@@ -4640,15 +4677,15 @@ mod1 &lt;- sirt::invariance.alignment(lambda, nu, wgt, align.pow=c(2,2))
 summary(mod1)</code></pre>
 <pre><code>## -----------------------------------------------------------------
 ## sirt 4.1-15 (2024-02-06 00:05:40) 
-## R version 4.3.2 (2023-10-31) aarch64, darwin20 | nodename=Erins-MacBook-Pro.local | login=root 
+## R version 4.4.1 (2024-06-14) aarch64, darwin20 | nodename=Erins-MBP | login=root 
 ## 
 ## Call:
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-03-06 09:19:22.354588 
-## Time difference of 0.003564119 secs
-## Computation Time: 0.003564119 
+## Date of Analysis: 2024-08-09 07:51:48.988976 
+## Time difference of 0.003149033 secs
+## Computation Time: 0.003149033 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.923 
@@ -4840,6 +4877,8 @@ h2.fit &lt;- lmer(prosocial ~ D_self_individual + D_other_individual +
                   data = DF_H2)
 
 parameters(h2.fit)</code></pre>
+<pre><code>## Package &#39;merDeriv&#39; needs to be installed to compute confidence intervals
+##   for random effect parameters.</code></pre>
 <pre><code>## # Fixed Effects
 ## 
 ## Parameter          | Coefficient |   SE |         95% CI | t(591) |      p
@@ -4854,10 +4893,10 @@ parameters(h2.fit)</code></pre>
 ## 
 ## # Random Effects
 ## 
-## Parameter               | Coefficient |   SE |       95% CI
-## -----------------------------------------------------------
-## SD (Intercept: country) |        0.16 | 0.16 | [0.02, 1.18]
-## SD (Residual)           |        1.80 | 0.05 | [1.70, 1.90]</code></pre>
+## Parameter               | Coefficient
+## -------------------------------------
+## SD (Intercept: country) |        0.16
+## SD (Residual)           |        1.80</code></pre>
 <pre><code>## 
 ## Uncertainty intervals (equal-tailed) and p-values (two-tailed) computed
 ##   using a Wald t-distribution approximation.</code></pre>
