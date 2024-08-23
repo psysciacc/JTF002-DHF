@@ -4145,9 +4145,9 @@ summary(mod1)</code></pre>
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-08-23 08:51:24.672997 
-## Time difference of 0.003511906 secs
-## Computation Time: 0.003511906 
+## Date of Analysis: 2024-08-23 10:57:43.80394 
+## Time difference of 0.003679037 secs
+## Computation Time: 0.003679037 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.327 
@@ -4698,9 +4698,9 @@ summary(mod1)</code></pre>
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-08-23 08:51:26.019454 
-## Time difference of 0.002902031 secs
-## Computation Time: 0.002902031 
+## Date of Analysis: 2024-08-23 10:57:45.210438 
+## Time difference of 0.003180027 secs
+## Computation Time: 0.003180027 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.923 
@@ -4893,6 +4893,7 @@ DF_H2 &lt;- sim_df(data = DF_individual_H2 %&gt;%
 <pre class="r"><code># group mean centering for level 1 variable 
 # by country? 
 DF_H2 &lt;- DF_H2 %&gt;% 
+  # group_by(country) %&gt;% 
   mutate(D_self_individual_Z = scale(D_self_individual, 
                                      center = TRUE),
          D_other_individual_Z = scale(D_other_individual), 
@@ -5109,6 +5110,7 @@ DF_final_H3 &lt;- DF_final_H %&gt;%
 # grand mean centering for level 2 variable
 # by country? 
 DF_final_H3 &lt;- DF_final_H3 %&gt;% 
+  # group_by(country) %&gt;% 
   mutate(D_individual_Z = scale(D_individual, 
                                      center = TRUE),
          H_individual_Z = scale(H_individual, 
