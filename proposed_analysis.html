@@ -11,7 +11,7 @@
 
 <meta name="author" content="Erin M. Buchanan" />
 
-<meta name="date" content="2024-08-09" />
+<meta name="date" content="2024-08-23" />
 
 <title>Proposed Code: JTF002: DHF</title>
 
@@ -1481,7 +1481,7 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">Proposed Code: JTF002: DHF</h1>
 <h4 class="author">Erin M. Buchanan</h4>
-<h4 class="date">2024-08-09</h4>
+<h4 class="date">2024-08-23</h4>
 
 </div>
 
@@ -1692,6 +1692,18 @@ names(DF)</code></pre>
 <p>Step 1. Data preparation</p>
 <ul>
 <li>(Re)code all variables, check distributions and missing values.</li>
+<li>Calculate overall item measures:
+<ul>
+<li>Note that these will be calculated by taking the mean score on all
+appropriate items for that measure excluding missing data, as long as a
+participant has at least one data point for that measure.</li>
+<li>For example, if someone has items 2 and 3 for the SWLS, these two
+items will averaged for that measure.</li>
+<li>We will test the robustness of our findings on a subsample of
+participants with no missing values. Each analysis will be run only on a
+subsample of participants who have no missing values on the variables
+involved in that analysis.</li>
+</ul></li>
 </ul>
 <div id="socio-demographics" class="section level2">
 <h2>Socio-demographics</h2>
@@ -2000,11 +2012,11 @@ psych::alpha(dt[c(&quot;Reciprocity_1&quot;,&quot;Reciprocity_2&quot;,&quot;Reci
 ## Reciprocity_5 0.27 0.19 0.17 0.20 0.11 0.04 0.03    0
 ## Reciprocity_6 0.24 0.16 0.15 0.17 0.16 0.08 0.05    0</code></pre>
 <pre class="r"><code># calculate positive and negative reciprocity  
-dt$PosRec &lt;- rowMeans(dt[c(&quot;Reciprocity_1&quot;,&quot;Reciprocity_2&quot;,&quot;Reciprocity_3&quot;)],na.rm=TRUE)
+dt$PosRec &lt;- rowMeans(dt[c(&quot;Reciprocity_1&quot;,&quot;Reciprocity_2&quot;,&quot;Reciprocity_3&quot;)], na.rm=TRUE)
 describe(dt$PosRec)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad min max range  skew kurtosis   se
 ## X1    1 301 5.91 0.92      6       6 0.99   2   7     5 -0.83     0.61 0.05</code></pre>
-<pre class="r"><code>dt$NegRec &lt;- rowMeans(dt[c(&quot;Reciprocity_4&quot;,&quot;Reciprocity_5&quot;,&quot;Reciprocity_6&quot;)],na.rm=TRUE)
+<pre class="r"><code>dt$NegRec &lt;- rowMeans(dt[c(&quot;Reciprocity_4&quot;,&quot;Reciprocity_5&quot;,&quot;Reciprocity_6&quot;)], na.rm=TRUE)
 describe(dt$NegRec)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad min max range skew kurtosis   se
 ## X1    1 301 2.89 1.52   2.67    2.79 1.98   1   7     6 0.36    -0.88 0.09</code></pre>
@@ -2131,7 +2143,7 @@ psych::alpha(dt[c(&quot;Self-construal_5&quot;,&quot;Self-construal_19R&quot;,&q
 ## Self-construal_5   0.04 0.04 0.10 0.06 0.20 0.11 0.19 0.14 0.13    0
 ## Self-construal_19R 0.02 0.02 0.09 0.08 0.11 0.11 0.16 0.16 0.26    0
 ## Self-construal_22  0.01 0.02 0.09 0.06 0.15 0.16 0.20 0.14 0.18    0</code></pre>
-<pre class="r"><code>dt$SC_simdif &lt;- rowMeans(dt[c(&quot;Self-construal_5&quot;,&quot;Self-construal_19R&quot;,&quot;Self-construal_22&quot;)],na.rm=TRUE)
+<pre class="r"><code>dt$SC_simdif &lt;- rowMeans(dt[c(&quot;Self-construal_5&quot;,&quot;Self-construal_19R&quot;,&quot;Self-construal_22&quot;)], na.rm=TRUE)
 describe(dt$SC_simdif)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad min max range  skew kurtosis   se
 ## X1    1 301 6.29 1.63   6.33    6.33 1.98   1   9     8 -0.16    -0.44 0.09</code></pre>
@@ -2173,7 +2185,7 @@ psych::alpha(dt[c(&quot;Self-construal_8&quot;,&quot;Self-construal_11R&quot;,&q
 ## Self-construal_8   0.20 0.12 0.16 0.11 0.12 0.07 0.10 0.05 0.07 0.01
 ## Self-construal_11R 0.20 0.13 0.21 0.14 0.12 0.08 0.09 0.02 0.02 0.00
 ## Self-construal_14R 0.14 0.15 0.26 0.11 0.17 0.05 0.05 0.03 0.04 0.00</code></pre>
-<pre class="r"><code>dt$SC_scont &lt;- rowMeans(dt[c(&quot;Self-construal_8&quot;,&quot;Self-construal_11R&quot;,&quot;Self-construal_14R&quot;)],na.rm=TRUE)
+<pre class="r"><code>dt$SC_scont &lt;- rowMeans(dt[c(&quot;Self-construal_8&quot;,&quot;Self-construal_11R&quot;,&quot;Self-construal_14R&quot;)], na.rm=TRUE)
 describe(dt$SC_scont)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad min  max range skew kurtosis   se
 ## X1    1 301 3.85 1.56   3.67    3.81 1.48   1 8.33  7.33 0.21    -0.31 0.09</code></pre>
@@ -2215,7 +2227,7 @@ psych::alpha(dt[c(&quot;Self-construal_12R&quot;,&quot;Self-construal_16R&quot;,
 ## Self-construal_12R 0.03 0.04 0.09 0.12 0.14 0.08 0.16 0.13 0.21    0
 ## Self-construal_16R 0.03 0.02 0.12 0.09 0.10 0.12 0.21 0.15 0.15    0
 ## Self-construal_21  0.01 0.01 0.07 0.03 0.14 0.13 0.24 0.15 0.22    0</code></pre>
-<pre class="r"><code>dt$SC_sdir &lt;- rowMeans(dt[c(&quot;Self-construal_12R&quot;,&quot;Self-construal_16R&quot;,&quot;Self-construal_21&quot;)],na.rm=TRUE)
+<pre class="r"><code>dt$SC_sdir &lt;- rowMeans(dt[c(&quot;Self-construal_12R&quot;,&quot;Self-construal_16R&quot;,&quot;Self-construal_21&quot;)], na.rm=TRUE)
 describe(dt$SC_sdir)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad min max range  skew kurtosis   se
 ## X1    1 301  6.3 1.52   6.33     6.3 1.98   3   9     6 -0.01    -0.79 0.09</code></pre>
@@ -2256,7 +2268,7 @@ psych::alpha(dt[c(&quot;Self-construal_2R&quot;,&quot;Self-construal_15&quot;,&q
 ## Self-construal_2R 0.01 0.02 0.08 0.07 0.10 0.05 0.19 0.22 0.27    0
 ## Self-construal_15 0.01 0.03 0.08 0.07 0.11 0.10 0.19 0.17 0.24    0
 ## Self-construal_23 0.00 0.01 0.04 0.04 0.13 0.14 0.24 0.16 0.25    0</code></pre>
-<pre class="r"><code>dt$SC_srel &lt;- rowMeans(dt[c(&quot;Self-construal_2R&quot;,&quot;Self-construal_15&quot;,&quot;Self-construal_23&quot;)],na.rm=TRUE)
+<pre class="r"><code>dt$SC_srel &lt;- rowMeans(dt[c(&quot;Self-construal_2R&quot;,&quot;Self-construal_15&quot;,&quot;Self-construal_23&quot;)], na.rm=TRUE)
 describe(dt$SC_srel)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad min max range  skew kurtosis   se
 ## X1    1 301  6.8 1.57      7    6.87 1.98   3   9     6 -0.28    -0.95 0.09</code></pre>
@@ -2298,7 +2310,7 @@ psych::alpha(dt[c(&quot;Self-construal_1&quot;,&quot;Self-construal_4R&quot;,&qu
 ## Self-construal_1   0.04 0.05 0.09 0.05 0.18 0.13 0.25 0.08 0.14    0
 ## Self-construal_4R  0.04 0.07 0.12 0.11 0.12 0.07 0.15 0.15 0.18    0
 ## Self-construal_13R 0.09 0.05 0.12 0.08 0.12 0.07 0.16 0.12 0.18    0</code></pre>
-<pre class="r"><code>dt$SC_cons &lt;- rowMeans(dt[c(&quot;Self-construal_1&quot;,&quot;Self-construal_4R&quot;,&quot;Self-construal_13R&quot;)],na.rm=TRUE)
+<pre class="r"><code>dt$SC_cons &lt;- rowMeans(dt[c(&quot;Self-construal_1&quot;,&quot;Self-construal_4R&quot;,&quot;Self-construal_13R&quot;)], na.rm=TRUE)
 describe(dt$SC_cons)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad min max range  skew kurtosis   se
 ## X1    1 301 5.77 2.04      6    5.85 2.47   1   9     8 -0.27     -0.7 0.12</code></pre>
@@ -2339,7 +2351,7 @@ psych::alpha(dt[c(&quot;Self-construal_7&quot;,&quot;Self-construal_17&quot;,&qu
 ## Self-construal_7   0.07 0.09 0.14 0.08 0.14 0.14 0.18 0.07 0.09    0
 ## Self-construal_17  0.06 0.07 0.13 0.11 0.17 0.12 0.17 0.07 0.10    0
 ## Self-construal_20R 0.05 0.04 0.15 0.13 0.19 0.11 0.13 0.08 0.12    0</code></pre>
-<pre class="r"><code>dt$SC_sexp &lt;- rowMeans(dt[c(&quot;Self-construal_7&quot;,&quot;Self-construal_17&quot;,&quot;Self-construal_20R&quot;)],na.rm=TRUE)
+<pre class="r"><code>dt$SC_sexp &lt;- rowMeans(dt[c(&quot;Self-construal_7&quot;,&quot;Self-construal_17&quot;,&quot;Self-construal_20R&quot;)], na.rm=TRUE)
 describe(dt$SC_sexp)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad min max range skew kurtosis  se
 ## X1    1 301 5.26 1.69   5.33    5.25 1.48   1   9     8    0     -0.5 0.1</code></pre>
@@ -2380,7 +2392,7 @@ psych::alpha(dt[c(&quot;Self-construal_3R&quot;,&quot;Self-construal_6&quot;,&qu
 ## Self-construal_3R 0.12 0.11 0.28 0.13 0.16 0.07 0.05 0.04 0.04    0
 ## Self-construal_6  0.07 0.07 0.13 0.10 0.13 0.13 0.20 0.09 0.08    0
 ## Self-construal_24 0.06 0.07 0.16 0.08 0.21 0.14 0.11 0.07 0.10    0</code></pre>
-<pre class="r"><code>dt$SC_sint &lt;- rowMeans(dt[c(&quot;Self-construal_3R&quot;,&quot;Self-construal_6&quot;,&quot;Self-construal_24&quot;)],na.rm=TRUE)
+<pre class="r"><code>dt$SC_sint &lt;- rowMeans(dt[c(&quot;Self-construal_3R&quot;,&quot;Self-construal_6&quot;,&quot;Self-construal_24&quot;)], na.rm=TRUE)
 describe(dt$SC_sint)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad  min max range skew kurtosis   se
 ## X1    1 301 4.77 1.57   4.67    4.73 1.48 1.33   9  7.67  0.2    -0.27 0.09</code></pre>
@@ -2422,7 +2434,7 @@ psych::alpha(dt[c(&quot;Self-construal_9&quot;,&quot;Self-construal_10R&quot;,&q
 ## Self-construal_9   0.04 0.02 0.07 0.04 0.18 0.13 0.27 0.10 0.14    0
 ## Self-construal_10R 0.03 0.03 0.10 0.06 0.14 0.10 0.17 0.17 0.21    0
 ## Self-construal_18R 0.02 0.02 0.09 0.10 0.18 0.09 0.15 0.14 0.21    0</code></pre>
-<pre class="r"><code>dt$SC_dec &lt;- rowMeans(dt[c(&quot;Self-construal_9&quot;,&quot;Self-construal_10R&quot;,&quot;Self-construal_18R&quot;)],na.rm=TRUE)
+<pre class="r"><code>dt$SC_dec &lt;- rowMeans(dt[c(&quot;Self-construal_9&quot;,&quot;Self-construal_10R&quot;,&quot;Self-construal_18R&quot;)], na.rm=TRUE)
 describe(dt$SC_dec)</code></pre>
 <pre><code>##    vars   n mean   sd median trimmed  mad  min max range  skew kurtosis   se
 ## X1    1 301  6.2 1.62   6.33    6.24 1.98 1.33   9  7.67 -0.18    -0.63 0.09</code></pre>
@@ -2604,8 +2616,8 @@ games.</li>
 </ul>
 <pre class="r"><code># coming based on real dataset</code></pre>
 </div>
-<div id="calculate-reliability" class="section level2">
-<h2>Calculate Reliability</h2>
+<div id="calculate-reliability-at-country-level" class="section level2">
+<h2>Calculate Reliability at Country Level</h2>
 <ul>
 <li>Calculate alpha reliability coefficients by country for each
 secondary measure (self-reported positive and negative reciprocity,
@@ -2618,7 +2630,10 @@ modifications. Items will be removed only if the removal of the item
 improves alpha by &gt; .10 points in at least half of the
 countries.</li>
 </ul>
-<pre class="r"><code># secondary measure (self-reported positive and negative reciprocity, attitude toward violence (three subscales and the total scale), self-face and other-face concern, reactions to provocation (three subscales), values (four higher-order value subscales), moral foundations (five subscales), intrinsic religiosity from DUREL, SWLS)</code></pre>
+<pre class="r"><code># secondary measure (self-reported positive and negative reciprocity, attitude toward violence (three subscales and the total scale), self-face and other-face concern, reactions to provocation (three subscales), values (four higher-order value subscales), moral foundations (five subscales), intrinsic religiosity from DUREL, SWLS)
+
+
+# we would do this by country - the code above shows the reliability overall, would include psych::alpha for each country. </code></pre>
 </div>
 <div id="merge-with-country-data" class="section level2">
 <h2>Merge with Country Data</h2>
@@ -2637,7 +2652,7 @@ normsism-collectivism, flexibility-monumentalism, tightness-looseness,
 relational mobility, and Schwartz country-level value scores.</li>
 </ul>
 <pre class="r"><code># coming based on real dataset</code></pre>
-<pre class="r"><code># temp rename data 
+<pre class="r"><code># temp rename data to make this code proposal work 
 DF &lt;- dtg</code></pre>
 </div>
 </div>
@@ -4130,9 +4145,9 @@ summary(mod1)</code></pre>
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-08-09 07:51:47.642269 
-## Time difference of 0.003508806 secs
-## Computation Time: 0.003508806 
+## Date of Analysis: 2024-08-23 08:51:24.672997 
+## Time difference of 0.003511906 secs
+## Computation Time: 0.003511906 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.327 
@@ -4683,9 +4698,9 @@ summary(mod1)</code></pre>
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-08-09 07:51:48.988976 
-## Time difference of 0.003149033 secs
-## Computation Time: 0.003149033 
+## Date of Analysis: 2024-08-23 08:51:26.019454 
+## Time difference of 0.002902031 secs
+## Computation Time: 0.002902031 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.923 
@@ -4824,6 +4839,9 @@ three cultural logics will predict more prosocial behavior.</p>
 <p>A multilevel model predicting prosociality from six or three cultural
 logic indices (depending on the best fitting model in H1b) with random
 intercept for country.</p>
+<p>All individual-level predictors will be group-mean centered (level
+1), and all sample-level predictors will be grand-mean centered (level
+2).</p>
 <p><em>Evaluation</em>:</p>
 <p>A significant positive effect (p &lt; .05) of the other-concern facet
 of each cultural logic will support the hypotheses. Significant effects
@@ -4869,10 +4887,30 @@ DF_H2 &lt;- sim_df(data = DF_individual_H2 %&gt;%
 </div>
 <div id="proposed-model" class="section level2">
 <h2>Proposed Model</h2>
-<pre class="r"><code># six factors - current pilot data 
-h2.fit &lt;- lmer(prosocial ~ D_self_individual + D_other_individual + 
-                    H_self_individual + H_other_individual + 
-                    F_self_individual + F_other_individual +
+<p>All individual-level predictors will be group-mean centered (level
+1), and all sample-level predictors will be grand-mean centered (level
+2).</p>
+<pre class="r"><code># group mean centering for level 1 variable 
+# by country? 
+DF_H2 &lt;- DF_H2 %&gt;% 
+  mutate(D_self_individual_Z = scale(D_self_individual, 
+                                     center = TRUE),
+         D_other_individual_Z = scale(D_other_individual), 
+                                     center = TRUE,
+         H_self_individual_Z = scale(H_self_individual, 
+                                     center = TRUE),
+         H_other_individual_Z = scale(H_other_individual, 
+                                     center = TRUE),
+         F_self_individual_Z = scale(F_self_individual, 
+                                     center = TRUE),
+         F_other_individual_Z = scale(F_other_individual, 
+                                     center = TRUE)
+         )
+
+# six factors - current pilot data 
+h2.fit &lt;- lmer(prosocial ~ D_self_individual_Z + D_other_individual_Z + 
+                    H_self_individual_Z + H_other_individual_Z + 
+                    F_self_individual_Z + F_other_individual_Z +
                  (1|country), 
                   data = DF_H2)
 
@@ -4881,15 +4919,15 @@ parameters(h2.fit)</code></pre>
 ##   for random effect parameters.</code></pre>
 <pre><code>## # Fixed Effects
 ## 
-## Parameter          | Coefficient |   SE |         95% CI | t(591) |      p
-## --------------------------------------------------------------------------
-## (Intercept)        |        2.94 | 0.59 | [ 1.78,  4.10] |   4.98 | &lt; .001
-## D self individual  |        0.20 | 0.14 | [-0.08,  0.48] |   1.38 | 0.169 
-## D other individual |        0.34 | 0.09 | [ 0.15,  0.52] |   3.61 | &lt; .001
-## H self individual  |        0.13 | 0.11 | [-0.08,  0.34] |   1.21 | 0.229 
-## H other individual |        0.14 | 0.12 | [-0.09,  0.38] |   1.19 | 0.233 
-## F self individual  |       -0.48 | 0.11 | [-0.69, -0.26] |  -4.34 | &lt; .001
-## F other individual |       -0.06 | 0.12 | [-0.30,  0.18] |  -0.48 | 0.632 
+## Parameter            | Coefficient |   SE |         95% CI | t(591) |      p
+## ----------------------------------------------------------------------------
+## (Intercept)          |        4.29 | 0.14 | [ 4.02,  4.56] |  31.50 | &lt; .001
+## D self individual Z  |        0.15 | 0.11 | [-0.06,  0.36] |   1.38 | 0.169 
+## D other individual Z |        0.32 | 0.09 | [ 0.15,  0.50] |   3.61 | &lt; .001
+## H self individual Z  |        0.13 | 0.10 | [-0.08,  0.33] |   1.21 | 0.229 
+## H other individual Z |        0.11 | 0.09 | [-0.07,  0.29] |   1.19 | 0.233 
+## F self individual Z  |       -0.39 | 0.09 | [-0.57, -0.21] |  -4.34 | &lt; .001
+## F other individual Z |       -0.04 | 0.09 | [-0.23,  0.14] |  -0.48 | 0.632 
 ## 
 ## # Random Effects
 ## 
@@ -5065,7 +5103,31 @@ DF_final_H3 &lt;- DF_final_H %&gt;%
                 H_sample_agg = mean(H_sample),
                 F_sample_agg = mean(F_sample)),
     by = &quot;country&quot;
-  )</code></pre>
+  )
+
+# group mean centering for level 1 variable 
+# grand mean centering for level 2 variable
+# by country? 
+DF_final_H3 &lt;- DF_final_H3 %&gt;% 
+  mutate(D_individual_Z = scale(D_individual, 
+                                     center = TRUE),
+         H_individual_Z = scale(H_individual, 
+                                     center = TRUE),
+         F_individual_Z = scale(F_individual, 
+                                     center = TRUE),
+         D_sample_agg_Z = scale(D_sample_agg, 
+                                center = TRUE), 
+         H_sample_agg_Z = scale(H_sample_agg, 
+                                center = TRUE), 
+         F_sample_agg_Z = scale(F_sample_agg, 
+                                center = TRUE),
+         D_sample_Z = scale(D_sample, 
+                           center = TRUE), 
+         H_sample_Z = scale(H_sample,
+                            center = TRUE), 
+         F_sample_Z = scale(F_sample,
+                            center = TRUE)
+         )</code></pre>
 </div>
 <div id="power-3" class="section level2">
 <h2>Power</h2>
@@ -5076,29 +5138,29 @@ parameters as high estimate with smaller sample size models), we would
 be able to detect regression loadings of approximately .20 (i.e., 1.96 *
 SE).</p>
 <pre class="r"><code>prosocial.model &lt;-&#39;
-  prosocial ~ D_individual + H_individual + F_individual
-  PosRec ~ D_individual + H_individual + F_individual
-  NegRec ~ D_individual + H_individual + F_individual
+  prosocial ~ D_individual_Z + H_individual_Z + F_individual_Z
+  PosRec ~ D_individual_Z + H_individual_Z + F_individual_Z
+  NegRec ~ D_individual_Z + H_individual_Z + F_individual_Z
 &#39;
   
 prosocial.fit &lt;- sem(
   model = prosocial.model,
-  data = DF_final_H
+  data = DF_final_H3
 )
 
 tidy(prosocial.fit)</code></pre>
 <pre><code>## # A tibble: 21 × 9
 ##    term   op    estimate std.error statistic  p.value   std.lv  std.all  std.nox
 ##    &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-##  1 proso… ~      0.359      0.0722    4.97   6.57e- 7  0.359    0.149    0.188  
-##  2 proso… ~      0.00343    0.0806    0.0425 9.66e- 1  0.00343  0.00132  0.00179
-##  3 proso… ~      0.0519     0.0569    0.911  3.62e- 1  0.0519   0.0259   0.0271 
-##  4 PosRe… ~      0.324      0.0299   10.8    0         0.324    0.292    0.368  
-##  5 PosRe… ~      0.226      0.0334    6.77   1.27e-11  0.226    0.189    0.257  
-##  6 PosRe… ~      0.0734     0.0236    3.12   1.84e- 3  0.0734   0.0796   0.0833 
-##  7 NegRe… ~     -0.333      0.0576   -5.78   7.46e- 9 -0.333   -0.173   -0.217  
-##  8 NegRe… ~     -0.0162     0.0643   -0.251  8.02e- 1 -0.0162  -0.00777 -0.0106 
-##  9 NegRe… ~      0.204      0.0454    4.50   6.76e- 6  0.204    0.127    0.133  
+##  1 proso… ~      0.285      0.0574    4.97   6.57e- 7  0.285    0.149    0.149  
+##  2 proso… ~      0.00252    0.0594    0.0425 9.66e- 1  0.00252  0.00132  0.00132
+##  3 proso… ~      0.0496     0.0544    0.911  3.62e- 1  0.0496   0.0259   0.0259 
+##  4 PosRe… ~      0.258      0.0238   10.8    0         0.258    0.292    0.292  
+##  5 PosRe… ~      0.167      0.0246    6.77   1.27e-11  0.167    0.189    0.189  
+##  6 PosRe… ~      0.0702     0.0225    3.12   1.84e- 3  0.0702   0.0796   0.0796 
+##  7 NegRe… ~     -0.264      0.0458   -5.78   7.46e- 9 -0.264   -0.173   -0.173  
+##  8 NegRe… ~     -0.0119     0.0474   -0.251  8.02e- 1 -0.0119  -0.00777 -0.00778
+##  9 NegRe… ~      0.195      0.0434    4.50   6.76e- 6  0.195    0.127    0.128  
 ## 10 proso… ~~     3.57       0.130    27.4    0         3.57     0.974    0.974  
 ## # ℹ 11 more rows</code></pre>
 </div>
@@ -5106,13 +5168,13 @@ tidy(prosocial.fit)</code></pre>
 <h2>Proposed Model</h2>
 <pre class="r"><code>prosocial.model &lt;-&#39;
 Level: 1
-  prosocial ~ D_individual + H_individual + F_individual
-  PosRec ~ D_individual + H_individual + F_individual
-  NegRec ~ D_individual + H_individual + F_individual
+  prosocial ~ D_individual_Z + H_individual_Z + F_individual_Z
+  PosRec ~ D_individual_Z + H_individual_Z + F_individual_Z
+  NegRec ~ D_individual_Z + H_individual_Z + F_individual_Z
 Level: 2
-  prosocial ~ D_sample_agg + H_sample_agg + F_sample_agg
-  PosRec ~ D_sample_agg + H_sample_agg + F_sample_agg
-  NegRec ~ D_sample_agg + H_sample_agg + F_sample_agg
+  prosocial ~ D_sample_agg_Z + H_sample_agg_Z + F_sample_agg_Z
+  PosRec ~ D_sample_agg_Z + H_sample_agg_Z + F_sample_agg_Z
+  NegRec ~ D_sample_agg_Z + H_sample_agg_Z + F_sample_agg_Z
 &#39;
   
 prosocial.fit &lt;- sem(
@@ -5176,8 +5238,8 @@ DF_final_H4 &lt;- DF_final_H3 %&gt;%
 </div>
 <div id="proposed-model-2" class="section level2">
 <h2>Proposed Model</h2>
-<pre class="r"><code>h3.model.a &lt;- lmer(attviol ~ D_individual + H_individual + F_individual + 
-                     D_sample + H_sample + F_sample + (1|country),
+<pre class="r"><code>h3.model.a &lt;- lmer(attviol ~ D_individual_Z + H_individual_Z + F_individual_Z + 
+                     D_sample_Z + H_sample_Z + F_sample_Z + (1|country),
                    data = DF_final_H4,
                    na.action = &quot;na.omit&quot;
                    )
@@ -5185,11 +5247,11 @@ DF_final_H4 &lt;- DF_final_H3 %&gt;%
 summary(h3.model.a)</code></pre>
 <pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
 ## lmerModLmerTest]
-## Formula: attviol ~ D_individual + H_individual + F_individual + D_sample +  
-##     H_sample + F_sample + (1 | country)
+## Formula: attviol ~ D_individual_Z + H_individual_Z + F_individual_Z +  
+##     D_sample_Z + H_sample_Z + F_sample_Z + (1 | country)
 ##    Data: DF_final_H4
 ## 
-## REML criterion at convergence: 4355.9
+## REML criterion at convergence: 4357.9
 ## 
 ## Scaled residuals: 
 ##     Min      1Q  Median      3Q     Max 
@@ -5202,38 +5264,39 @@ summary(h3.model.a)</code></pre>
 ## Number of obs: 1500, groups:  country, 5
 ## 
 ## Fixed effects:
-##                Estimate Std. Error         df t value Pr(&gt;|t|)    
-## (Intercept)   4.836e+00  3.124e-01  1.672e+01  15.479 2.44e-11 ***
-## D_individual  9.105e-03  4.065e-02  1.490e+03   0.224   0.8228    
-## H_individual -7.417e-02  4.603e-02  1.492e+03  -1.611   0.1073    
-## F_individual  7.279e-02  3.212e-02  1.490e+03   2.266   0.0236 *  
-## D_sample      5.277e-03  3.814e-02  1.489e+03   0.138   0.8900    
-## H_sample      5.043e-02  3.746e-02  1.489e+03   1.346   0.1784    
-## F_sample     -6.585e-02  3.275e-02  1.490e+03  -2.011   0.0446 *  
+##                  Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)     4.762e+00  2.183e-01  3.998e+00  21.817 2.62e-05 ***
+## D_individual_Z  7.237e-03  3.231e-02  1.490e+03   0.224   0.8228    
+## H_individual_Z -5.466e-02  3.392e-02  1.492e+03  -1.611   0.1073    
+## F_individual_Z  6.956e-02  3.069e-02  1.490e+03   2.266   0.0236 *  
+## D_sample_Z      4.488e-03  3.244e-02  1.489e+03   0.138   0.8900    
+## H_sample_Z      4.451e-02  3.306e-02  1.489e+03   1.346   0.1784    
+## F_sample_Z     -5.927e-02  2.948e-02  1.490e+03  -2.011   0.0446 *  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
-##             (Intr) D_ndvd H_ndvd F_ndvd D_smpl H_smpl
-## D_individul -0.139                                   
-## H_individul -0.300 -0.403                            
-## F_individul  0.013 -0.088 -0.289                     
-## D_sample    -0.158 -0.176  0.033 -0.054              
-## H_sample    -0.088  0.058 -0.163 -0.121 -0.441       
-## F_sample    -0.165 -0.166  0.019 -0.117 -0.120 -0.178</code></pre>
-<pre class="r"><code>h3.model.b &lt;- lmer(oface ~ D_individual + H_individual + F_individual + 
-                     D_sample + H_sample + F_sample + (1|country),
+##             (Intr) D_nd_Z H_nd_Z F_nd_Z D_sm_Z H_sm_Z
+## D_indivdl_Z  0.000                                   
+## H_indivdl_Z  0.000 -0.403                            
+## F_indivdl_Z  0.000 -0.088 -0.289                     
+## D_sample_Z   0.000 -0.176  0.033 -0.054              
+## H_sample_Z   0.000  0.058 -0.163 -0.121 -0.441       
+## F_sample_Z   0.000 -0.166  0.019 -0.117 -0.120 -0.178</code></pre>
+<pre class="r"><code>h3.model.b &lt;- lmer(oface ~ D_individual_Z + H_individual_Z + F_individual_Z + 
+                     D_sample_Z + H_sample_Z + F_sample_Z + (1|country),
                    data = DF_final_H4, 
                    na.action = &quot;na.omit&quot;)
 
 summary(h3.model.b)</code></pre>
 <pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
 ## lmerModLmerTest]
-## Formula: oface ~ D_individual + H_individual + F_individual + D_sample +  
-##     H_sample + F_sample + (1 | country)
+## Formula: 
+## oface ~ D_individual_Z + H_individual_Z + F_individual_Z + D_sample_Z +  
+##     H_sample_Z + F_sample_Z + (1 | country)
 ##    Data: DF_final_H4
 ## 
-## REML criterion at convergence: 4375.5
+## REML criterion at convergence: 4377.4
 ## 
 ## Scaled residuals: 
 ##      Min       1Q   Median       3Q      Max 
@@ -5246,25 +5309,25 @@ summary(h3.model.b)</code></pre>
 ## Number of obs: 1500, groups:  country, 5
 ## 
 ## Fixed effects:
-##                Estimate Std. Error         df t value Pr(&gt;|t|)    
-## (Intercept)   3.013e+00  3.305e-01  1.382e+01   9.116 3.22e-07 ***
-## D_individual -1.548e-02  4.091e-02  1.490e+03  -0.378   0.7052    
-## H_individual  3.078e-02  4.633e-02  1.492e+03   0.664   0.5065    
-## F_individual -1.862e-02  3.232e-02  1.490e+03  -0.576   0.5647    
-## D_sample      3.631e-02  3.838e-02  1.489e+03   0.946   0.3444    
-## H_sample     -8.102e-02  3.769e-02  1.489e+03  -2.149   0.0318 *  
-## F_sample     -7.065e-03  3.296e-02  1.489e+03  -0.214   0.8303    
+##                  Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)     2.783e+00  2.422e-01  3.992e+00  11.491 0.000331 ***
+## D_individual_Z -1.230e-02  3.252e-02  1.490e+03  -0.378 0.705240    
+## H_individual_Z  2.268e-02  3.414e-02  1.492e+03   0.664 0.506546    
+## F_individual_Z -1.779e-02  3.089e-02  1.490e+03  -0.576 0.564703    
+## D_sample_Z      3.088e-02  3.265e-02  1.489e+03   0.946 0.344376    
+## H_sample_Z     -7.150e-02  3.327e-02  1.489e+03  -2.149 0.031763 *  
+## F_sample_Z     -6.359e-03  2.966e-02  1.489e+03  -0.214 0.830295    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
-##             (Intr) D_ndvd H_ndvd F_ndvd D_smpl H_smpl
-## D_individul -0.133                                   
-## H_individul -0.286 -0.403                            
-## F_individul  0.012 -0.088 -0.289                     
-## D_sample    -0.150 -0.176  0.033 -0.054              
-## H_sample    -0.084  0.058 -0.163 -0.121 -0.441       
-## F_sample    -0.157 -0.167  0.019 -0.117 -0.120 -0.178</code></pre>
+##             (Intr) D_nd_Z H_nd_Z F_nd_Z D_sm_Z H_sm_Z
+## D_indivdl_Z  0.000                                   
+## H_indivdl_Z  0.000 -0.403                            
+## F_indivdl_Z  0.000 -0.088 -0.289                     
+## D_sample_Z   0.000 -0.176  0.033 -0.054              
+## H_sample_Z   0.000  0.058 -0.163 -0.121 -0.441       
+## F_sample_Z   0.000 -0.167  0.019 -0.117 -0.120 -0.178</code></pre>
 </div>
 <div id="power-4" class="section level2">
 <h2>Power</h2>
@@ -5471,9 +5534,9 @@ parameters as high estimate with smaller sample size models), we would
 be able to detect regression loadings of approximately .20 (i.e., 1.96 *
 SE).</p>
 <pre class="r"><code>provocation.model &lt;-&#39;
-  retaliation ~ D_individual + H_individual + F_individual
-  withdrawal ~ D_individual + H_individual + F_individual
-  humor ~ D_individual + H_individual + F_individual
+  retaliation ~ D_individual_Z + H_individual_Z + F_individual_Z
+  withdrawal ~ D_individual_Z + H_individual_Z + F_individual_Z
+  humor ~ D_individual_Z + H_individual_Z + F_individual_Z
 &#39;
   
 provocation.fit &lt;- sem(
@@ -5485,15 +5548,15 @@ tidy(provocation.fit)</code></pre>
 <pre><code>## # A tibble: 21 × 9
 ##    term    op    estimate std.error statistic p.value   std.lv  std.all  std.nox
 ##    &lt;chr&gt;   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-##  1 retali… ~      0.0293     0.0421     0.696 4.86e-1  0.0293   0.0211   0.0265 
-##  2 retali… ~     -0.130      0.0470    -2.77  5.60e-3 -0.130   -0.0868  -0.118  
-##  3 retali… ~      0.0611     0.0332     1.84  6.55e-2  0.0611   0.0529   0.0553 
-##  4 withdr… ~     -0.00895    0.0424    -0.211 8.33e-1 -0.00895 -0.00636 -0.00801
-##  5 withdr… ~      0.198      0.0473     4.19  2.84e-5  0.198    0.131    0.177  
-##  6 withdr… ~     -0.123      0.0334    -3.67  2.43e-4 -0.123   -0.105   -0.110  
-##  7 humor … ~     -0.0112     0.0503    -0.222 8.25e-1 -0.0112  -0.00668 -0.00841
-##  8 humor … ~     -0.225      0.0562    -4.00  6.26e-5 -0.225   -0.125   -0.170  
-##  9 humor … ~      0.0445     0.0397     1.12  2.62e-1  0.0445   0.0320   0.0335 
+##  1 retali… ~      0.0233     0.0334     0.696 4.86e-1  0.0233   0.0211   0.0211 
+##  2 retali… ~     -0.0959     0.0346    -2.77  5.60e-3 -0.0959  -0.0868  -0.0868 
+##  3 retali… ~      0.0584     0.0317     1.84  6.55e-2  0.0584   0.0529   0.0529 
+##  4 withdr… ~     -0.00711    0.0337    -0.211 8.33e-1 -0.00711 -0.00636 -0.00637
+##  5 withdr… ~      0.146      0.0348     4.19  2.84e-5  0.146    0.131    0.131  
+##  6 withdr… ~     -0.117      0.0319    -3.67  2.43e-4 -0.117   -0.105   -0.105  
+##  7 humor … ~     -0.00886    0.0400    -0.222 8.25e-1 -0.00886 -0.00668 -0.00669
+##  8 humor … ~     -0.166      0.0414    -4.00  6.26e-5 -0.166   -0.125   -0.125  
+##  9 humor … ~      0.0425     0.0379     1.12  2.62e-1  0.0425   0.0320   0.0321 
 ## 10 retali… ~~     1.21       0.0443    27.4   0        1.21     0.994    0.994  
 ## # ℹ 11 more rows</code></pre>
 </div>
@@ -5501,13 +5564,13 @@ tidy(provocation.fit)</code></pre>
 <h2>Proposed Model</h2>
 <pre class="r"><code>provocation.model &lt;-&#39;
 Level: 1
-  retaliation ~ D_individual + H_individual + F_individual
-  withdrawal ~ D_individual + H_individual + F_individual
-  humor ~ D_individual + H_individual + F_individual
+  retaliation ~ D_individual_Z + H_individual_Z + F_individual_Z
+  withdrawal ~ D_individual_Z + H_individual_Z + F_individual_Z
+  humor ~ D_individual_Z + H_individual_Z + F_individual_Z
 Level: 2
-  retaliation  ~ D_sample_agg + H _sample_agg + F_sample_agg
-  withdrawal ~ D_sample_agg + H_sample_agg + F_sample_agg 
-  humor ~ D_sample_agg + H _sample_agg + F_sample_agg 
+  retaliation  ~ D_sample_agg_Z + H _sample_agg_Z + F_sample_agg_Z
+  withdrawal ~ D_sample_agg_Z + H_sample_agg_Z + F_sample_agg_Z 
+  humor ~ D_sample_agg_Z + H _sample_agg_Z + F_sample_agg_Z 
 &#39;
   
 provocation.fit &lt;- sem(

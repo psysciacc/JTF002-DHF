@@ -116,6 +116,10 @@ names(DF)
 Step 1. Data preparation 
 
 - (Re)code all variables, check distributions and missing values. 
+- Calculate overall item measures: 
+  - Note that these will be calculated by taking the mean score on all appropriate items for that measure excluding missing data, as long as a participant has at least one data point for that measure.
+  - For example, if someone has items 2 and 3 for the SWLS, these two items will averaged for that measure. 
+  - We will test the robustness of our findings on a subsample of participants with no missing values. Each analysis will be run only on a subsample of participants who have no missing values on the variables involved in that analysis.
 
 ## Socio-demographics 
 
@@ -176,9 +180,9 @@ psych::alpha(dt[c("Reciprocity_1","Reciprocity_2","Reciprocity_3")])
 psych::alpha(dt[c("Reciprocity_4","Reciprocity_5","Reciprocity_6")]) 
 
 # calculate positive and negative reciprocity  
-dt$PosRec <- rowMeans(dt[c("Reciprocity_1","Reciprocity_2","Reciprocity_3")],na.rm=TRUE)
+dt$PosRec <- rowMeans(dt[c("Reciprocity_1","Reciprocity_2","Reciprocity_3")], na.rm=TRUE)
 describe(dt$PosRec)
-dt$NegRec <- rowMeans(dt[c("Reciprocity_4","Reciprocity_5","Reciprocity_6")],na.rm=TRUE)
+dt$NegRec <- rowMeans(dt[c("Reciprocity_4","Reciprocity_5","Reciprocity_6")], na.rm=TRUE)
 describe(dt$NegRec)
 ```
 
@@ -206,53 +210,53 @@ describe(dt[,c(81:104)])
 # Difference versus similarity: 5, 19, 22 	
 dt$`Self-construal_19R`<-10-dt$`Self-construal_19`
 psych::alpha(dt[c("Self-construal_5","Self-construal_19R","Self-construal_22")]) #a=.66
-dt$SC_simdif <- rowMeans(dt[c("Self-construal_5","Self-construal_19R","Self-construal_22")],na.rm=TRUE)
+dt$SC_simdif <- rowMeans(dt[c("Self-construal_5","Self-construal_19R","Self-construal_22")], na.rm=TRUE)
 describe(dt$SC_simdif)
 
 # Self-containment versus connection to others: 8, 11, 14
 dt$`Self-construal_11R`<-10-dt$`Self-construal_11`
 dt$`Self-construal_14R`<-10-dt$`Self-construal_14`
 psych::alpha(dt[c("Self-construal_8","Self-construal_11R","Self-construal_14R")]) #a=.47
-dt$SC_scont <- rowMeans(dt[c("Self-construal_8","Self-construal_11R","Self-construal_14R")],na.rm=TRUE)
+dt$SC_scont <- rowMeans(dt[c("Self-construal_8","Self-construal_11R","Self-construal_14R")], na.rm=TRUE)
 describe(dt$SC_scont)
 
 # Self-direction versus receptiveness to influence: 12, 16, 21
 dt$`Self-construal_12R`<-10-dt$`Self-construal_12`
 dt$`Self-construal_16R`<-10-dt$`Self-construal_16`
 psych::alpha(dt[c("Self-construal_12R","Self-construal_16R","Self-construal_21")]) #a=.51
-dt$SC_sdir <- rowMeans(dt[c("Self-construal_12R","Self-construal_16R","Self-construal_21")],na.rm=TRUE)
+dt$SC_sdir <- rowMeans(dt[c("Self-construal_12R","Self-construal_16R","Self-construal_21")], na.rm=TRUE)
 describe(dt$SC_sdir)
 
 # Self-reliance versus dependence on others: 2, 15, 23 
 dt$`Self-construal_2R`<-10-dt$`Self-construal_2`
 psych::alpha(dt[c("Self-construal_2R","Self-construal_15","Self-construal_23")]) #a=.70
-dt$SC_srel <- rowMeans(dt[c("Self-construal_2R","Self-construal_15","Self-construal_23")],na.rm=TRUE)
+dt$SC_srel <- rowMeans(dt[c("Self-construal_2R","Self-construal_15","Self-construal_23")], na.rm=TRUE)
 describe(dt$SC_srel)
 
 # Consistency versus variability: 1, 4, 13			
 dt$`Self-construal_4R`<-10-dt$`Self-construal_4`
 dt$`Self-construal_13R`<-10-dt$`Self-construal_13`
 psych::alpha(dt[c("Self-construal_1","Self-construal_4R","Self-construal_13R")]) #a=.79
-dt$SC_cons <- rowMeans(dt[c("Self-construal_1","Self-construal_4R","Self-construal_13R")],na.rm=TRUE)
+dt$SC_cons <- rowMeans(dt[c("Self-construal_1","Self-construal_4R","Self-construal_13R")], na.rm=TRUE)
 describe(dt$SC_cons)
 
 # Self-expression versus harmony: 7, 17, 20								
 dt$`Self-construal_20R`<-10-dt$`Self-construal_20`
 psych::alpha(dt[c("Self-construal_7","Self-construal_17","Self-construal_20R")]) #a=.58
-dt$SC_sexp <- rowMeans(dt[c("Self-construal_7","Self-construal_17","Self-construal_20R")],na.rm=TRUE)
+dt$SC_sexp <- rowMeans(dt[c("Self-construal_7","Self-construal_17","Self-construal_20R")], na.rm=TRUE)
 describe(dt$SC_sexp)
 
 # Self-Interest versus Commitment to Others: 3, 6, 24 
 dt$`Self-construal_3R`<-10-dt$`Self-construal_3`
 psych::alpha(dt[c("Self-construal_3R","Self-construal_6","Self-construal_24")]) #a=.51
-dt$SC_sint <- rowMeans(dt[c("Self-construal_3R","Self-construal_6","Self-construal_24")],na.rm=TRUE)
+dt$SC_sint <- rowMeans(dt[c("Self-construal_3R","Self-construal_6","Self-construal_24")], na.rm=TRUE)
 describe(dt$SC_sint)
 
 # Contextualized vs. decontextualized self: 9, 10, 18
 dt$`Self-construal_10R`<-10-dt$`Self-construal_10`
 dt$`Self-construal_18R`<-10-dt$`Self-construal_18`
 psych::alpha(dt[c("Self-construal_9","Self-construal_10R","Self-construal_18R")]) #a=.58
-dt$SC_dec <- rowMeans(dt[c("Self-construal_9","Self-construal_10R","Self-construal_18R")],na.rm=TRUE)
+dt$SC_dec <- rowMeans(dt[c("Self-construal_9","Self-construal_10R","Self-construal_18R")], na.rm=TRUE)
 describe(dt$SC_dec)
 ```
 
@@ -366,12 +370,15 @@ Note: this will be updated with examples from pilot data of the full study.
 # coming based on real dataset
 ```
 
-## Calculate Reliability 
+## Calculate Reliability at Country Level 
 
 - Calculate alpha reliability coefficients by country for each secondary measure (self-reported positive and negative reciprocity, attitude toward violence (three subscales and the total scale), self-face and other-face concern, reactions to provocation (three subscales), values (four higher-order value subscales), moral foundations (five subscales), intrinsic religiosity from DUREL, SWLS). If alpha is >.60, calculate the index. If alpha is < .60, consider modifications. Items will be removed only if the removal of the item improves alpha by > .10 points in at least half of the countries.
 
 ```{r reliability}
 # secondary measure (self-reported positive and negative reciprocity, attitude toward violence (three subscales and the total scale), self-face and other-face concern, reactions to provocation (three subscales), values (four higher-order value subscales), moral foundations (five subscales), intrinsic religiosity from DUREL, SWLS)
+
+
+# we would do this by country - the code above shows the reliability overall, would include psych::alpha for each country. 
 ```
 
 ## Merge with Country Data 
@@ -395,7 +402,7 @@ Note: this will be updated with examples from pilot data of the full study.
 ```
 
 ```{r temp-data}
-# temp rename data 
+# temp rename data to make this code proposal work 
 DF <- dtg
 ```
 
@@ -1262,7 +1269,9 @@ H2: The individual endorsement of the other-concern facet of all three cultural 
 
 *Analysis Plan*:
 
-A multilevel model predicting prosociality from six or three cultural logic indices (depending on the best fitting model in H1b) with random intercept for country. 
+A multilevel model predicting prosociality from six or three cultural logic indices (depending on the best fitting model in H1b) with random intercept for country.
+
+All individual-level predictors will be group-mean centered (level 1), and all sample-level predictors will be grand-mean centered (level 2). 
 
 *Evaluation*: 
 
@@ -1305,11 +1314,31 @@ DF_H2 <- sim_df(data = DF_individual_H2 %>%
 
 ## Proposed Model
 
+All individual-level predictors will be group-mean centered (level 1), and all sample-level predictors will be grand-mean centered (level 2). 
+
+
 ```{r h2-model}
+# group mean centering for level 1 variable 
+# by country? 
+DF_H2 <- DF_H2 %>% 
+  mutate(D_self_individual_Z = scale(D_self_individual, 
+                                     center = TRUE),
+         D_other_individual_Z = scale(D_other_individual), 
+                                     center = TRUE,
+         H_self_individual_Z = scale(H_self_individual, 
+                                     center = TRUE),
+         H_other_individual_Z = scale(H_other_individual, 
+                                     center = TRUE),
+         F_self_individual_Z = scale(F_self_individual, 
+                                     center = TRUE),
+         F_other_individual_Z = scale(F_other_individual, 
+                                     center = TRUE)
+         )
+
 # six factors - current pilot data 
-h2.fit <- lmer(prosocial ~ D_self_individual + D_other_individual + 
-                    H_self_individual + H_other_individual + 
-                    F_self_individual + F_other_individual +
+h2.fit <- lmer(prosocial ~ D_self_individual_Z + D_other_individual_Z + 
+                    H_self_individual_Z + H_other_individual_Z + 
+                    F_self_individual_Z + F_other_individual_Z +
                  (1|country), 
                   data = DF_H2)
 
@@ -1469,6 +1498,30 @@ DF_final_H3 <- DF_final_H %>%
                 F_sample_agg = mean(F_sample)),
     by = "country"
   )
+
+# group mean centering for level 1 variable 
+# grand mean centering for level 2 variable
+# by country? 
+DF_final_H3 <- DF_final_H3 %>% 
+  mutate(D_individual_Z = scale(D_individual, 
+                                     center = TRUE),
+         H_individual_Z = scale(H_individual, 
+                                     center = TRUE),
+         F_individual_Z = scale(F_individual, 
+                                     center = TRUE),
+         D_sample_agg_Z = scale(D_sample_agg, 
+                                center = TRUE), 
+         H_sample_agg_Z = scale(H_sample_agg, 
+                                center = TRUE), 
+         F_sample_agg_Z = scale(F_sample_agg, 
+                                center = TRUE),
+         D_sample_Z = scale(D_sample, 
+                           center = TRUE), 
+         H_sample_Z = scale(H_sample,
+                            center = TRUE), 
+         F_sample_Z = scale(F_sample,
+                            center = TRUE)
+         )
 ```
   
 ## Power 
@@ -1477,14 +1530,14 @@ Parameters are based on *z*-score estimation, which do not involve degrees of fr
 
 ```{r}
 prosocial.model <-'
-  prosocial ~ D_individual + H_individual + F_individual
-  PosRec ~ D_individual + H_individual + F_individual
-  NegRec ~ D_individual + H_individual + F_individual
+  prosocial ~ D_individual_Z + H_individual_Z + F_individual_Z
+  PosRec ~ D_individual_Z + H_individual_Z + F_individual_Z
+  NegRec ~ D_individual_Z + H_individual_Z + F_individual_Z
 '
   
 prosocial.fit <- sem(
   model = prosocial.model,
-  data = DF_final_H
+  data = DF_final_H3
 )
 
 tidy(prosocial.fit)
@@ -1495,13 +1548,13 @@ tidy(prosocial.fit)
 ```{r h3-model, eval = F}
 prosocial.model <-'
 Level: 1
-  prosocial ~ D_individual + H_individual + F_individual
-  PosRec ~ D_individual + H_individual + F_individual
-  NegRec ~ D_individual + H_individual + F_individual
+  prosocial ~ D_individual_Z + H_individual_Z + F_individual_Z
+  PosRec ~ D_individual_Z + H_individual_Z + F_individual_Z
+  NegRec ~ D_individual_Z + H_individual_Z + F_individual_Z
 Level: 2
-  prosocial ~ D_sample_agg + H_sample_agg + F_sample_agg
-  PosRec ~ D_sample_agg + H_sample_agg + F_sample_agg
-  NegRec ~ D_sample_agg + H_sample_agg + F_sample_agg
+  prosocial ~ D_sample_agg_Z + H_sample_agg_Z + F_sample_agg_Z
+  PosRec ~ D_sample_agg_Z + H_sample_agg_Z + F_sample_agg_Z
+  NegRec ~ D_sample_agg_Z + H_sample_agg_Z + F_sample_agg_Z
 '
   
 prosocial.fit <- sem(
@@ -1563,16 +1616,16 @@ DF_final_H4 <- DF_final_H3 %>%
 ## Proposed Model
 
 ```{r h4-model}
-h3.model.a <- lmer(attviol ~ D_individual + H_individual + F_individual + 
-                     D_sample + H_sample + F_sample + (1|country),
+h3.model.a <- lmer(attviol ~ D_individual_Z + H_individual_Z + F_individual_Z + 
+                     D_sample_Z + H_sample_Z + F_sample_Z + (1|country),
                    data = DF_final_H4,
                    na.action = "na.omit"
                    )
 
 summary(h3.model.a)
 
-h3.model.b <- lmer(oface ~ D_individual + H_individual + F_individual + 
-                     D_sample + H_sample + F_sample + (1|country),
+h3.model.b <- lmer(oface ~ D_individual_Z + H_individual_Z + F_individual_Z + 
+                     D_sample_Z + H_sample_Z + F_sample_Z + (1|country),
                    data = DF_final_H4, 
                    na.action = "na.omit")
 
@@ -1763,9 +1816,9 @@ Parameters are based on *z*-score estimation, which do not involve degrees of fr
 
 ```{r}
 provocation.model <-'
-  retaliation ~ D_individual + H_individual + F_individual
-  withdrawal ~ D_individual + H_individual + F_individual
-  humor ~ D_individual + H_individual + F_individual
+  retaliation ~ D_individual_Z + H_individual_Z + F_individual_Z
+  withdrawal ~ D_individual_Z + H_individual_Z + F_individual_Z
+  humor ~ D_individual_Z + H_individual_Z + F_individual_Z
 '
   
 provocation.fit <- sem(
@@ -1781,13 +1834,13 @@ tidy(provocation.fit)
 ```{r h5-model, eval = F}
 provocation.model <-'
 Level: 1
-  retaliation ~ D_individual + H_individual + F_individual
-  withdrawal ~ D_individual + H_individual + F_individual
-  humor ~ D_individual + H_individual + F_individual
+  retaliation ~ D_individual_Z + H_individual_Z + F_individual_Z
+  withdrawal ~ D_individual_Z + H_individual_Z + F_individual_Z
+  humor ~ D_individual_Z + H_individual_Z + F_individual_Z
 Level: 2
-  retaliation  ~ D_sample_agg + H _sample_agg + F_sample_agg
-  withdrawal ~ D_sample_agg + H_sample_agg + F_sample_agg 
-  humor ~ D_sample_agg + H _sample_agg + F_sample_agg 
+  retaliation  ~ D_sample_agg_Z + H _sample_agg_Z + F_sample_agg_Z
+  withdrawal ~ D_sample_agg_Z + H_sample_agg_Z + F_sample_agg_Z 
+  humor ~ D_sample_agg_Z + H _sample_agg_Z + F_sample_agg_Z 
 '
   
 provocation.fit <- sem(
