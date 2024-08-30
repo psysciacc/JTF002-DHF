@@ -11,7 +11,7 @@
 
 <meta name="author" content="Erin M. Buchanan" />
 
-<meta name="date" content="2024-08-23" />
+<meta name="date" content="2024-08-30" />
 
 <title>Proposed Code: JTF002: DHF</title>
 
@@ -1481,7 +1481,7 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">Proposed Code: JTF002: DHF</h1>
 <h4 class="author">Erin M. Buchanan</h4>
-<h4 class="date">2024-08-23</h4>
+<h4 class="date">2024-08-30</h4>
 
 </div>
 
@@ -4145,9 +4145,9 @@ summary(mod1)</code></pre>
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-08-23 10:57:43.80394 
-## Time difference of 0.003679037 secs
-## Computation Time: 0.003679037 
+## Date of Analysis: 2024-08-30 10:15:14.804651 
+## Time difference of 0.003724098 secs
+## Computation Time: 0.003724098 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.327 
@@ -4698,9 +4698,9 @@ summary(mod1)</code></pre>
 ## sirt::invariance.alignment(lambda = lambda, nu = nu, wgt = wgt, 
 ##     align.pow = c(2, 2))
 ## 
-## Date of Analysis: 2024-08-23 10:57:45.210438 
-## Time difference of 0.003180027 secs
-## Computation Time: 0.003180027 
+## Date of Analysis: 2024-08-30 10:15:16.327636 
+## Time difference of 0.003159046 secs
+## Computation Time: 0.003159046 
 ## 
 ## -----------------------------------------------------------------
 ## Optimization Function Value = 5.923 
@@ -4891,7 +4891,7 @@ DF_H2 &lt;- sim_df(data = DF_individual_H2 %&gt;%
 1), and all sample-level predictors will be grand-mean centered (level
 2).</p>
 <pre class="r"><code># group mean centering for level 1 variable 
-# by country? 
+# by country
 DF_H2 &lt;- DF_H2 %&gt;% 
   # group_by(country) %&gt;% 
   mutate(D_self_individual_Z = scale(D_self_individual, 
@@ -5108,7 +5108,7 @@ DF_final_H3 &lt;- DF_final_H %&gt;%
 
 # group mean centering for level 1 variable 
 # grand mean centering for level 2 variable
-# by country? 
+# by country
 DF_final_H3 &lt;- DF_final_H3 %&gt;% 
   # group_by(country) %&gt;% 
   mutate(D_individual_Z = scale(D_individual, 

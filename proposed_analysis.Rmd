@@ -1319,7 +1319,7 @@ All individual-level predictors will be group-mean centered (level 1), and all s
 
 ```{r h2-model}
 # group mean centering for level 1 variable 
-# by country? 
+# by country
 DF_H2 <- DF_H2 %>% 
   # group_by(country) %>% 
   mutate(D_self_individual_Z = scale(D_self_individual, 
@@ -1502,7 +1502,7 @@ DF_final_H3 <- DF_final_H %>%
 
 # group mean centering for level 1 variable 
 # grand mean centering for level 2 variable
-# by country? 
+# by country
 DF_final_H3 <- DF_final_H3 %>% 
   # group_by(country) %>% 
   mutate(D_individual_Z = scale(D_individual, 
