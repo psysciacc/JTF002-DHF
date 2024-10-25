@@ -1,5 +1,5 @@
 ---
-title: "Proposed Code: JTF002: DHF"
+title: "Final Pre-Data Collection Code: JTF002: DHF"
 author: "Erin M. Buchanan"
 date: "`r Sys.Date()`"
 output: 
@@ -38,9 +38,9 @@ library(ggplot2)
 set.seed(48299439)
 ```
 
-# Variable Definition
+# SEM Variable Definition
 
-This most likely does the job, but I would ensure not missing a parameter by constructing the model just from the variable names.
+This section defines the correlated error for Level 1/2 analyses for Hypothesis 1 (and then used throughout). We define these values at the top here to keep from repeating them below for clarity on the parts of the model that change. 
 
 ```{r overall-variables}
 corr_error <- '
@@ -107,7 +107,7 @@ corr_error <- '
 
 ```{r import-data}
 # pilot data
-DF <- import("pilot_study/DHF_PSA_Pilot_May 10, 2023_12.10.csv")
+DF <- import("../pilot_study/DHF_PSA_Pilot_May 10, 2023_12.10.csv")
 
 # example data structure 
 names(DF)
@@ -125,17 +125,10 @@ Step 1. Data preparation
 
 ## Socio-demographics 
 
-* Here, I would not define the column numbers, in the case these would not match, for some unexpected reason. If the variable names should match, obtain the column number by variable name instead.
-
-* This was also present at other parts below, but I did not edit all of them
-
 ```{r demographic-clean}
 dt <- DF
 
 # Socio-demographics ----
-
-# refactor gender, age, education, state, race, migration 
-
 factorized_var_numbers<-
   c(which(names(dt)=="Gender"),
     which(names(dt)=="Education"),
@@ -146,12 +139,9 @@ factorized_var_numbers<-
 numeric_var_numbers<-
   c(which(names(dt)=="Age"))
 
-#dt[,c(9,11:14)] <- lapply(dt[,c(9,11:14)], as.factor)
+# refactor gender, age, education, state, race, migration 
 dt[,factorized_var_numbers] <- lapply(dt[,factorized_var_numbers], as.factor)
-
-#dt[,c(10)] <- as.numeric(dt[,c(10)])
 dt[,numeric_var_numbers] <- as.numeric(dt[,numeric_var_numbers])
-
 
 # review data 
 table(dt$Gender, useNA = "ifany") 
@@ -164,42 +154,29 @@ table(dt$Migration, useNA = "ifany")
 
 ## DHF 
 
-* Here I would also not use the column numbers for the same reason. To dplyr-pipe, you can supply sequential variable names directly.
-
 ```{r dhf-clean}
 # DHF ----
 
 # look at the scaling 
 table(dt$DHF_endorsement_3, useNA = "ifany")
 
-
 # rescore the variables into numbers
-#dt <- dt %>%
-#  mutate_at(vars(15:74),~dplyr::recode(., "Strongly disagree"=1, 
-#                                       "Disagree"=2,"Somewhat disagree"=3,
-#                                       "Somewhat agree"=4,"Agree"=5,
-#                                       "Strongly agree"=6))
-
-
+# make sure these columns are together 
+# or use mutate and select columns DHF_endorse* and DHF_norms*
 dt <- dt %>%
-  mutate_at(vars(DHF_endorsement_1:DHF_Norms_30),~dplyr::recode(., "Strongly disagree"=1, 
-                                       "Disagree"=2,"Somewhat disagree"=3,
-                                       "Somewhat agree"=4,"Agree"=5,
-                                       "Strongly agree"=6))
-  
-
-
-DHF_first_num<-which(names(dt)=="DHF_endorsement_1")
-DHF_last_num<-which(names(dt)=="DHF_Norms_30")
-
+  mutate_at(vars(DHF_endorsement_1:DHF_Norms_30), 
+            ~dplyr::recode(., 
+               "Strongly disagree"=1, 
+               "Disagree"=2,"Somewhat disagree"=3,
+               "Somewhat agree"=4,"Agree"=5,
+               "Strongly agree"=6))
 # examine data
-#describe(dt[,c(15:74)])
-describe(dt[,c(DHF_first_num:DHF_last_num)])
+DHF_first_num <- which(names(dt)=="DHF_endorsement_1")
+DHF_last_num <- which(names(dt)=="DHF_Norms_30")
+describe(dt[ , c(DHF_first_num:DHF_last_num)])
 ```
 
 ## Reciprocity
-
-* This does not work for some reason. I understood this should be from 1 to 7. With the original code, 1 and 7 responses were coded as NA. I tried to make an alternative approach.
 
 ```{r reciprocity-clean}
 # Reciprocity ----
@@ -208,12 +185,7 @@ describe(dt[,c(DHF_first_num:DHF_last_num)])
 table(dt$Reciprocity_1, useNA = "ifany") # not all response options are available for this var
 table(dt$Reciprocity_6, useNA = "ifany") # for this variable all options are shown
 
-# recode
-#dt <- dt %>%
-#  mutate_at(vars(75:80),~dplyr::recode(., "Does not apply to me at all\n1\n"=1, 
-#                                       "2"=2,"3"=3,"4"=4,"5"=5,"6"=6,
-#                                       "Applies to me perfectly\n7\n"=7))
-
+# recode variables to numeric
 dt <- dt %>%
   mutate_at(vars(Reciprocity_1:Reciprocity_6), ~dplyr::case_when(
     . == "Does not apply to me at all\r\n1\r\n" ~ 1,
@@ -229,13 +201,9 @@ dt <- dt %>%
   ))
 
 # examine data
-Recprocity_first_num<-which(names(dt)=="Reciprocity_1")
-Recprocity_last_num<-which(names(dt)=="Reciprocity_6")
-
-# examine data
+Recprocity_first_num <- which(names(dt)=="Reciprocity_1")
+Recprocity_last_num <- which(names(dt)=="Reciprocity_6")
 describe(dt[,c(Recprocity_first_num:Recprocity_last_num)])
-
-#describe(dt[,c(75:80)])
 
 # review alpha 
 psych::alpha(dt[c("Reciprocity_1","Reciprocity_2","Reciprocity_3")]) 
@@ -248,126 +216,40 @@ dt$NegRec <- rowMeans(dt[c("Reciprocity_4","Reciprocity_5","Reciprocity_6")], na
 describe(dt$NegRec)
 ```
 
-## Self-Construal
-
-* This did not work as supposed. All the odd numbers become missing. I tried to use case_when here as well.
-
-
-```{r self-construal-clean}
-
-# Self-construal ----
-
-# look at the scoring 
-table(dt$`Self-construal_1`, useNA = "ifany")
-
-# recode 
-#dt <- dt %>%
-#  mutate_at(vars(81:104),~dplyr::recode(., "Doesn’t describe me at all\n1\n"=1, 
-#                                       "1½"=2,"Describes me a little\n2\n"=3,
-#                                       "2½"=4,"Describes me moderately\n3\n"=5,
-#                                       "3½"=6,"Describes me very well\n4\n"=7,
-#                                       "4½"=8,"Describes me exactly\n5\n"=9))
-
-dt <- dt %>%
-  mutate_at(vars(`Self-construal_1`:`Self-construal_24`),~dplyr::case_when(
-    . == "Doesn’t describe me at all\r\n1\r\n" ~ 1,
-    . =="1½" ~ 2,
-    . =="Describes me a little\r\n2\r\n"~3,
-    . =="2½"~4,
-    . =="Describes me moderately\r\n3\r\n"~5,
-    . =="3½"~6,
-    . =="Describes me very well\r\n4\r\n"~7,
-    . =="4½"~8,
-    . =="Describes me exactly\r\n5\r\n"~9,
-    TRUE~NA_integer_))
-
-
-#examine data 
-describe(dt[,c(81:104)])
-table(dt$`Self-construal_1`, useNA = "ifany")
-
-# all variables are recoded in the direction of independence
-# Difference versus similarity: 5, 19, 22 	
-dt$`Self-construal_19R`<-10-dt$`Self-construal_19`
-psych::alpha(dt[c("Self-construal_5","Self-construal_19R","Self-construal_22")]) #a=.66
-dt$SC_simdif <- rowMeans(dt[c("Self-construal_5","Self-construal_19R","Self-construal_22")], na.rm=TRUE)
-describe(dt$SC_simdif)
-
-# Self-containment versus connection to others: 8, 11, 14
-dt$`Self-construal_11R`<-10-dt$`Self-construal_11`
-dt$`Self-construal_14R`<-10-dt$`Self-construal_14`
-psych::alpha(dt[c("Self-construal_8","Self-construal_11R","Self-construal_14R")]) #a=.47
-dt$SC_scont <- rowMeans(dt[c("Self-construal_8","Self-construal_11R","Self-construal_14R")], na.rm=TRUE)
-describe(dt$SC_scont)
-
-# Self-direction versus receptiveness to influence: 12, 16, 21
-dt$`Self-construal_12R`<-10-dt$`Self-construal_12`
-dt$`Self-construal_16R`<-10-dt$`Self-construal_16`
-psych::alpha(dt[c("Self-construal_12R","Self-construal_16R","Self-construal_21")]) #a=.51
-dt$SC_sdir <- rowMeans(dt[c("Self-construal_12R","Self-construal_16R","Self-construal_21")], na.rm=TRUE)
-describe(dt$SC_sdir)
-
-# Self-reliance versus dependence on others: 2, 15, 23 
-dt$`Self-construal_2R`<-10-dt$`Self-construal_2`
-psych::alpha(dt[c("Self-construal_2R","Self-construal_15","Self-construal_23")]) #a=.70
-dt$SC_srel <- rowMeans(dt[c("Self-construal_2R","Self-construal_15","Self-construal_23")], na.rm=TRUE)
-describe(dt$SC_srel)
-
-# Consistency versus variability: 1, 4, 13			
-dt$`Self-construal_4R`<-10-dt$`Self-construal_4`
-dt$`Self-construal_13R`<-10-dt$`Self-construal_13`
-psych::alpha(dt[c("Self-construal_1","Self-construal_4R","Self-construal_13R")]) #a=.79
-dt$SC_cons <- rowMeans(dt[c("Self-construal_1","Self-construal_4R","Self-construal_13R")], na.rm=TRUE)
-describe(dt$SC_cons)
-
-# Self-expression versus harmony: 7, 17, 20								
-dt$`Self-construal_20R`<-10-dt$`Self-construal_20`
-psych::alpha(dt[c("Self-construal_7","Self-construal_17","Self-construal_20R")]) #a=.58
-dt$SC_sexp <- rowMeans(dt[c("Self-construal_7","Self-construal_17","Self-construal_20R")], na.rm=TRUE)
-describe(dt$SC_sexp)
-
-# Self-Interest versus Commitment to Others: 3, 6, 24 
-dt$`Self-construal_3R`<-10-dt$`Self-construal_3`
-psych::alpha(dt[c("Self-construal_3R","Self-construal_6","Self-construal_24")]) #a=.51
-dt$SC_sint <- rowMeans(dt[c("Self-construal_3R","Self-construal_6","Self-construal_24")], na.rm=TRUE)
-describe(dt$SC_sint)
-
-# Contextualized vs. decontextualized self: 9, 10, 18
-dt$`Self-construal_10R`<-10-dt$`Self-construal_10`
-dt$`Self-construal_18R`<-10-dt$`Self-construal_18`
-psych::alpha(dt[c("Self-construal_9","Self-construal_10R","Self-construal_18R")]) #a=.58
-dt$SC_dec <- rowMeans(dt[c("Self-construal_9","Self-construal_10R","Self-construal_18R")], na.rm=TRUE)
-describe(dt$SC_dec)
-```
-
 ## Behavior 
-
-* From what I undestood, this runs smoothly and how it should run. But, a brief description here could help. Describe what part is made long format and for what purpose. A brief comment above each line of code, or so.
-
-* Perhaps do not name data frames as "c", because it is also a function in R?
 
 ```{r behavior-clean}
 # Behavior ----
 
-# dictator=universal prosociality
+# dictator = universal prosociality for our experiment
 dt$prosocial <- as.numeric(dt$Dictator_decision)
+
+# examine the data 
 describe(dt$prosocial) 
 
 # ultimatum_receiver=negative reciprocity
-a <- dt[c(8,118:128)]
-b <- a %>%
+# select those rows 
+receiver <- dt %>% 
+  select(ResponseId, `Ultimatum Receiver_1`:`Ultimatum Receiver_11`)
+
+# convert to long format for scoring
+receiver_long <- receiver %>%
   pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
   
-b$change <- ifelse(b$decision=="I accept" & 
-                     (((b$decision != dplyr::lag(b$decision))==TRUE)|
-                        (b$proposed=="Ultimatum Receiver_1")),1,0)
-b$proposed <- str_remove(b$proposed, "Ultimatum Receiver_")
-b$UG_negrec <- ifelse(b$change==1,b$proposed,0)
-c <- subset(b, b$UG_negrec!=0)
-c$dupl <- ifelse(duplicated(c$ResponseId)==TRUE,1,0)
-c <- subset(c, c$dupl==0)
-c <- c[,c(1,5)]
-dtg <- merge(dt,c,by="ResponseId")
+# score the dictator game based on decisions made by pairs of 
+# participants 
+receiver_long$change <- ifelse(receiver_long$decision=="I accept" & 
+                     (((receiver_long$decision != dplyr::lag(receiver_long$decision))==TRUE)|
+                        (receiver_long$proposed=="Ultimatum Receiver_1")),1,0)
+receiver_long$proposed <- str_remove(receiver_long$proposed, "Ultimatum Receiver_")
+receiver_long$UG_negrec <- ifelse(receiver_long$change==1,receiver_long$proposed,0)
+neg_rec_df <- subset(receiver_long, receiver_long$UG_negrec!=0)
+neg_rec_df$dupl <- ifelse(duplicated(neg_rec_df$ResponseId)==TRUE,1,0)
+neg_rec_df <- subset(neg_rec_df, neg_rec_df$dupl==0)
+
+neg_rec_df <- neg_rec_df %>% 
+  select(ResponseId, UG_negrec)
+dtg <- merge(dt, neg_rec_df, by="ResponseId")
 dtg$UG_negrec <- as.numeric(dtg$UG_negrec)
 
 # examine data
@@ -378,23 +260,31 @@ dtg$UG_negrec <- as.numeric(dtg$UG_negrec)
 100*table(dtg$`Ultimatum Receiver_5`)%>% prop.table() 
 
 # ultimatum_proposer=positive reciprocity
-a <- dt[c(8,129:139)]
-b <- a %>%
-  pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
-b$proposed <- str_remove(b$proposed, "Ultimatum Proposer_")
-b[,c(2,3)]<-lapply(b[,c(2,3)],as.numeric)
-b$proposed <- b$proposed-1
-cor.test(b$proposed,b$decision) #r between proposal to and from = .54***  
-describe(b$decision) #m=4.78 (4.78/11*100=43%)
+# select data 
+proposer <- dt %>% 
+  select(ResponseId, `Ultimatum Proposer_1`:`Ultimatum Proposer_11`)
 
-b$pr <- ifelse(b$decision>=b$proposed,1,0)
-c <- aggregate(b$pr,by=list(b$ResponseId), FUN=sum)
-c$UG_posrec <- (c$x/11)*100
-c$ResponseId <- c$Group.1
-c <- c[3:4]
+# pivot longer to score the data 
+proposer_long <- proposer %>%
+  pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
+proposer_long$proposed <- str_remove(proposer_long$proposed, "Ultimatum Proposer_")
+
+proposer_long[ , c("proposed", "decision")] <- lapply(proposer_long[ , c("proposed", "decision")], as.numeric)
+proposer_long$proposed <- proposer_long$proposed-1
+cor.test(proposer_long$proposed, proposer_long$decision) 
+# r between proposal to and from = .54***  
+describe(proposer_long$decision) 
+# m=4.78 (4.78/11*100=43%)
+
+proposer_long$pr <- ifelse(proposer_long$decision>=proposer_long$proposed,1,0)
+pos_rec_df <- aggregate(proposer_long$pr,by=list(proposer_long$ResponseId), FUN=sum)
+pos_rec_df$UG_posrec <- (pos_rec_df$x/11)*100
+pos_rec_df$ResponseId <- pos_rec_df$Group.1
+pos_rec_df <- pos_rec_df %>% 
+  select(ResponseId, UG_posrec)
 
 # create merged dataset
-dtg <- merge(dtg, c, by="ResponseId")
+dtg <- merge(dtg, pos_rec_df, by="ResponseId")
 
 # examine correlations
 cor.test(dtg$PosRec,dtg$UG_posrec) 
@@ -403,30 +293,35 @@ cor.test(dtg$PosRec,dtg$UG_negrec)
 cor.test(dtg$NegRec,dtg$UG_posrec) 
 ```
 
-## Expectations
-
-* Runs smoothly, but a brief comment would help to understand.
-
+## Expectations 
 
 ```{r expectations-clean}
 # Expectations----
+expect <- dt %>% 
+  select(ResponseId, `Ultimatum expect_1`:`Ultimatum expect_11`)
 
-a <- dt[c(8,140:150)]
-
-b <- a %>%
+# create an expectation long dataset to score the data
+expect_long <- expect %>%
   pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
 
-b$change <- ifelse(b$decision=="The other person would accept" & 
-                     (((b$decision != dplyr::lag(b$decision))==TRUE)|
-                        (b$proposed=="Ultimatum expect_1")),1,0)
-b$proposed <- str_remove(b$proposed, "Ultimatum expect_")
-b$UG_expect <- ifelse(b$change==1,b$proposed,0)
-c <- subset(b, b$UG_expect!=0)
-c$dupl <- ifelse(duplicated(c$ResponseId)==TRUE,1,0)
-c <- subset(c, c$dupl==0)
-c <- c[,c(1,5)]
-dtg <- merge(dtg,c,by="ResponseId")
+# score the expectations
+expect_long$change <- ifelse(expect_long$decision=="The other person would accept" & 
+                     (((expect_long$decision != dplyr::lag(expect_long$decision))==TRUE)|
+                        (expect_long$proposed=="Ultimatum expect_1")),1,0)
+expect_long$proposed <- str_remove(expect_long$proposed, "Ultimatum expect_")
+expect_long$UG_expect <- ifelse(expect_long$change==1, expect_long$proposed, 0)
+expect_df <- subset(expect_long, expect_long$UG_expect!=0)
+expect_df$dupl <- ifelse(duplicated(expect_df$ResponseId)==TRUE,1,0)
+expect_df <- subset(expect_df, expect_df$dupl==0)
+
+# select the final columns and merge
+expect_df <- expect_df %>% 
+  select(ResponseId, UG_expect)
+dtg <- merge(dtg, expect_df, by="ResponseId")
 dtg$UG_expect <- as.numeric(dtg$UG_expect)
+
+# check the data 
+describe(dtg$UG_expect)
 ```
 
 ## Create Datasets
@@ -464,7 +359,6 @@ Note: this will be updated with examples from pilot data of the full study.
 ```{r reliability}
 # secondary measure (self-reported positive and negative reciprocity, attitude toward violence (three subscales and the total scale), self-face and other-face concern, reactions to provocation (three subscales), values (four higher-order value subscales), moral foundations (five subscales), intrinsic religiosity from DUREL, SWLS)
 
-
 # we would do this by country - the code above shows the reliability overall, would include psych::alpha for each country. 
 ```
 
@@ -473,7 +367,7 @@ Note: this will be updated with examples from pilot data of the full study.
 - Merge with secondary country-level data on GDP per capita, inequality (Gini), HDI, GII, Democracy and Global freedom indicators. 
 
 ```{r merge-country-level}
-
+# coming based on real dataset
 ```
 
 - Merge with secondary historical country-level data on population density-1500 and 2000, pathogen prevalence, resource scarcity, war, and territorial threats.
@@ -547,19 +441,11 @@ If the model converges, it will be compared to the models below (see notes below
 
 ## Data Simulation
 
-* Not working for me, not sure if should work. The problem seems to be that country was a character variable
-
 ```{r data-simulation-hierarchical}
-#DF_individual <- DF %>% 
-#  filter(`US state` == "Texas" | `US state` == "New York") %>% 
-#  dplyr::rename(country = `US state`) %>% 
-#  mutate(country = droplevels(country)) %>% 
-#  select(DHF_endorsement_1:DHF_endorsement_30, country)
-
 DF_individual <- DF %>% 
   filter(`US state` == "Texas" | `US state` == "New York") %>% 
   dplyr::rename(country = `US state`) %>% 
-  mutate(country = droplevels(as.factor(country))) %>% 
+   mutate(country = droplevels(as.factor(country))) %>% 
   select(DHF_endorsement_1:DHF_endorsement_30, country)
 
 colnames(DF_individual) <- c(paste0(
@@ -567,12 +453,6 @@ colnames(DF_individual) <- c(paste0(
         "H_other", "F_self", "F_other"), 
       each = 5),
   rep(1:5)), "country")
-
-#DF_norms <- DF %>% 
-#  filter(`US state` == "Texas" | `US state` == "New York") %>% 
-#  dplyr::rename(country = `US state`) %>% 
-#  mutate(country = droplevels(country)) %>% 
-#  select(DHF_Norms_1:DHF_Norms_30, country)
 
 DF_norms <- DF %>% 
   filter(`US state` == "Texas" | `US state` == "New York") %>% 
@@ -588,8 +468,6 @@ colnames(DF_norms) <- c(paste0(
 ```
 
 ## Power
-
-* Runs and does its job
 
 ```{r power-hierarchical}
 p <- 30 # number of observed variables 
@@ -621,11 +499,6 @@ semPower(type = 'a-priori',
 ## H1A Individual 
 
 ### Hierarchical Individual Test 1
-
-* Runs but non-convergence issues. I understood these as resulting from only two level-2 clusters in the pilot data?
-
-* Model seems to be correctly defined
-
 
 ```{r individual-hierarchical-test1, eval = F}
 hierarchical.model.test1 <- 
@@ -666,8 +539,6 @@ hierarchical.individual.test1.params <- tidy(hierarchical.individual.test1.fit)
 ```
 
 ### Hierarchical Individual Test 2
-
-* Same as above: Model seems to be correctly defined. Applies to all following CFA-models, not commented.
 
 ```{r individual-hierarchical-test2, eval = F}
 hierarchical.model.test2 <- 
@@ -1267,9 +1138,6 @@ hierarchical.norms.test1.fitindices
 
 # Alignment Procedure
 
-* Code seems to run smoothly
-* The factors are here defined as orthogonal. Shouldn't these be correlated as in Figure 1? Or is this somehow necessary for this procedure?
-
 ## Individual
 
 ```{r alignment-individual}
@@ -1316,7 +1184,6 @@ colnames(nu) <- ipars[ ipars$op=="~1"  & ipars$se !=0, "lhs" ][1:(length(ipars[ 
 
 Ng <-  unlist(hierarchical.mgcfa.fit$model_configural@SampleStats@nobs)
 wgt <- matrix( sqrt(Ng), length(Ng), ncol(nu) )
-
 
 mod1 <- sirt::invariance.alignment(lambda, nu, wgt, align.pow=c(2,2))
 summary(mod1)
@@ -1395,9 +1262,6 @@ If the 3-factor model is used (dignity, honor, face), the test will be explorato
 ## Data Simulation
 
 DHF indices will be calculated based on the best performing model for each level. Individual-level DHF endorsement scores will be calculated as averages of individual endorsement items, and country-level DHF norms scores will be calculated as averages of norms items, aggregated at country level (see below for H3). 
-
-* This did not run. "prosociality" could not be found.
-
 
 ```{r h2-data-simulation}
 DF_individual_H2 <- DF %>% 
