@@ -1,0 +1,22 @@
+---
+title: "Reproducible Analyses"
+author: "Erin M. Buchanan"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+- Using manuscript + supplement from https://drive.google.com/drive/u/0/folders/1_lBKpwcRFFIUcJZq8XENDovHmMNC8m5I
+
+- Using analyses from https://drive.google.com/drive/u/0/folders/1V00hNRQofmBxloVls-Vxy1t30henrzGw
+
+- Using pre-registration from https://docs.google.com/document/d/1nCfUY9tJLBk41vE_BU56S10rrBoRdVaMwDFo1DMZy8M/edit?tab=t.0#heading=h.fwbi14d4b65g
+
+## Libraries
+
+## Data 
+
+

@@ -1,0 +1,129 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 # Create all scale indices\
+print("1. Creating reciprocity indices...")\
+\
+# 1. RECIPROCITY\
+dt4 <- dt4 %>%\
+  mutate(\
+    Positive_Reciprocity = calculate_scale_mean(., c("Reciprocity_1", "Reciprocity_2", "Reciprocity_3")),\
+    Negative_Reciprocity = calculate_scale_mean(., c("Reciprocity_4", "Reciprocity_5", "Reciprocity_6"))\
+  )\
+\
+print("2. Creating violence attitude indices...")\
+\
+# 2. VIOLENCE ATTITUDES\
+dt4 <- dt4 %>%\
+  mutate(\
+    Penal_Code_Violence = calculate_scale_mean(., c("violence_1", "violence_2", "violence_3")),\
+    War_Acceptance = calculate_scale_mean(., c("violence_4", "violence_5", "violence_6")),\
+    Corporal_Punishment = calculate_scale_mean(., c("violence_7", "violence_8", "violence_9")),\
+    Intimate_Violence = calculate_scale_mean(., c("violence_10", "violence_11", "violence_12")),\
+    Total_Violence = calculate_scale_mean(., paste0("violence_", 1:12))\
+  )\
+\
+print("3. Creating face concern indices...")\
+\
+# 3. FACE CONCERNS\
+dt4 <- dt4 %>%\
+  mutate(\
+    Other_Face_Concern = calculate_scale_mean(., c("conflict_face_2", "conflict_face_3", "conflict_face_4", \
+                                                   "conflict_face_5", "conflict_face_6", "conflict_face_7")),\
+    Self_Face_Concern = calculate_scale_mean(., c("conflict_face_8", "conflict_face_9", "conflict_face_10", "conflict_face_11"))\
+  )\
+\
+print("4. Creating reactions to insult indices (excluding 3rd scenario)...")\
+\
+# 4. REACTIONS TO PROVOCATION (excluding 3rd scenario items due to problematic alpha)\
+dt4 <- dt4 %>%\
+  mutate(\
+    Withdrawal = calculate_scale_mean(., c("insult1_1", "insult2_1")),\
+    Retaliation = calculate_scale_mean(., c("insult1_2", "insult2_2")),\
+    Humor = calculate_scale_mean(., c("insult1_3", "insult2_3"))\
+  )\
+\
+print("5. Creating Schwartz higher-order values indices...")\
+\
+# 5. SCHWARTZ HIGHER-ORDER VALUES\
+dt4 <- dt4 %>%\
+  mutate(\
+    Self_Transcendence = calculate_scale_mean(., paste0("values_", c(3, 8, 19, 12, 18))),\
+    Self_Enhancement = calculate_scale_mean(., paste0("values_", c(4, 13, 2, 17))),\
+    Openness_to_Change = calculate_scale_mean(., paste0("values_", c(1, 11, 6, 15, 10, 21))),\
+    Conservation = calculate_scale_mean(., paste0("values_", c(5, 14, 7, 16, 9, 20)))\
+  )\
+\
+print("6. Creating moral foundations indices...")\
+\
+# 6. MORAL FOUNDATIONS\
+dt4 <- dt4 %>%\
+  mutate(\
+    MFQ_Care = calculate_scale_mean(., paste0("MFQ_", c(1, 7, 13, 19, 25, 31))),\
+    MFQ_Equality = calculate_scale_mean(., paste0("MFQ_", c(2, 8, 14, 20, 26, 32))),\
+    MFQ_Proportionality = calculate_scale_mean(., paste0("MFQ_", c(3, 9, 15, 21, 27, 33))),\
+    MFQ_Loyalty = calculate_scale_mean(., paste0("MFQ_", c(4, 10, 16, 22, 28, 34))),\
+    MFQ_Authority = calculate_scale_mean(., paste0("MFQ_", c(5, 11, 17, 23, 29, 35))),\
+    MFQ_Purity = calculate_scale_mean(., paste0("MFQ_", c(6, 12, 18, 24, 30, 36)))\
+  )\
+\
+print("7. Creating religiosity indices...")\
+\
+# 7. INTRINSIC RELIGIOSITY (raw scores)\
+dt4 <- dt4 %>%\
+  mutate(\
+    Intrinsic_Religiosity = calculate_scale_mean(., c("relig_intrinsic_1", "relig_intrinsic_2", "relig_intrinsic_3"))\
+  )\
+\
+# 8. COMPOSITE RELIGIOSITY (standardized scores)\
+print("8. Creating composite religiosity index (standardized scores)...")\
+\
+# Check if religiosity variables exist\
+religiosity_vars <- c("relig_attendance", "relig_private", "relig_intrinsic_1", "relig_intrinsic_2", "relig_intrinsic_3")\
+available_relig_vars <- religiosity_vars[religiosity_vars %in% names(dt4)]\
+\
+if(length(available_relig_vars) > 0) \{\
+  # Standardize each religiosity variable\
+  dt4_standardized <- dt4\
+  for(var in available_relig_vars) \{\
+    dt4_standardized[[paste0(var, "_z")]] <- scale(dt4[[var]])[,1]\
+  \}\
+  \
+  # Calculate composite score from standardized variables\
+  standardized_vars <- paste0(available_relig_vars, "_z")\
+  dt4$Composite_Religiosity <- calculate_scale_mean(dt4_standardized, standardized_vars)\
+  \
+  cat("Composite religiosity created using:", paste(available_relig_vars, collapse = ", "), "\\n")\
+\} else \{\
+  dt4$Composite_Religiosity <- NA\
+  cat("Warning: Religiosity variables not found. Composite religiosity set to NA.\\n")\
+\}\
+\
+print("9. Creating subjective well-being index...")\
+\
+# 9. SUBJECTIVE WELL-BEING\
+dt4 <- dt4 %>%\
+  mutate(\
+    Subjective_Wellbeing = calculate_scale_mean(., c("swbls_1", "swbls_2", "swbls_3", "swbls_4", "swbls_5"))\
+  )\
+\
+# List all created indices\
+created_indices <- c(\
+  "Positive_Reciprocity", "Negative_Reciprocity",\
+  "Penal_Code_Violence", "War_Acceptance", "Corporal_Punishment", "Intimate_Violence", "Total_Violence",\
+  "Other_Face_Concern", "Self_Face_Concern",\
+  "Withdrawal", "Retaliation", "Humor",\
+  "Self_Transcendence", "Self_Enhancement", "Openness_to_Change", "Conservation",\
+  "MFQ_Care", "MFQ_Equality", "MFQ_Proportionality", "MFQ_Loyalty", "MFQ_Authority", "MFQ_Purity",\
+  "Intrinsic_Religiosity", "Composite_Religiosity", "Subjective_Wellbeing"\
+)\
+\
+print("\\nCreated indices:")\
+print(created_indices)\
+\
+print("\\nCREATING DESCRIPTIVE STATISTICS")\
+print(paste(rep("=", 50), collapse = ""))}

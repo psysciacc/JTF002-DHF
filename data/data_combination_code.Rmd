@@ -1,0 +1,2191 @@
+---
+title: "Dignity Honour Face - Data preparation"
+author: "Elias Keller"
+date: "`r Sys.Date()`"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: show
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+- Updated by Erin M. Buchanan `r Sys.Date()`
+
+```{r include=FALSE}
+if (!knitr::is_html_output()) knitr::opts_chunk$set(echo=FALSE)
+```
+
+# Libraries
+
+```{r packages_and_functions, message = FALSE}
+library(tidyverse)
+library(huxtable)
+library(janitor)
+library(countrycode)
+```
+
+# Functions
+
+```{r eval=knitr::is_html_output()}
+#quick table function
+autotable <- purrr::compose(
+  . %>% as_hux(scientific = FALSE),
+  . %>% theme_article(), 
+  . %>% set_position("left"),
+  .dir = "forward")
+```
+
+**Overview**
+
+1. Prepare Qualtrics
+2. Prepare Gorilla
+3. Africa Long Study
+4. Combine Qualtrics, Gorilla and Africa Long Study
+5. Add metadata
+
+# Prepare Qualtrics
+
+## Import
+
+* *Note*: Qualtrics datasets were exported and then renamed as dhf_data_v1 and dhf_data_v2 - found in the `raw data` folder. 
+
+```{r}
+qualtrics_v1 <- read.csv("raw_data/Qualtrics/dhf_data_v1.csv", na.strings = c(" ", "")) %>% #loading data. Qualtrics includes missings as empty fields, so those are coded as NA
+  filter(StartDate != "Start Date" & StartDate != '{"ImportId":"startDate","timeZone":"America/Denver"}')  #removing the variable names imported by qualtrics
+
+qualtrics_v2 <- read.csv("raw_data/Qualtrics/dhf_data_v2.csv", na.strings = c(" ", ""))  %>% #loading data Qualtrics includes missings as empty fields, so those are coded as NA
+  filter(StartDate != "Start Date" & StartDate != '{"ImportId":"startDate","timeZone":"America/Denver"}') #removing the variable names imported by qualtrics
+```
+
+## Clean up
+
+### Check variable names were exported correctly and match codebook
+
+* Do they match each other?
+
+```{r}
+compare_df_cols(qualtrics_v1, qualtrics_v2) %>%
+  mutate(Same = qualtrics_v1==qualtrics_v2) %>%
+  filter(Same != "TRUE" | is.na(Same)) %>%
+  autotable() %>%
+  set_caption("Comparison of variables in Qualtrics 1 and 2 - only non matching ones")
+```
+
+## Combine qualtrics versions
+ 
+```{r}
+qualtrics_total <- qualtrics_v1 %>%
+  bind_rows(qualtrics_v2) 
+```
+
+### Clean qualtrics 
+
+**1. Remove test rows**
+  
+* These are the entries under the "test" variable. At the moment, I'm removing everything that isn't an NA (so, everything shown in the table minus the last row), is that correct?
+
+```{r}
+qualtrics_total %>%
+  count(Test) %>%
+  autotable()
+
+nrow(qualtrics_total)
+```
+
+* Only retaining those that were not tests (have NA in test variable)
+
+```{r}
+qualtrics_total <- qualtrics_total %>%
+  filter(is.na(Test)) # 
+
+nrow(qualtrics_total)
+```
+
+**2. Remove those who hadn't given consent**
+
+* Those who had to give alternative consent and didn't are marked as -99 (missing) at this variable by qualtrics. Only keeping those who do not have -99 or have a missing value (meaning they gave consent elsewhere)
+
+```{r}
+qualtrics_total <- qualtrics_total %>%
+  filter(ConsentAlt != -99 | is.na(ConsentAlt))  #
+
+nrow(qualtrics_total)
+```
+
+## Adding source identifyer
+
+* Added a column "datasource" to indicate where data came from (Qualtrics, Gorilla, Africa Long Study)
+
+```{r}
+qualtrics_total <- qualtrics_total %>%
+  mutate("datasource" = "Qualtrics") 
+```
+
+# Prepare Gorilla
+
+Steps needed:
+
+1. Download experiment components and combine into full data for each experiment
+2. Combine Gorilla experiments into projects (i.e., all Persian combined, and all Russian combined)
+3. Combine Gorilla projects (i.e., combine Persian and Russian)
+4. Check that variable names match Qualtrics
+5. add platform signifier
+
+Note on data download on Gorilla: 
+
+* go to experiment
+* click "Download experiment data"
+* select "combine data from all versions"
+* select short form and Name+ID
+* move into language & place-specific folder under `raw_data`
+
+* Some participants have a "live" status, should they be included or only the "complete" participants?
+
+## Persian
+
+### Persian behzadnia
+
+#### Download each component and select relevant variables
+
+**Consent (sqw3)**
+
+```{r}
+persian_behzadnia_consent <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_questionnaire-sq3w.csv") %>%
+  select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
+  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+         Progress = Participant.Status)
+```
+
+**DHF instructions (355e)**
+
+```{r}
+persian_behzadnia_instructions <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_questionnaire-355e.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"))  
+```
+
+**Dictator Game Comprehension (aguj)**
+
+* in qualtrics: Dictator.comp1.1 = first item, first time, in Gorilla: 3. Correct: 2
+* Dictator.comp1.2 = second item, first time, Gorilla: 6. Correct: 3 
+* Dictator.comp2.1 = first item, second time: 17
+* Dictator.comp2.2 = second item, second time: 27
+
+```{r}
+persian_behzadnia_dictatorcomprehension <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_task-aguj.csv") %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Dictator.comp1.1",
+                                "object_6" ~ "Dictator.comp1.2",
+                                "object_17" ~ "Dictator.comp2.1",
+                                "object_27" ~ "Dictator.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Dictator and Ultimatum Game instructions**
+
+```{r}
+persian_behzadnia_instructions2 <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_questionnaire-y8yi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Ultimatum game comprehension**
+
+```{r}
+persian_behzadnia_ultimatumcomprehension <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_task-i1kz.csv")  %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Ultimatum.comp1.1",
+                                "object_6" ~ "Ultimatum.comp1.2",
+                                "object_17" ~ "Ultimatum.comp2.1",
+                                "object_27" ~ "Ultimatum.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Ultimatum Game**
+
+```{r}
+persian_behzadnia_ultimatumgame <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_questionnaire-gxf8.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**PVQN**
+
+```{r}
+persian_behzadnia_pvqn <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_questionnaire-mdgi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Moral foundations to Debrief**
+
+```{r}
+persian_behzadnia_moral <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_questionnaire-o6w9.csv") %>%
+  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"),
+         ends_with("Other"),  #to include other gender etc. options 
+         StartDate = UTC.Timestamp) 
+```
+
+#### Combine into full dataset
+
+```{r message = FALSE}
+persian_behzadnia_full <- persian_behzadnia_consent %>% 
+          left_join(persian_behzadnia_instructions) %>%
+          left_join(persian_behzadnia_dictatorcomprehension) %>% 
+          left_join(persian_behzadnia_instructions2) %>%
+          left_join(persian_behzadnia_ultimatumcomprehension) %>%
+          left_join(persian_behzadnia_ultimatumgame) %>%
+          left_join(persian_behzadnia_pvqn) %>%
+          left_join(persian_behzadnia_moral) %>%
+  mutate(LabID = "behzadnia",
+         Country = "IR",
+         datasource = "Gorilla") %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+```
+
+### Persian Heydari
+
+#### Download each component and select relevant variables
+
+**Consent**
+
+```{r}
+persian_heydari_consent <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_questionnaire-8lsd.csv") %>%
+  select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
+  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+         Progress = Participant.Status)
+```
+
+**DHF instructions**
+
+```{r}
+persian_heydari_instructions <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_questionnaire-355e.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"))  
+```
+
+**Dictator Game Comprehension**
+
+```{r}
+persian_heydari_dictatorcomprehension <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_task-aguj.csv") %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Dictator.comp1.1",
+                                "object_6" ~ "Dictator.comp1.2",
+                                "object_17" ~ "Dictator.comp2.1",
+                                "object_27" ~ "Dictator.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Dictator and Ultimatum Game instructions**
+
+```{r}
+persian_heydari_instructions2 <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_questionnaire-y8yi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Ultimatum game comprehension**
+
+```{r}
+persian_heydari_ultimatumcomprehension <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_task-i1kz.csv")  %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Ultimatum.comp1.1",
+                                "object_6" ~ "Ultimatum.comp1.2",
+                                "object_17" ~ "Ultimatum.comp2.1",
+                                "object_27" ~ "Ultimatum.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Ultimatum Game**
+
+```{r}
+persian_heydari_ultimatumgame <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_questionnaire-gxf8.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**PVQN**
+
+```{r}
+persian_heydari_pvqn <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_questionnaire-mdgi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Moral foundations to Debrief**
+
+```{r}
+persian_heydari_moral <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_questionnaire-ppiz.csv") %>%
+  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"),
+         ends_with("Other"),  #to include other gender etc. options 
+         StartDate = UTC.Timestamp) 
+```
+
+#### Combine into full dataset
+
+```{r message = FALSE}
+persian_heydari_full <- persian_heydari_consent %>% 
+          left_join(persian_heydari_instructions) %>%
+          left_join(persian_heydari_dictatorcomprehension) %>% 
+          left_join(persian_heydari_instructions2) %>%
+          left_join(persian_heydari_ultimatumcomprehension) %>%
+          left_join(persian_heydari_ultimatumgame) %>%
+          left_join(persian_heydari_pvqn) %>%
+          left_join(persian_heydari_moral) %>%
+  mutate(LabID = "heydari",
+         Country = "IR",
+         datasource = "Gorilla") %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+```
+
+### Persian Mehdinejad
+
+#### Download each component and select relevant variables
+
+**Consent**
+
+```{r}
+persian_mehdinejad_consent <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_questionnaire-273y.csv") %>%
+  select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
+  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+         Progress = Participant.Status)
+```
+
+**DHF instructions**
+
+```{r}
+persian_mehdinejad_instructions <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_questionnaire-355e.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"))  
+```
+
+**Dictator Game Comprehension**
+
+```{r}
+persian_mehdinejad_dictatorcomprehension <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_task-aguj.csv") %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Dictator.comp1.1",
+                                "object_6" ~ "Dictator.comp1.2",
+                                "object_17" ~ "Dictator.comp2.1",
+                                "object_27" ~ "Dictator.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Dictator and Ultimatum Game instructions**
+
+```{r}
+persian_mehdinejad_instructions2 <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_questionnaire-y8yi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Ultimatum game comprehension**
+
+```{r}
+persian_mehdinejad_ultimatumcomprehension <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_task-i1kz.csv")  %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Ultimatum.comp1.1",
+                                "object_6" ~ "Ultimatum.comp1.2",
+                                "object_17" ~ "Ultimatum.comp2.1",
+                                "object_27" ~ "Ultimatum.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Ultimatum Game**
+
+```{r}
+persian_mehdinejad_ultimatumgame <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_questionnaire-gxf8.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**PVQN**
+
+```{r}
+persian_mehdinejad_pvqn <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_questionnaire-mdgi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Moral foundations to Debrief**
+
+```{r}
+persian_mehdinejad_moral <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_questionnaire-f9qm.csv") %>%
+  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"),
+         ends_with("Other"),  #to include other gender etc. options 
+         StartDate = UTC.Timestamp) 
+```
+
+#### Combine into full dataset
+
+```{r message = FALSE}
+persian_mehdinejad_full <- persian_mehdinejad_consent %>% 
+          left_join(persian_mehdinejad_instructions) %>%
+          left_join(persian_mehdinejad_dictatorcomprehension) %>% 
+          left_join(persian_mehdinejad_instructions2) %>%
+          left_join(persian_mehdinejad_ultimatumcomprehension) %>%
+          left_join(persian_mehdinejad_ultimatumgame) %>%
+          left_join(persian_mehdinejad_pvqn) %>%
+          left_join(persian_mehdinejad_moral) %>%
+  mutate(LabID = "mehdinejad",
+         Country = "IR",
+         datasource = "Gorilla") %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+```
+
+### Persian Tondro
+
+#### Download each component and select relevant variables
+
+**Consent**
+
+```{r}
+persian_tondro_consent <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_questionnaire-jdx2.csv") %>%
+  select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
+  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+         Progress = Participant.Status)
+```
+
+**DHF instructions**
+
+```{r}
+persian_tondro_instructions <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_questionnaire-355e.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"))  
+```
+
+**Dictator Game Comprehension**
+
+```{r}
+persian_tondro_dictatorcomprehension <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_task-aguj.csv") %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Dictator.comp1.1",
+                                "object_6" ~ "Dictator.comp1.2",
+                                "object_17" ~ "Dictator.comp2.1",
+                                "object_27" ~ "Dictator.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Dictator and Ultimatum Game instructions**
+
+```{r}
+persian_tondro_instructions2 <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_questionnaire-y8yi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Ultimatum game comprehension**
+
+```{r}
+persian_tondro_ultimatumcomprehension <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_task-i1kz.csv")  %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Ultimatum.comp1.1",
+                                "object_6" ~ "Ultimatum.comp1.2",
+                                "object_17" ~ "Ultimatum.comp2.1",
+                                "object_27" ~ "Ultimatum.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Ultimatum Game**
+
+```{r}
+persian_tondro_ultimatumgame <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_questionnaire-gxf8.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**PVQN**
+
+```{r}
+persian_tondro_pvqn <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_questionnaire-mdgi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Moral foundations to Debrief**
+
+```{r}
+persian_tondro_moral <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_questionnaire-l93m.csv") %>%
+  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"),
+         ends_with("Other"),  #to include other gender etc. options 
+         StartDate = UTC.Timestamp) 
+```
+
+#### Combine into full dataset
+
+```{r message = FALSE}
+persian_tondro_full <- persian_tondro_consent %>% 
+          left_join(persian_tondro_instructions) %>%
+          left_join(persian_tondro_dictatorcomprehension) %>% 
+          left_join(persian_tondro_instructions2) %>%
+          left_join(persian_tondro_ultimatumcomprehension) %>%
+          left_join(persian_tondro_ultimatumgame) %>%
+          left_join(persian_tondro_pvqn) %>%
+          left_join(persian_tondro_moral) %>%
+  mutate(LabID = "tondro",
+         Country = "IR",
+         datasource = "Gorilla") %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+```
+
+### Persian Vazirian
+
+#### Download each component and select relevant variables
+
+**Consent**
+
+```{r}
+persian_vazirian_consent <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_questionnaire-ri58.csv") %>%
+  select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
+  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+         Progress = Participant.Status)
+```
+
+**DHF instructions**
+
+```{r}
+persian_vazirian_instructions <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_questionnaire-355e.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"))  
+```
+
+**Dictator Game Comprehension**
+
+```{r}
+persian_vazirian_dictatorcomprehension <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_task-aguj.csv") %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Dictator.comp1.1",
+                                "object_6" ~ "Dictator.comp1.2",
+                                "object_17" ~ "Dictator.comp2.1",
+                                "object_27" ~ "Dictator.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Dictator and Ultimatum Game instructions**
+
+```{r}
+persian_vazirian_instructions2 <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_questionnaire-y8yi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Ultimatum game comprehension**
+
+```{r}
+persian_vazirian_ultimatumcomprehension <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_task-i1kz.csv")  %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Ultimatum.comp1.1",
+                                "object_6" ~ "Ultimatum.comp1.2",
+                                "object_17" ~ "Ultimatum.comp2.1",
+                                "object_27" ~ "Ultimatum.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Ultimatum Game**
+
+```{r}
+persian_vazirian_ultimatumgame <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_questionnaire-gxf8.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**PVQN**
+
+```{r}
+persian_vazirian_pvqn <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_questionnaire-mdgi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Moral foundations to Debrief**
+
+```{r}
+persian_vazirian_moral <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_questionnaire-gad4.csv") %>%
+  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"),
+         ends_with("Other"),  #to include other gender etc. options 
+         StartDate = UTC.Timestamp) 
+```
+
+#### Combine into full dataset
+
+```{r message = FALSE}
+persian_vazirian_full <- persian_vazirian_consent %>% 
+          left_join(persian_vazirian_instructions) %>%
+          left_join(persian_vazirian_dictatorcomprehension) %>% 
+          left_join(persian_vazirian_instructions2) %>%
+          left_join(persian_vazirian_ultimatumcomprehension) %>%
+          left_join(persian_vazirian_ultimatumgame) %>%
+          left_join(persian_vazirian_pvqn) %>%
+          left_join(persian_vazirian_moral) %>%
+  mutate(LabID = "vazirian",
+         Country = "IR",
+         datasource = "Gorilla") %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+
+```
+
+### Persian Zakeri
+
+#### Download each component and select relevant variables
+
+**Consent**
+
+```{r}
+persian_zakeri_consent <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_questionnaire-r73s.csv") %>%
+  select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
+  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+         Progress = Participant.Status)
+```
+
+**DHF instructions**
+
+```{r}
+persian_zakeri_instructions <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_questionnaire-355e.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"))  
+```
+
+**Dictator Game Comprehension**
+
+```{r}
+persian_zakeri_dictatorcomprehension <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_task-aguj.csv") %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Dictator.comp1.1",
+                                "object_6" ~ "Dictator.comp1.2",
+                                "object_17" ~ "Dictator.comp2.1",
+                                "object_27" ~ "Dictator.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Dictator and Ultimatum Game instructions**
+
+```{r}
+persian_zakeri_instructions2 <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_questionnaire-y8yi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Ultimatum game comprehension**
+
+```{r}
+persian_zakeri_ultimatumcomprehension <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_task-i1kz.csv")  %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Ultimatum.comp1.1",
+                                "object_6" ~ "Ultimatum.comp1.2",
+                                "object_17" ~ "Ultimatum.comp2.1",
+                                "object_27" ~ "Ultimatum.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Ultimatum Game**
+
+```{r}
+persian_zakeri_ultimatumgame <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_questionnaire-gxf8.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**PVQN**
+
+```{r}
+persian_zakeri_pvqn <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_questionnaire-mdgi.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Moral foundations to Debrief**
+
+```{r}
+persian_zakeri_moral <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_questionnaire-gl5c.csv") %>%
+  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"),
+         ends_with("Other"),  #to include other gender etc. options 
+         StartDate = UTC.Timestamp)
+```
+
+#### Combine into full dataset
+
+```{r message = FALSE}
+persian_zakeri_full <- persian_zakeri_consent %>% 
+          left_join(persian_zakeri_instructions) %>%
+          left_join(persian_zakeri_dictatorcomprehension) %>% 
+          left_join(persian_zakeri_instructions2) %>%
+          left_join(persian_zakeri_ultimatumcomprehension) %>%
+          left_join(persian_zakeri_ultimatumgame) %>%
+          left_join(persian_zakeri_pvqn) %>%
+          left_join(persian_zakeri_moral) %>%
+  mutate(LabID = "zakeri",
+         Country = "IR",
+         datasource = "Gorilla") %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+```
+
+### Combine all Persian experiments
+
+```{r}
+persian_all <- persian_behzadnia_full %>%
+  bind_rows(list(persian_heydari_full, persian_mehdinejad_full, persian_tondro_full, persian_vazirian_full, persian_zakeri_full))
+```
+
+### Recode variable names to match Qualtrics
+
+* Export column names to Excel
+
+```{r}
+#Get column names for codebook
+persian_all %>% 
+  colnames() %>%
+  write.csv("codebooks/Gorilla/variable_names_export_persian.csv", row.names = FALSE)
+```
+
+* in Ecxel
+  + make new column with corrected names
+  + check that all variables needed are present
+* import new codes and make into column names
+
+```{r}
+# import new column names from codebook (manually created)
+persian_variablenames <- read.csv("codebooks/Gorilla/variable_names_export_persian_recoded.csv", header = FALSE,sep = ";") 
+# import variable names and assign to object
+persian_all_recoded <- persian_all
+# assign new variable name object to the dataset
+colnames(persian_all_recoded) <- persian_variablenames$V2 
+```
+
+## Russian
+
+### Russian Efremova
+
+#### Download each component and select relevant variables
+
+**Consent**
+
+```{r}
+russian_efremova_consent <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-qxa3.csv") %>%
+  select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
+  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+         Progress = Participant.Status)
+```
+
+**DHF instructions**
+
+```{r}
+russian_efremova_instructions <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-6jro.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"))  
+```
+
+**Dictator Game Comprehension**
+
+```{r}
+russian_efremova_dictatorcomprehension <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_task-hl17.csv") %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Dictator.comp1.1",
+                                "object_6" ~ "Dictator.comp1.2",
+                                "object_17" ~ "Dictator.comp2.1",
+                                "object_27" ~ "Dictator.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Dictator and Ultimatum Game instructions**
+
+```{r}
+russian_efremova_instructions2 <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-3zyp.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Ultimatum game comprehension**
+
+```{r}
+russian_efremova_ultimatumcomprehension <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_task-xdtb.csv")  %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Ultimatum.comp1.1",
+                                "object_6" ~ "Ultimatum.comp1.2",
+                                "object_17" ~ "Ultimatum.comp2.1",
+                                "object_27" ~ "Ultimatum.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Ultimatum Game**
+
+```{r}
+russian_efremova_ultimatumgame <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-ls6m.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**PVQN**
+
+```{r}
+russian_efremova_pvqn_n <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-9izs.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+
+russian_efremova_pvqn_f <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-x8dj.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+
+russian_efremova_pvqn_m <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-rdmv.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Moral foundations to Demographics**
+
+```{r}
+russian_efremova_moral <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-pjg5.csv") %>%
+  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"),
+         ends_with("Other"),  #to include other gender etc. options 
+         StartDate = UTC.Timestamp) 
+```
+
+**Debrief**
+
+Debrief only contains an info text and no measurements, therefore not added.
+
+#### Combine into full dataset
+
+```{r message = FALSE}
+russian_efremova_full <- russian_efremova_consent %>% 
+          left_join(russian_efremova_instructions) %>%
+          left_join(russian_efremova_dictatorcomprehension) %>% 
+          left_join(russian_efremova_instructions2) %>%
+          left_join(russian_efremova_ultimatumcomprehension) %>%
+          left_join(russian_efremova_ultimatumgame) %>%
+          left_join(russian_efremova_pvqn_f) %>%
+          left_join(russian_efremova_pvqn_m) %>%
+          left_join(russian_efremova_pvqn_n) %>%
+            left_join(russian_efremova_moral) %>%
+  mutate(LabID = "efremova",
+         Country = "RU",
+         datasource = "Gorilla") %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+```
+
+### Russian Efremova 2
+
+#### Download each component and select relevant variables
+
+**Consent**
+
+```{r}
+russian_efremova2_consent <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-qxa3.csv") %>%
+  select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
+  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+         Progress = Participant.Status)
+```
+
+**DHF instructions**
+
+```{r}
+russian_efremova2_instructions <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-6jro.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"))  
+```
+
+**Dictator Game Comprehension**
+
+```{r}
+russian_efremova2_dictatorcomprehension <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_task-hl17.csv") %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Dictator.comp1.1",
+                                "object_6" ~ "Dictator.comp1.2",
+                                "object_17" ~ "Dictator.comp2.1",
+                                "object_27" ~ "Dictator.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Dictator and Ultimatum Game instructions**
+
+```{r}
+russian_efremova2_instructions2 <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-3zyp.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Ultimatum game comprehension**
+
+```{r}
+russian_efremova2_ultimatumcomprehension <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_task-xdtb.csv")  %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Ultimatum.comp1.1",
+                                "object_6" ~ "Ultimatum.comp1.2",
+                                "object_17" ~ "Ultimatum.comp2.1",
+                                "object_27" ~ "Ultimatum.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Ultimatum Game**
+
+```{r}
+russian_efremova2_ultimatumgame <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-ls6m.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**PVQN**
+
+```{r}
+russian_efremova2_pvqn_n <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-9izs.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+
+russian_efremova2_pvqn_f <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-x8dj.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+
+russian_efremova2_pvqn_m <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-rdmv.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Moral foundations to Demographics**
+
+```{r}
+russian_efremova2_moral <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-pjg5.csv") %>%
+  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"),
+         ends_with("Other"),  #to include other gender etc. options 
+         StartDate = UTC.Timestamp) 
+```
+
+**Debrief**
+
+Debrief only contains an info text and no measurements, therefore not added.
+
+#### Combine into full dataset
+
+```{r message = FALSE}
+russian_efremova2_full <- russian_efremova2_consent %>% 
+          left_join(russian_efremova2_instructions) %>%
+          left_join(russian_efremova2_dictatorcomprehension) %>% 
+          left_join(russian_efremova2_instructions2) %>%
+          left_join(russian_efremova2_ultimatumcomprehension) %>%
+          left_join(russian_efremova2_ultimatumgame) %>%
+          left_join(russian_efremova2_pvqn_f) %>%
+          left_join(russian_efremova2_pvqn_m) %>%
+          left_join(russian_efremova2_pvqn_n) %>%
+            left_join(russian_efremova2_moral) %>%
+  mutate(LabID = "efremova2",
+         Country = "RU",
+         datasource = "Gorilla") %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+```
+
+### Russian Olga
+
+#### Download each component and select relevant variables
+
+**Consent**
+
+```{r}
+russian_olga_consent <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-wmsj.csv") %>%
+  select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
+  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+         Progress = Participant.Status)
+```
+
+**DHF instructions**
+
+```{r}
+russian_olga_instructions <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-6jro.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"))  
+```
+
+**Dictator Game Comprehension**
+
+```{r}
+russian_olga_dictatorcomprehension <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_task-hl17.csv") %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Dictator.comp1.1",
+                                "object_6" ~ "Dictator.comp1.2",
+                                "object_17" ~ "Dictator.comp2.1",
+                                "object_27" ~ "Dictator.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Dictator and Ultimatum Game instructions**
+
+```{r}
+russian_olga_instructions2 <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-3zyp.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Ultimatum game comprehension**
+
+```{r}
+russian_olga_ultimatumcomprehension <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_task-xdtb.csv")  %>%
+  filter(Response.Type == "response") %>%
+  select(ResponseId = Participant.Private.ID, Object.ID, Response)  %>%
+  mutate(Object.ID = str_replace(Object.ID,"-", "_"),
+         Object.ID = case_match(Object.ID,
+                                "object_3" ~ "Ultimatum.comp1.1",
+                                "object_6" ~ "Ultimatum.comp1.2",
+                                "object_17" ~ "Ultimatum.comp2.1",
+                                "object_27" ~ "Ultimatum.comp2.2")) %>%
+  pivot_wider(names_from = Object.ID,
+              values_from = Response) 
+```
+
+**Ultimatum Game**
+
+```{r}
+russian_olga_ultimatumgame <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-ls6m.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**PVQN**
+
+```{r}
+russian_olga_pvqn_n <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-9izs.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+
+russian_olga_pvqn_f <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-x8dj.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+
+russian_olga_pvqn_m <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-rdmv.csv") %>%
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised")) 
+```
+
+**Moral foundations to Demographics**
+
+```{r}
+russian_olga_moral <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-r7fa.csv") %>%
+  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  select(ResponseId = Participant.Private.ID, 
+         ends_with("Quantised"),
+         ends_with("Other"),  #to include other gender etc. options 
+         StartDate = UTC.Timestamp) 
+```
+
+**Debrief**
+
+Debrief only contains an info text and no measurements, therefore not added.
+
+#### Combine into full dataset
+
+```{r message = FALSE}
+russian_olga_full <- russian_olga_consent %>% 
+          left_join(russian_olga_instructions) %>%
+          left_join(russian_olga_dictatorcomprehension) %>% 
+          left_join(russian_olga_instructions2) %>%
+          left_join(russian_olga_ultimatumcomprehension) %>%
+          left_join(russian_olga_ultimatumgame) %>%
+          left_join(russian_olga_pvqn_f) %>%
+          left_join(russian_olga_pvqn_m) %>%
+          left_join(russian_olga_pvqn_n) %>%
+            left_join(russian_olga_moral) %>%
+  mutate(LabID = "olga",
+         Country = "RU",
+         datasource = "Gorilla") %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+```
+
+### Combine all Russian experiments
+
+```{r}
+russian_all <- russian_efremova_full %>%
+  bind_rows(list(russian_efremova2_full, russian_olga_full))
+```
+
+### Recode variable names to match Qualtrics
+
+* Export column names to Excel
+
+```{r}
+#Get column names for codebook
+russian_all %>% 
+  colnames() %>%
+  write.csv("codebooks/Gorilla/variable_names_export_russian.csv", row.names = FALSE)
+```
+
+* in Ecxel
+  + make new column with corrected names
+  + check that all variables needed are present
+* import new codes and make into column names
+
+```{r}
+# import new column names from codebook (manually created)
+russian_variablenames <- read.csv("codebooks/Gorilla/variable_names_export_russian_recoded.csv", header = FALSE,sep = ";") 
+# import variable names and assign to object
+russian_all_recoded <- russian_all
+# assign new variable name object to the dataset
+colnames(russian_all_recoded) <- russian_variablenames$V2 
+```
+
+## Combine Persian and Russian
+
+* Same variable names?
+
+```{r}
+compare_df_cols(persian_all_recoded, russian_all_recoded) %>%
+  mutate(Same = persian_all_recoded == russian_all_recoded) %>%
+  filter(Same != "TRUE" | is.na(Same)) %>%
+  autotable() %>%
+  set_caption("Comparison of variables in Persian and Russian data  - only non matching ones")
+```
+
+Gender choice is not represented in Persian data set, since they only had the neutral version. Therefore ready to merge.
+
+```{r}
+gorilla_all <- russian_all_recoded %>%
+  bind_rows(persian_all_recoded)
+```
+
+Removing "Progress" variable as we don't need it
+
+```{r}
+gorilla_all <- gorilla_all %>%
+  select(-Progress)
+```
+
+# Africa Long Study
+
+## Import
+
+```{r}
+# loading data. Marking empty fields as NAs
+africa_full <- read.csv("raw_data/Africa Long Life/ALLS_W6_anon.csv", na.strings = c(" ", ""))  
+```
+
+## Clean up
+
+### Select relevant variables
+
+* DHF self report: DFH1_W6:DFH30_W6 (30 items)
+* attitudes towards violence: ATTVIO1_W6:ATTVIO12_W6 (12 items)
+* DHF: DFHNORMS1_W6:DFHNORMS30_W6 (30 items)
+* Self-face and other-face concern: SELFFACE1_W6:SELFFACE13_W6 (13 items)
+* Maybe demographics (check each whether they happen to match up in wording etc., check if necessary)
+
+* Comparing demographics:
+
+```{r}
+tibble("In Qualtrics" = c("Age (Years)", "gender (gender identity)", "country_res(Country of residence)", "Migration", "Parent1 origin", "Parent2 origin", "Location Childhood", "Location current", "ethnicity (Ethnicity)", "religion (Religion)", "education (Education)", "Student", "Income"),
+       "Africa Dataset" = c("AGE_W1_CORE (years)", "GENDER_CORE (0 = female, 1 = male, 2 = other)", "COUNTRY_W6 (Country)", "N/A", "N/A", "N/A", "N/A", "N/A (except country)", "ETHNICITY_SA_CORE (open, South Africa only: has to be requested)", "RELIGION_W2_Core (religions)", "EDUCATION_W6 (1 = No further education qualification completed 
+2 = Grade 12/secondary school 
+3 = Vocational training and qualification 
+4 = Certificate or Diploma level qualification 
+5 = Degree level qualification 
+6 = Other, please specify)", "N/A", "N/A"),
+"Compatible?" = c("yes", "yes", "yes", "no", "no", "no", "no", "no", "no (unless you request it)", "yes", "no (Africa variable only pertains to further education in last 6 months! No general education available)", "no", "no")) %>%
+  autotable() 
+```
+
+* -> select and rename compatible africa variables, then recode to match answers where needed
+
+```{r}
+africa_relevant <- africa_full %>%
+  select(starts_with("DFH"),
+         starts_with("ATTVIO"),
+         starts_with("SELFFACE"),
+         Age = AGE_W1_CORE, 
+         gender = GENDER_CORE,
+         country_res = COUNTRY_W6,
+         religion = RELIGION_W2_CORE)
+```
+
+### Match names to Qualtrics dataset
+
+* DHF self report: DFH1_W6:DFH30_W6 (30 items): dhf_endors_1:dhf_endors_30
+* attitudes towards violence: ATTVIO1_W6:ATTVIO12_W6 (12 items): violence_1:violence_12
+* DHF: DFHNORMS1_W6:DFHNORMS30_W6 (30 items): dhf_norm_1:dhf_norm_30
+* Self-face and other-face concern: SELFFACE1_W6:SELFFACE13_W6 (13 items): 
+  + SELFFACE1_W6: conflict_role
+  + SELFFACE2_W6: conflict_gender
+  + SELFFACE3_W6:SELFFACE13_W6: conflict_face_1:conflict_face_11
+
+```{r}
+africa_recoded <- africa_relevant %>%
+  rename(conflict_role = SELFFACE1_W6,
+         conflict_gender = SELFFACE2_W6,
+         conflict_face_1 = SELFFACE3_W6,
+         conflict_face_2 = SELFFACE4_W6,
+         conflict_face_3 = SELFFACE5_W6,
+         conflict_face_4 = SELFFACE6_W6,
+         conflict_face_5 = SELFFACE7_W6,
+         conflict_face_6 = SELFFACE8_W6,
+         conflict_face_7 = SELFFACE9_W6,
+         conflict_face_8 = SELFFACE10_W6,
+         conflict_face_9 = SELFFACE11_W6,
+         conflict_face_10 = SELFFACE12_W6,
+         conflict_face_11 = SELFFACE13_W6) %>%
+  rename_with(~str_replace(.x, "_W6", "")) %>%
+  rename_with(~str_replace(.x, "DFHNORMS", "dhf_norm_")) %>%
+  rename_with(~str_replace(.x, "DFH", "dhf_endors_")) %>%
+  rename_with(~str_replace(.x, "ATTVIO", "violence_"))
+```
+
+### Adding source identifyer and Country variable
+
+```{r}
+africa_recoded <- africa_recoded %>%
+  mutate(datasource = "ALLS",
+         Country = case_match(country_res, 
+                              "Namibia" ~ "NM",
+                              "South Africa" ~ "ZA",
+                              "Kenya" ~ "KE",
+                              .default = country_res),
+         country_res = case_when(country_res == "Kenya" ~ "89", #make numeric to match qualtrics
+                            country_res == "Namibia" ~ "124",
+                            country_res == "South Africa" ~ "164",
+                            TRUE ~ country_res))
+```
+
+# Combine Qualtrics, Gorilla and Africa Long Study
+
+## Qualtrics and Africa
+
+1. Same variable names?
+
+```{r}
+africa_recoded <- africa_recoded %>%
+  mutate(across(everything(),
+                ~as.character(.x))) #make all variables into character to avoid issues with column specifications
+
+compare_df_cols(qualtrics_total, africa_recoded) %>%
+  mutate(Same = qualtrics_total == africa_recoded) %>%
+  filter(Same != "TRUE" | is.na(Same)) %>%
+  DT::datatable(caption = "Comparison of variables in Qualtrics and Africa data  - only non matching ones")
+```
+
+* -> There are no columns in the Africa dataset that are not in the qualtrics dataset. Therefore ready to merge.
+
+```{r}
+qualtrics_africa <- qualtrics_total %>%
+  bind_rows(africa_recoded)
+```
+
+### Recoding sociodemographics in Africa Long Study dataset to match Qualtrics:
+
+* Age
+
+```{r}
+qualtrics_africa <- qualtrics_africa %>%
+  mutate(Age = na_if(Age, "NA"))
+```
+
+* gender
+
+```{r}
+qualtrics_africa <- qualtrics_africa %>%
+  mutate(gender = na_if(gender, "NA"),
+         gender = case_when(datasource == "ALLS" & gender == "0" ~ "1", 
+                            datasource == "ALLS" & gender == "1" ~ "2",
+                            datasource == "ALLS" & gender == "2" ~ "4",
+                            TRUE ~ gender))
+```
+
+* religion
+
+(Africa Long Study responses of Christianity, Hinduism, Islam, Judaism and no affiliation (= atheistic/agnostic) were coded using Qualtrics codes. Anything else, or multiple religions, were categorised as "other" and the response was transferred to the religion_7_text open response variable. As the end result, the coding matches that in the Qualtrics code book)
+
+```{r}
+qualtrics_africa <- qualtrics_africa %>%
+  mutate(religion = na_if(religion, "NA"),
+         religion_qualtrics_codes = case_when(datasource == "ALLS" & religion == "christian" ~ "2", #coding those that were single religions
+                                              datasource == "ALLS" & religion == "christianity" ~ "2",
+                                              datasource == "ALLS" & religion == "hinduism" ~ "5",
+                                              datasource == "ALLS" & religion == "islam" ~ "3",
+                                              datasource == "ALLS" & religion == "judaism" ~ "4",
+                                              datasource == "ALLS" & religion == "no affiliation" ~ "1",
+                                              datasource == "ALLS" & is.na(religion) ~ NA,
+                                              datasource == "Qualtrics" ~ religion, #all qualtrics responses stay as is
+                                              TRUE ~ "7"), #the remaining africa responses are coded as other
+         religion_7_TEXT = case_when(datasource == "ALLS" & religion_qualtrics_codes == "7" ~ religion, #when response was "other", the exact response was copied to the open response variable
+                                     datasource == "ALLS" & religion_qualtrics_codes != "7" ~ "-99", #when not other,-99 was assigned
+         TRUE ~ religion_7_TEXT)) %>% #the remaining (qualtrics) responses stay as is
+  select(-religion) %>% #removing orginal religion variable so that...
+  rename(religion = religion_qualtrics_codes) # ...the recoded religion variable can be saved under the original name
+```
+
+## Combine Qualtrics/Africa data with Gorilla
+
+1. Same variable names?
+
+```{r}
+gorilla_all <- gorilla_all %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+
+qualtrics_africa <- qualtrics_africa  %>%
+  mutate(across(everything(),
+                ~as.character(.x)))
+
+compare_df_cols(qualtrics_africa, gorilla_all) %>%
+  mutate(Same = qualtrics_africa == gorilla_all) %>%
+  filter(Same != "TRUE" | is.na(Same)) %>%
+  autotable() %>%
+  set_caption("Comparison of variables in Gorilla and QUaltrics/Africa data  - only non matching ones")
+```
+
+* Contains only those variables that are not present in Gorilla data.
+
+### Merging all:
+
+```{r}
+dhf_all <- qualtrics_africa %>%
+  bind_rows(gorilla_all)
+```
+
+# Data checking and cleaning
+
+## Remove all consent questions and responses
+
+(as requested)
+
+```{r}
+dhf_all <- dhf_all %>%
+  select(-(contains("consent")))
+
+nrow(dhf_all)
+```
+
+## Qualtrics language codes
+
+**Priya said: Once all Qualtrics data is in, get list of all the Q_language codes for me and I’ll tell you which ones need to be deleted**
+
+* here they are:
+
+```{r}
+dhf_all %>%
+  filter(datasource == "Qualtrics") %>%
+  count(Q_Language) %>%
+  DT::datatable()
+```
+
+* Deleting all rows which do **not** a number in the language code (no number means participants saw one of the “base” versions without customised information for their lab. Can’t be sure they consented properly or saw the correct information).
+
+```{r}
+table(dhf_all$Q_Language, useNA = "ifany")
+
+dhf_all <- dhf_all %>%
+  filter((datasource == "Qualtrics" & str_detect(Q_Language, ".*[0-9].*")) | datasource == "Gorilla" | datasource == "ALLS") 
+# retaining only those which have a number in the string
+
+nrow(dhf_all)
+```
+
+## Add lab metadata to ALLS and Gorilla
+
+```{r}
+lab_metadata <- read_csv("codebooks/lab_metadata.csv", show_col_types = FALSE) %>%
+  filter(datasource == "ALLS" | datasource == "Gorilla") %>%
+  select(LabID, Country, Q_Language, Sample) %>%
+  mutate(LabID = as.character(LabID),
+         # as this is Namibia, not an NA (import mistake) -> 
+         # have decided to recode this NM to avoid mistakes
+         Country = replace_na(Country, "NM")) 
+
+dhf_all <- dhf_all %>%
+  mutate(LabID = case_when(LabID == "behzadnia" ~ "488",
+                          LabID == "heydari" ~ "2989",
+                            LabID == "mehdinejad" ~ "3647",
+                            LabID == "tondro" ~ "3235",
+                            LabID == "vazirian" ~ "3208",
+                            LabID == "zakeri" ~ "3321",
+                            LabID == "efremova" ~ "476",
+                            LabID == "efremova2" ~ "476",
+                            LabID == "olga" ~ "3293",
+                            datasource == "ALLS" ~ "1533",
+                            .default = LabID)) %>%
+  rows_patch(lab_metadata, by = c("LabID", "Country"), unmatched = "ignore") 
+```
+
+* Q_Language and Sample added. Note that Gorilla does not have sample specified.
+
+Link to metadata sheet: https://docs.google.com/spreadsheets/d/1cpskXpk-32EkzF4adTVVhVPqF24fXD7rkNcj05ACOZs/edit?gid=0#gid=0
+
+## add country metadata 
+
+* Link to table which spells out country names
+
+```{r message = FALSE}
+country_names <- read_csv2("codebooks/Qualtrics/qualtrics_URL_country.csv", show_col_types = FALSE) %>%
+    mutate(Code = replace_na(Code, "NM")) %>%
+  rename(Country = Code,
+         Country_full = Country)
+
+dhf_all <- dhf_all %>%
+  left_join(country_names)
+
+nrow(dhf_all)
+```
+
+## Clean Country Names
+
+* country_res is the indicator where they live from the data
+* country_res_full is our variable taking it from factor coded to full names
+* Country is the URL variable in the experiment links
+* Country_full was the spelled out version of Country
+
+* prefer country indicated by participant followed by country followed by lab location
+
+```{r demographic-clean-country}
+country_codes <- read_csv("codebooks/Qualtrics/qualtrics_country_numbers.csv")
+
+# remove imported blank lines
+country_codes <- country_codes %>%
+filter(!is.na(code), !is.na(country))
+
+dhf_all <- dhf_all %>% 
+  # i prefer not to respond
+  mutate(country_res = gsub(-999, NA, country_res),
+         # saw but didn't answer
+         country_res = gsub(-99, NA, country_res),
+         # other not listed 
+         country_res = gsub(199, NA, country_res)) %>% 
+  mutate(country_res_full = factor(
+    country_res,
+    levels = c(country_codes$code),
+    labels = c(country_codes$country)
+  )) %>% 
+  # fill in lab ids when they didn't use the link right 
+  mutate(
+    LabID = if_else(
+      LabID == "" | is.na(LabID),
+      str_extract(Q_Language, "(\\d+)(?!.*\\d)"),  # last number in string
+      LabID
+    )
+  ) %>% 
+  # create lab IDs for ones with double ids 
+  mutate(LabID = gsub("3587,3587", "3587", LabID),
+         LabID = gsub("3746,3746", "3746", LabID)) %>% 
+  # if the country_res_full is NA, use country_full, otherwise 
+  # use country_res_full from the participant 
+  mutate(
+    country_res_full = ifelse(
+      is.na(country_res_full),
+      as.character(Country_full),
+      as.character(country_res_full)
+    )
+  ) %>% 
+  # fix the country variable when they are incorrect codees
+  mutate(Country = gsub("ET\\$LabID=3300", "ET", Country), 
+         Country = gsub("UA,UA", "UA", Country), 
+         Country = gsub("CM,CM", "CM", Country),
+         Country = gsub("TRUZ", "UZ", Country),
+         Country = gsub("GB", "UK", Country),
+         Country = gsub("SR", "RS", Country),
+         Country = gsub("SR", "RS", Country),
+         Country = gsub("GA", "GE", Country)
+         ) %>% 
+  # clean up overall country if it's missing, use Q_language codes
+  mutate(
+    Country = if_else(
+      is.na(Country) | Country == "",
+      str_extract(Q_Language, "(?<=^[A-Z]{2}-?)[A-Z]{2}"),
+      Country
+    )
+  ) %>% 
+  # fix the issues when they are cases with country and lab id 
+  mutate(
+    Country = case_when(
+      Q_Language == "RO-3304"   ~ "RO",
+      Q_Language == "SR-2088-C" ~ "SR",
+      Q_Language == "HE-2412"   ~ "IL",
+      Q_Language == "SR-2088" ~ "SR", 
+      Q_Language == "SQI-4150" ~ "SQI",
+      Q_Language == "KAT-GE4378" ~ "GA",
+      TRUE ~ Country            # keep existing Country
+    ),
+    country_res_full = case_when(
+      is.na(country_res_full) & Q_Language == "RO-3304"   ~ "Romania",
+      is.na(country_res_full) & Q_Language == "SR-2088-C" ~ "Serbia",
+      is.na(country_res_full) & Q_Language == "HE-2412"   ~ "Israel",
+      is.na(country_res_full) & Q_Language == "SR-2088" ~ "Serbia", 
+      is.na(country_res_full) & Q_Language == "SQI-4150" ~ "Albania",
+      is.na(country_res_full) & Q_Language == "KAT-GE4378" ~ "Georgia",
+      is.na(country_res_full) & Q_Language == "EN-KU-2480" ~ "Kuwait",
+      TRUE ~ country_res_full            # keep existing Country
+    )
+  ) %>% 
+  # fill in the full name using countrycode
+  mutate(
+    country_res_full = if_else(
+      is.na(country_res_full) | country_res_full == "",
+      countrycode(Country, origin = "iso2c", destination = "country.name"),
+      country_res_full
+    )
+  ) %>% 
+  # normalize the names 
+  mutate(
+    country_res_full = recode(
+      country_res_full,
+      "Hong Kong (S.A.R.)" = "Hong Kong",
+      "Bosnia & Herzegovina" = "Bosnia-Herzegovina",
+      "Macao SAR China" = "Macau (S.A.R.)"
+    )
+  )
+```
+
+* You will get a warning: 
+  + ! Some values were not matched unambiguously: KU, NM, SQI, UK
+  + NM remember is nambia due to issues earlier 
+
+```{r}
+# make sure nothing went wrong 
+nrow(dhf_all)
+```
+
+* Examine the output 
+
+```{r}
+# examine for missing data 
+table(dhf_all$country_res_full, useNA = "ifany")
+
+dhf_all %>% 
+  group_by(country_res, country_res_full, Country, Country_full) %>% 
+  count()
+
+dhf_all <- dhf_all %>%
+  left_join(country_names, by = "Country", suffix = c("", "_lookup")) %>%
+  mutate(
+    Country_full = if_else(
+      is.na(Country_full),        # only replace if current value is NA
+      Country_full_lookup,        # take the one from lookup_df
+      Country_full                # otherwise keep the existing one
+    )
+  ) %>%
+  select(-Country_full_lookup)     # remove the temporary column
+
+View(dhf_all %>%
+  filter(is.na(Country_full)) %>%
+  select(Country, Country_full))
+```
+
+ABOVE HERE IS WHERE I'M GETTING THE ISSUE: I can't work out why there are still 7 cases where there's no Country_full because I thought I fixed it. Also, note, haven't run from here onwards because I'm waiting for the new country-level dataset.
+
+## add country metadata 
+
+2. Add country metadata from https://docs.google.com/spreadsheets/d/1n4ycQ-YxNXH7OctVWsTE96jFsHjWqiRU/edit?gid=950312991#gid=950312991
+
+```{r message = FALSE}
+country_metadata <- read_csv("codebooks/countries_data.csv", show_col_types = FALSE) %>%
+  rename(Country_full = dhf_country_name) %>%
+  select(-country_name,
+         -iso3c) 
+
+dhf_all <- dhf_all %>%
+  left_join(country_metadata)
+```
+
+## Recoding comprehension questions
+
+* Since the Gorilla comprehension questions are stored as text in Farsi/Russian, they (and the qualtrics equivalents) are converted into a binary correct/incorrect code for analysis.
+
+* In theory, the repeat comprehension question should be a NA if the first attempt was answered correctly. Showing the number of responses for the first dictator comprehension question for those who had a NA in the repeat comprehension question:
+
+```{r}
+dhf_all %>%
+  select(Dictator.comp1.1, Dictator.comp2.1) %>%
+  filter(is.na(Dictator.comp2.1)) %>%
+  count(Dictator.comp1.1) %>%
+  autotable()
+```
+
+* It seems that some participants just have NA in the repeat comprehension even if the first attempt was wrong (1, 3) - since this question couldn't be skipped, these will be the people that dropped out after this question: 
+
+* Confirming whether they have data after this question: 
+
+```{r}
+dhf_all %>%
+  select(Dictator.comp1.1, Dictator.comp2.1, Dictator_decision, Ultimatum.Receiver_1) %>%
+  filter((Dictator.comp1.1 == "1" & is.na(Dictator.comp2.1)) | (Dictator.comp1.1 == "3" & is.na(Dictator.comp2.1))) %>%
+  DT::datatable()
+```
+
+* This is true.
+
+* The responses that were most frequent (2, the russian, and the more frequent persian one) are the show the correct responses for the first dictator comprehension question. Those are stored in vectors to be called on for recoding, and then used to recode: 
+
+```{r}
+# Dictator comp 1 (first attempt 1.1, second attempt 2.1)
+correct_responses_dictatorcomp1 <- dhf_all %>%
+  select(Dictator.comp1.1, Dictator.comp2.1) %>%
+  filter(is.na(Dictator.comp2.1)) %>%
+  count(Dictator.comp1.1) %>%
+  filter(n >= 338) %>%
+  drop_na() %>%
+  select(-n)
+
+correct_responses_dictatorcomp1_qualtrics <- correct_responses_dictatorcomp1[1,1]
+correct_responses_dictatorcomp1_russian <- correct_responses_dictatorcomp1[2,1]
+correct_responses_dictatorcomp1_persian <- correct_responses_dictatorcomp1[3,1]
+
+# Dictator comp 2 (first attempt 1.2, second attempt 2.2)
+correct_responses_dictatorcomp2 <- dhf_all %>%
+  select(Dictator.comp1.2, Dictator.comp2.2) %>%
+  filter(is.na(Dictator.comp2.2)) %>%
+  count(Dictator.comp1.2) %>%
+  filter(n >= 337) %>%
+  drop_na() %>%
+  select(-n)
+  
+correct_responses_dictatorcomp2_qualtrics <- correct_responses_dictatorcomp2[1,1]
+correct_responses_dictatorcomp2_russian <- correct_responses_dictatorcomp2[2,1]
+correct_responses_dictatorcomp2_persian <- correct_responses_dictatorcomp2[3,1]
+#for some reason, for Dictator.comp2.2, the correct farsi answer isn't matched. It must be slightly different from Dictator.comp1.2, although I can't tell how. In any case, storing this answer separately, so that it can be used in the recoding:
+correct_responses_dictatorcomp2_persian_repeat <- (dhf_all %>%
+  filter(Country == "IR") %>%
+  count(Dictator.comp2.2))[1,1]
+
+# recoding
+dhf_all <- dhf_all %>%
+  mutate(across(c(Dictator.comp1.1, Dictator.comp2.1), ~case_match(.x, 
+                                            c(correct_responses_dictatorcomp1_persian, correct_responses_dictatorcomp1_qualtrics, correct_responses_dictatorcomp1_russian) ~ "Correct",
+                                            NA ~ NA,
+                                            .default = "False"),
+                .names = "{.col}_dich")) %>% #question 1
+  mutate(across(c(Dictator.comp1.2, Dictator.comp2.2), ~case_match(.x, 
+                                            c(correct_responses_dictatorcomp2_persian, correct_responses_dictatorcomp2_persian_repeat, correct_responses_dictatorcomp2_qualtrics, correct_responses_dictatorcomp2_russian) ~ "Correct",
+                                            NA ~ NA,
+                                            .default = "False"),
+                                            .names = "{.col}_dich")) #question 2
+```
+
+* The correct/incorrect coded variables are stored with the variable ending _dich. 
+
+* Same for ultimatum game comprehension: 
+
+```{r}
+# Ultimatum comp 1 (first attempt 1.1, second attempt 2.1)
+correct_responses_ultimatumcomp1 <- dhf_all %>%
+  select(Ultimatum.comp.1.1, Ultimatum.comp.2.1) %>%
+  filter(is.na(Ultimatum.comp.2.1)) %>%
+  count(Ultimatum.comp.1.1) %>%
+  filter(n >= 277) %>%
+  drop_na() %>%
+  select(-n)
+
+correct_responses_ultimatumcomp1_qualtrics <- correct_responses_ultimatumcomp1[1,1]
+correct_responses_ultimatumcomp1_russian <- correct_responses_ultimatumcomp1[2,1]
+correct_responses_ultimatumcomp1_persian <- correct_responses_ultimatumcomp1[3,1]
+
+# ultimatum comp 2 (first attempt 1.2, second attempt 2.2)
+correct_responses_ultimatumcomp2 <- dhf_all %>%
+  select(Ultimatum.comp.1.2, Ultimatum.comp.2.2) %>%
+  filter(is.na(Ultimatum.comp.2.2)) %>%
+  count(Ultimatum.comp.1.2) %>%
+  filter(n >= 363) %>%
+  drop_na() %>%
+  select(-n) 
+  
+correct_responses_ultimatumcomp2_qualtrics <- correct_responses_ultimatumcomp2[1,1]
+correct_responses_ultimatumcomp2_russian <- correct_responses_ultimatumcomp2[2,1]
+correct_responses_ultimatumcomp2_persian <- correct_responses_ultimatumcomp2[3,1]
+
+# recoding
+dhf_all <- dhf_all %>%
+  mutate(across(c(Ultimatum.comp.1.1, Ultimatum.comp.2.1), ~case_match(.x, 
+                                            c(correct_responses_ultimatumcomp1_persian, correct_responses_ultimatumcomp1_qualtrics, correct_responses_ultimatumcomp1_russian) ~ "Correct",
+                                            NA ~ NA,
+                                            .default = "False"),
+                .names = "{.col}_dich")) %>% #question 1
+  mutate(across(c(Ultimatum.comp.1.2, Ultimatum.comp.2.2), ~case_match(.x, 
+                                            c(correct_responses_ultimatumcomp2_persian, correct_responses_ultimatumcomp2_qualtrics, correct_responses_ultimatumcomp2_russian) ~ "Correct",
+                                            NA ~ NA,
+                                            .default = "False"),
+                                            .names = "{.col}_dich")) #question 2
+```
+
+* The correct/incorrect coded variables are stored with the variable ending _dich. 
+
+## Variable cleanup
+
+* Deleting unneeded columns from dataset
+
+```{r}
+dhf_all <- dhf_all %>%
+  select(-UNSW.Skip, -id, -ppid, -rstatus, -ui, -UserID, -Panelist_ID, -PROLIFIC_PID, -aid, -response_id, -assignment_id, -besample_id, -completion_code, -Test)
+```
+
+* And ordering so that religion variable is with other demographic questions, and the dichotomous dictator/ultimatum questions are after the respective comprehension questions:
+
+```{r}
+dhf_all <- dhf_all %>%
+  relocate(religion, .before = religion_7_TEXT) %>%
+  relocate(Dictator.comp1.1_dich:Dictator.comp2.2_dich, .after = Dictator.comp2.2) %>%
+  relocate(Ultimatum.comp.1.1_dich:Ultimatum.comp.2.2_dich, .after = Ultimatum.comp.2.2)
+```
+
+## Checking how missing data are coded
+
+### Qualtrics
+
+Note how missings are coded during export:
+
+* Qualtrics export settings: 
+  + -99 = seen but not answered sections
+  + 0: seen but not chosen multi-value fields
+* during data prep: 
+  + blank fields were recoded as NA (I don't know what this means within qualtrics, I just recoded all fields that were empty ("") or had an extra space (" ") as NA)
+  
+### Gorilla
+
+* Did not change any export settings in Gorilla. Here both empty fields and NAs exist, see for example the counts for the free text gender:
+
+```{r}
+dhf_all %>%
+  filter(datasource == "Gorilla") %>%
+  count(gender_4_TEXT) %>%
+  autotable()
+```
+
+* This would suggest that NA is when the question was not seen/applicable, and blank if it was seen but not answered.
+
+### ALLS
+
+* Equally did not change any coding for ALLS. Seems that there are blank fields also for when a question was seen but not answered, e.g., gender: 
+
+```{r}
+dhf_all %>%
+  filter(datasource == "ALLS") %>%
+  count(gender) %>%
+  autotable()
+```
+
+* => will need to make this match, but I am leaving this to the analysis team as it will be easier to make these decision when looking at the data in more detail. 
+
+## Checking all columns for correct codings between different datasources
+
+* dhf endorse
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(across(starts_with("dhf_endors"),
+               ~ na_if(.x, "NA")))
+
+dhf_all %>%
+  count(dhf_endors_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* dhf norm
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(across(starts_with("dhf_norm"),
+               ~ na_if(.x, "NA")))
+
+dhf_all %>%
+  count(dhf_norm_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* dictator decision
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(Dictator_decision = as.numeric(Dictator_decision),
+         Dictator_decision = case_when(datasource == "Gorilla" ~ (Dictator_decision-1),
+                                       TRUE ~ Dictator_decision))
+
+dhf_all %>%
+  count(Dictator_decision, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* ultimatum receiver
+
+```{r}
+dhf_all %>%
+  count(Ultimatum.Receiver_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* ultimatum proposer
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(across(starts_with("Ultimatum.Proposer"),
+                ~as.numeric(.x))) %>%
+  mutate(across(starts_with("Ultimatum.Proposer"),
+                ~case_when(datasource == "Gorilla" ~ (.x-1),
+                                       TRUE ~ .x)))
+
+dhf_all %>%
+  count(Ultimatum.Proposer_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* ultimatum expect
+
+```{r}
+dhf_all %>%
+  count(Ultimatum.expect_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* reciprocity
+
+```{r}
+
+dhf_all %>%
+  count(Reciprocity_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+
+```
+
+* violence
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(across(starts_with("violence"),
+               ~ na_if(.x, "NA")))
+
+dhf_all %>%
+  count(violence_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* conflict role
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(conflict_role = na_if(conflict_role, "NA"))
+
+dhf_all %>%
+  count(conflict_role, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* conflict gender
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(conflict_gender = na_if(conflict_gender, "NA"),
+         conflict_gender = case_when(datasource == "ALLS" & conflict_gender == "0" ~ "1",
+                                     datasource == "ALLS" & conflict_gender == "1" ~ "2",
+                                       TRUE ~ conflict_gender))
+
+dhf_all %>%
+  count(conflict_gender, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+**Note: the gender coding for ALLS was not specified in their codebook. It's been recoded now assuming the order they shown in the codebook is the order of the codes (i.e., 0 for male, 1 for female)**
+
+* conflict_face
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(across(starts_with("conflict_face"),
+               ~ na_if(.x, "NA")))
+
+dhf_all %>%
+  count(conflict_face_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+**Note: ALLS data is from 1 to 7, instead of the normal 1 to 5.**
+
+* insult
+
+```{r}
+dhf_all %>%
+  count(insult1_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* valuesgender
+
+```{r}
+dhf_all %>%
+  count(valuesgender, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* values neutral
+
+```{r}
+dhf_all %>%
+  count(values_n_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* values male/female
+
+```{r}
+dhf_all %>%
+  count(values_m_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* mfq
+
+```{r}
+dhf_all %>%
+  count(MFQ_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* relig_attendance
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(relig_attendance = as.numeric(relig_attendance)) %>%
+  mutate(relig_attendance = case_when(datasource == "Gorilla" ~ (relig_attendance-1),
+                                       TRUE ~ relig_attendance))
+
+dhf_all %>%
+  count(relig_attendance, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* religion private
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(relig_private = as.numeric(relig_private)) %>%
+  mutate(relig_private = case_when(datasource == "Gorilla" ~ (relig_private-1),
+                                       TRUE ~ relig_private))
+
+dhf_all %>%
+  count(relig_private, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* religion intrinsic
+
+```{r}
+dhf_all %>%
+  count(relig_intrinsic_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* swbls
+
+```{r}
+dhf_all %>%
+  count(swbls_1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* age
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(Age = as.numeric(Age),
+         Age = case_when(datasource == "ALLS" & Age == 17 ~ -99,
+                         datasource == "Gorilla" & Age == 1 ~ -99,
+                         datasource == "Gorilla" & Age == 84 ~ -999,
+                         datasource == "Gorilla" & (Age != -99 | Age != -999) ~ Age+16,
+                                       TRUE ~ Age))
+
+dhf_all %>%
+  count(Age, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n) %>%
+  mutate(Age = as.numeric(Age)) %>%
+  arrange(Age)
+```
+
+* gender
+
+```{r}
+dhf_all %>%
+  count(gender, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* country res
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(country_res = as.numeric(country_res),
+         country_res = case_when(datasource == "Gorilla" & country_res < 137 ~ country_res, 
+                         datasource == "Gorilla" & (country_res > 137 & country_res < 201) ~ country_res-1,
+                         datasource == "Gorilla" & country_res == 201 ~ -999,
+                         datasource == "Gorilla" & country_res == 137 ~ 200,
+                                       TRUE ~ country_res))
+
+dhf_all %>%
+  filter(datasource != "Qualtrics") %>%
+  count(country_res, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n) %>%
+  mutate(country_res = as.numeric(country_res)) %>%
+  arrange(country_res)
+```
+
+* parent
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(across(c(parent1, parent2), ~as.numeric(.x))) %>%
+  mutate(across(c(parent1, parent2),
+                ~case_when(datasource == "Gorilla" & .x < 137 ~ .x, 
+                         datasource == "Gorilla" & (.x > 137 & .x < 201) ~ .x-1,
+                         datasource == "Gorilla" & .x == 201 ~ -999,
+                         datasource == "Gorilla" & .x == 137 ~ 200,
+                                       TRUE ~ .x))) %>%
+  mutate(across(c(parent1, parent2),
+                ~na_if(.x, 0)))
+
+dhf_all %>%
+  count(parent1, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n) %>%
+  mutate(parent1 = as.numeric(parent1)) %>%
+  arrange(parent1)
+```
+
+* location childhood and current
+
+```{r}
+dhf_all <- dhf_all %>%
+  mutate(across(c(location_childhood, location_current),
+                ~case_when(datasource == "Qualtrics" & .x == "4" ~ "2",
+                           datasource == "Qualtrics" & .x == "5" ~ "3",
+                                       TRUE ~ .x))) 
+
+dhf_all %>%
+  count(location_childhood, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n) 
+```
+
+* ethnicity
+
+```{r}
+dhf_all %>%
+  count(ethnicity, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n) 
+```
+
+* religion
+
+```{r}
+dhf_all %>%
+  count(religion_7_TEXT, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* education
+
+```{r}
+dhf_all %>%
+  count(education, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n)
+```
+
+* student
+
+```{r}
+dhf_all %>%
+  count(student, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n) 
+```
+
+* income
+
+```{r}
+dhf_all %>%
+  count(income, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n) 
+```
+
+# Exporting final dataset
+
+```{r}
+write.csv(dhf_all, "processed_data/dhf_data_final.csv")
+```

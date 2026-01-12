@@ -1,0 +1,565 @@
+"Country","Scale","N","Valid_Items","Total_Items","Alpha"
+"Argentina","Tradition",134,2,2,0.263
+"Argentina","Security",134,2,2,0.263
+"Argentina","Self_Direction",134,2,2,0.39
+"Argentina","Conformity",134,2,2,0.474
+"Argentina","Power",134,2,2,0.539
+"Argentina","Hedonism",134,2,2,0.546
+"Argentina","Universalism",134,3,3,0.555
+"Argentina","Conservation",134,6,6,0.56
+"Armenia","Tradition",332,2,2,0.372
+"Armenia","Self_Direction",332,2,2,0.389
+"Armenia","Universalism",331,3,3,0.411
+"Armenia","War_Acceptance",336,3,3,0.424
+"Armenia","Conformity",332,2,2,0.425
+"Armenia","Security",331,2,2,0.505
+"Armenia","Power",331,2,2,0.519
+"Armenia","Withdrawal",328,3,3,0.541
+"Armenia","Intimate_Violence",336,3,3,0.567
+"Armenia","Retaliation",328,3,3,0.567
+"Armenia","Conservation",331,6,6,0.578
+"Armenia","Humor",328,3,3,0.589
+"Australia","Tradition",900,2,2,0.33
+"Australia","Security",900,2,2,0.481
+"Australia","Self_Direction",900,2,2,0.487
+"Australia","Power",900,2,2,0.518
+"Australia","Universalism",899,3,3,0.586
+"Austria","Tradition",230,2,2,0.343
+"Austria","Self_Direction",230,2,2,0.426
+"Austria","Power",230,2,2,0.46
+"Austria","Withdrawal",232,3,3,0.538
+"Austria","Security",230,2,2,0.564
+"Austria","Conformity",230,2,2,0.593
+"Bangladesh","Stimulation",287,2,2,0.403
+"Bangladesh","Power",287,2,2,0.412
+"Bangladesh","Tradition",287,2,2,0.452
+"Bangladesh","Conformity",287,2,2,0.453
+"Bangladesh","Self_Direction",287,2,2,0.469
+"Bangladesh","Achievement",287,2,2,0.484
+"Bangladesh","Intimate_Violence",290,3,3,0.487
+"Bangladesh","Penal_Code_Violence",290,3,3,0.533
+"Bangladesh","Universalism",286,3,3,0.577
+"Bangladesh","Positive_Reciprocity",290,3,3,0.583
+"Bangladesh","Security",287,2,2,0.596
+"Bosnia-Herzegovina","Intimate_Violence",399,3,3,0.242
+"Bosnia-Herzegovina","Self_Direction",383,2,2,0.339
+"Bosnia-Herzegovina","Tradition",383,2,2,0.416
+"Bosnia-Herzegovina","Security",382,2,2,0.427
+"Bosnia-Herzegovina","War_Acceptance",399,3,3,0.503
+"Bosnia-Herzegovina","Withdrawal",389,3,3,0.533
+"Bosnia-Herzegovina","Power",382,2,2,0.538
+"Bosnia-Herzegovina","Conformity",382,2,2,0.576
+"Bosnia-Herzegovina","Achievement",383,2,2,0.588
+"Bosnia-Herzegovina","Universalism",382,3,3,0.599
+"Brazil","Intimate_Violence",304,3,3,0.272
+"Brazil","Self_Direction",299,2,2,0.368
+"Brazil","Hedonism",300,2,2,0.381
+"Brazil","Security",300,2,2,0.39
+"Brazil","Tradition",300,2,2,0.417
+"Brazil","Withdrawal",301,3,3,0.487
+"Brazil","Benevolence",300,2,2,0.49
+"Brazil","Power",300,2,2,0.51
+"Brazil","Conformity",300,2,2,0.549
+"Brazil","War_Acceptance",304,3,3,0.554
+"Brazil","Universalism",300,3,3,0.554
+"Bulgaria","Tradition",282,2,2,0.223
+"Bulgaria","Intimate_Violence",287,3,3,0.279
+"Bulgaria","Self_Direction",282,2,2,0.427
+"Bulgaria","Power",282,2,2,0.442
+"Bulgaria","Universalism",282,3,3,0.463
+"Bulgaria","Security",282,2,2,0.465
+"Bulgaria","War_Acceptance",286,3,3,0.477
+"Bulgaria","Conformity",282,2,2,0.532
+"Bulgaria","Benevolence",279,2,2,0.538
+"Bulgaria","Withdrawal",285,3,3,0.59
+"Bulgaria","Retaliation",285,3,3,0.599
+"Canada","Tradition",697,2,2,0.301
+"Canada","Power",697,2,2,0.407
+"Canada","Self_Direction",697,2,2,0.446
+"Canada","Security",697,2,2,0.484
+"Canada","Universalism",697,3,3,0.503
+"Canada","Intimate_Violence",700,3,3,0.551
+"Canada","Benevolence",697,2,2,0.591
+"Chile","Tradition",348,2,2,0.252
+"Chile","Hedonism",348,2,2,0.457
+"Chile","Self_Direction",348,2,2,0.464
+"Chile","Security",348,2,2,0.493
+"Chile","Universalism",348,3,3,0.527
+"Chile","Withdrawal",355,3,3,0.536
+"Chile","Power",348,2,2,0.545
+"Chile","Benevolence",348,2,2,0.57
+"Chile","Intimate_Violence",363,3,3,0.58
+"Chile","Stimulation",348,2,2,0.585
+"Chile","Conformity",348,2,2,0.588
+"China","Power",360,2,2,0.36
+"China","War_Acceptance",363,3,3,0.409
+"China","Tradition",360,2,2,0.42
+"China","Benevolence",360,2,2,0.502
+"China","Conformity",360,2,2,0.507
+"China","Security",360,2,2,0.525
+"China","Intimate_Violence",363,3,3,0.534
+"China","Self_Direction",360,2,2,0.544
+"China","Hedonism",360,2,2,0.585
+"China","Universalism",360,3,3,0.592
+"Croatia","Tradition",664,2,2,0.298
+"Croatia","Self_Direction",664,2,2,0.376
+"Croatia","Security",663,2,2,0.459
+"Croatia","Withdrawal",666,3,3,0.466
+"Croatia","Power",664,2,2,0.49
+"Croatia","Intimate_Violence",671,3,3,0.527
+"Croatia","Universalism",664,3,3,0.557
+"Croatia","Conformity",663,2,2,0.59
+"Czech Republic","Tradition",386,2,2,0.193
+"Czech Republic","Intimate_Violence",391,3,3,0.315
+"Czech Republic","Universalism",386,3,3,0.457
+"Czech Republic","War_Acceptance",391,3,3,0.468
+"Czech Republic","Self_Direction",386,2,2,0.523
+"Czech Republic","Withdrawal",388,3,3,0.527
+"Czech Republic","Benevolence",386,2,2,0.562
+"Czech Republic","Power",386,2,2,0.572
+"Czech Republic","Security",386,2,2,0.587
+"Ethiopia","Intimate_Violence",299,3,3,0.274
+"Ethiopia","Power",297,2,2,0.427
+"Ethiopia","Tradition",296,2,2,0.436
+"Ethiopia","War_Acceptance",299,3,3,0.44
+"Ethiopia","Achievement",297,2,2,0.468
+"Ethiopia","Conformity",297,2,2,0.475
+"Ethiopia","Stimulation",297,2,2,0.483
+"Ethiopia","Corporal_Punishment",299,3,3,0.542
+"Ethiopia","Penal_Code_Violence",299,3,3,0.586
+"Ethiopia","Withdrawal",299,3,3,0.593
+"France","Tradition",430,2,2,0.338
+"France","Self_Direction",430,2,2,0.398
+"France","Security",429,2,2,0.497
+"France","Retaliation",431,3,3,0.531
+"France","Benevolence",430,2,2,0.56
+"France","Hedonism",430,2,2,0.56
+"France","Universalism",430,3,3,0.563
+"France","Power",430,2,2,0.569
+"Georgia","Self_Direction",276,2,2,0.388
+"Georgia","Tradition",276,2,2,0.396
+"Georgia","Intimate_Violence",286,3,3,0.406
+"Georgia","Security",275,2,2,0.443
+"Georgia","Conformity",276,2,2,0.525
+"Georgia","Withdrawal",280,3,3,0.543
+"Georgia","Power",275,2,2,0.547
+"Georgia","Stimulation",274,2,2,0.55
+"Georgia","Humor",280,3,3,0.561
+"Georgia","Benevolence",276,2,2,0.592
+"Germany","Tradition",695,2,2,0.26
+"Germany","Self_Direction",695,2,2,0.428
+"Germany","Security",695,2,2,0.475
+"Germany","Conformity",695,2,2,0.497
+"Germany","Intimate_Violence",698,3,3,0.498
+"Germany","Power",695,2,2,0.572
+"Germany","War_Acceptance",699,3,3,0.583
+"Ghana","Stimulation",62,2,2,0.47
+"Ghana","Achievement",62,2,2,0.507
+"Ghana","Retaliation",62,3,3,0.548
+"Ghana","Withdrawal",62,3,3,0.565
+"Ghana","Intimate_Violence",62,3,3,0.59
+"Ghana","Power",62,2,2,0.593
+"Greece","Intimate_Violence",442,3,3,0.161
+"Greece","Security",432,2,2,0.397
+"Greece","Power",432,2,2,0.418
+"Greece","Tradition",432,2,2,0.428
+"Greece","Self_Direction",432,2,2,0.455
+"Greece","Conformity",431,2,2,0.502
+"Greece","Universalism",432,3,3,0.512
+"Greece","Withdrawal",435,3,3,0.57
+"Greece","Benevolence",432,2,2,0.589
+"Hong Kong","Tradition",90,2,2,0.26
+"Hong Kong","Self_Direction",90,2,2,0.294
+"Hong Kong","Intimate_Violence",91,3,3,0.377
+"Hong Kong","Power",90,2,2,0.415
+"Hong Kong","Security",90,2,2,0.446
+"Hong Kong","Conformity",90,2,2,0.528
+"Hong Kong","Hedonism",90,2,2,0.564
+"Hong Kong","Withdrawal",90,3,3,0.568
+"Hungary","Tradition",418,2,2,0.207
+"Hungary","Security",418,2,2,0.376
+"Hungary","Universalism",418,3,3,0.424
+"Hungary","Self_Direction",418,2,2,0.445
+"Hungary","Retaliation",418,3,3,0.49
+"Hungary","Intimate_Violence",417,3,3,0.493
+"Hungary","Benevolence",418,2,2,0.518
+"Hungary","Power",418,2,2,0.528
+"Hungary","Withdrawal",418,3,3,0.54
+"Hungary","War_Acceptance",418,3,3,0.577
+"India","Tradition",364,2,2,0.131
+"India","Security",364,2,2,0.46
+"India","Power",364,2,2,0.48
+"India","Hedonism",364,2,2,0.481
+"India","Self_Direction",364,2,2,0.488
+"India","Conformity",364,2,2,0.518
+"India","Universalism",363,3,3,0.536
+"India","Intimate_Violence",386,3,3,0.56
+"India","Conservation",364,6,6,0.576
+"India","Benevolence",364,2,2,0.579
+"Indonesia","Withdrawal",273,3,3,0.322
+"Indonesia","Tradition",274,2,2,0.33
+"Indonesia","Intimate_Violence",277,3,3,0.43
+"Indonesia","War_Acceptance",277,3,3,0.445
+"Indonesia","Benevolence",274,2,2,0.451
+"Indonesia","Self_Direction",274,2,2,0.452
+"Indonesia","Hedonism",274,2,2,0.471
+"Indonesia","Power",274,2,2,0.475
+"Indonesia","Universalism",274,3,3,0.529
+"Indonesia","Conformity",274,2,2,0.532
+"Indonesia","Humor",274,3,3,0.577
+"Iran","Security",367,2,2,0.279
+"Iran","Tradition",366,2,2,0.351
+"Iran","Power",369,2,2,0.397
+"Iran","Universalism",366,3,3,0.429
+"Iran","Conformity",365,2,2,0.434
+"Iran","Self_Direction",367,2,2,0.44
+"Iran","Intimate_Violence",380,3,3,0.448
+"Iran","Withdrawal",379,3,3,0.501
+"Iran","War_Acceptance",381,3,3,0.515
+"Iran","Benevolence",368,2,2,0.526
+"Iran","Self_Transcendence",366,5,5,0.591
+"Ireland","Intimate_Violence",73,3,3,-0.156
+"Ireland","Tradition",73,2,2,0.322
+"Ireland","Hedonism",73,2,2,0.441
+"Ireland","Benevolence",73,2,2,0.49
+"Ireland","Universalism",73,3,3,0.51
+"Ireland","Security",73,2,2,0.512
+"Ireland","Power",73,2,2,0.533
+"Ireland","Conformity",73,2,2,0.585
+"Israel","Tradition",443,2,2,0.334
+"Israel","Security",443,2,2,0.377
+"Israel","Self_Direction",443,2,2,0.444
+"Israel","War_Acceptance",444,3,3,0.484
+"Israel","Power",443,2,2,0.489
+"Israel","Universalism",443,3,3,0.518
+"Israel","Withdrawal",443,3,3,0.57
+"Israel","Benevolence",443,2,2,0.576
+"Israel","Retaliation",443,3,3,0.578
+"Israel","Conservation",443,6,6,0.58
+"Israel","Conformity",443,2,2,0.598
+"Italy","Tradition",562,2,2,0.297
+"Italy","Power",562,2,2,0.441
+"Italy","Security",562,2,2,0.492
+"Italy","Conformity",562,2,2,0.524
+"Italy","Self_Direction",562,2,2,0.533
+"Italy","Stimulation",562,2,2,0.581
+"Japan","Tradition",424,2,2,0.118
+"Japan","Security",424,2,2,0.433
+"Japan","Benevolence",424,2,2,0.501
+"Japan","Universalism",424,3,3,0.507
+"Japan","Self_Direction",424,2,2,0.519
+"Japan","MFQ_Purity",424,6,6,0.528
+"Japan","Power",424,2,2,0.533
+"Japan","Conformity",424,2,2,0.535
+"Japan","Intimate_Violence",424,3,3,0.541
+"Japan","Hedonism",423,2,2,0.56
+"Japan","Conservation",424,6,6,0.591
+"Kazakhstan","Tradition",90,2,2,0.284
+"Kazakhstan","Universalism",90,3,3,0.303
+"Kazakhstan","Intimate_Violence",93,3,3,0.345
+"Kazakhstan","Self_Direction",90,2,2,0.395
+"Kazakhstan","Stimulation",90,2,2,0.452
+"Kazakhstan","Hedonism",90,2,2,0.462
+"Kazakhstan","Benevolence",90,2,2,0.471
+"Kazakhstan","Withdrawal",92,3,3,0.477
+"Kazakhstan","War_Acceptance",93,3,3,0.483
+"Kazakhstan","Security",89,2,2,0.49
+"Kazakhstan","Power",90,2,2,0.564
+"Kazakhstan","Self_Transcendence",90,5,5,0.572
+"Kazakhstan","Conservation",89,6,6,0.572
+"Kazakhstan","Conformity",90,2,2,0.582
+"Kazakhstan","Humor",92,3,3,0.591
+"Kenya","Tradition",223,2,2,0.324
+"Kenya","Benevolence",222,2,2,0.464
+"Kenya","Stimulation",223,2,2,0.484
+"Kenya","Self_Direction",223,2,2,0.517
+"Kenya","Achievement",223,2,2,0.547
+"Kenya","Conformity",222,2,2,0.565
+"Kenya","Withdrawal",223,3,3,0.566
+"Kosovo","Tradition",204,2,2,0.261
+"Kosovo","Security",204,2,2,0.45
+"Kosovo","Conformity",203,2,2,0.464
+"Kosovo","Self_Direction",203,2,2,0.503
+"Kosovo","Benevolence",204,2,2,0.538
+"Kosovo","Universalism",203,3,3,0.538
+"Kosovo","Hedonism",204,2,2,0.557
+"Kosovo","Withdrawal",206,3,3,0.563
+"Kosovo","MFQ_Purity",203,6,6,0.573
+"Kosovo","Power",204,2,2,0.581
+"Kosovo","Retaliation",204,3,3,0.59
+"Kuwait","Intimate_Violence",35,3,3,0.308
+"Kuwait","Tradition",173,2,2,0.354
+"Kuwait","Self_Direction",173,2,2,0.433
+"Kuwait","Conformity",173,2,2,0.461
+"Kuwait","Power",173,2,2,0.477
+"Kuwait","Retaliation",174,3,3,0.506
+"Kuwait","Security",173,2,2,0.55
+"Kuwait","Benevolence",173,2,2,0.559
+"Kuwait","Universalism",172,3,3,0.575
+"Kuwait","Withdrawal",174,3,3,0.584
+"Lebanon","Withdrawal",85,3,3,0.435
+"Lebanon","Tradition",84,2,2,0.516
+"Lebanon","Conformity",84,2,2,0.522
+"Lebanon","Intimate_Violence",87,3,3,0.536
+"Lebanon","Power",84,2,2,0.574
+"Malaysia","Tradition",302,2,2,0.311
+"Malaysia","Power",302,2,2,0.402
+"Malaysia","Conformity",302,2,2,0.442
+"Malaysia","Security",302,2,2,0.443
+"Malaysia","Hedonism",301,2,2,0.464
+"Malaysia","Universalism",302,3,3,0.505
+"Malaysia","Retaliation",304,3,3,0.518
+"Malaysia","War_Acceptance",311,3,3,0.523
+"Malaysia","Self_Direction",301,2,2,0.544
+"Malaysia","Corporal_Punishment",311,3,3,0.549
+"Malaysia","Withdrawal",303,3,3,0.563
+"Malaysia","Benevolence",302,2,2,0.593
+"Mexico","Tradition",137,2,2,0.123
+"Mexico","Self_Direction",137,2,2,0.459
+"Mexico","Conformity",137,2,2,0.511
+"Mexico","Stimulation",137,2,2,0.536
+"Mexico","Power",137,2,2,0.538
+"Mexico","Withdrawal",140,3,3,0.568
+"Mexico","War_Acceptance",140,3,3,0.587
+"Mexico","Hedonism",137,2,2,0.589
+"Morocco","Tradition",172,2,2,0.2
+"Morocco","Power",173,2,2,0.242
+"Morocco","Hedonism",173,2,2,0.349
+"Morocco","Intrinsic_Religiosity",170,3,3,0.417
+"Morocco","Withdrawal",175,3,3,0.438
+"Morocco","Benevolence",173,2,2,0.486
+"Morocco","Universalism",173,3,3,0.539
+"Morocco","Self_Direction",173,2,2,0.552
+"Morocco","MFQ_Purity",170,6,6,0.569
+"Morocco","Security",173,2,2,0.592
+"Morocco","Self_Enhancement",173,4,4,0.593
+"Morocco","Conformity",173,2,2,0.599
+"New Zealand","Tradition",222,2,2,0.34
+"New Zealand","Self_Direction",222,2,2,0.389
+"New Zealand","Power",222,2,2,0.463
+"New Zealand","Security",222,2,2,0.539
+"New Zealand","Universalism",222,3,3,0.592
+"Nigeria","Tradition",473,2,2,0.364
+"Nigeria","Power",473,2,2,0.407
+"Nigeria","Stimulation",473,2,2,0.495
+"Nigeria","Conformity",472,2,2,0.513
+"Nigeria","Benevolence",473,2,2,0.559
+"Nigeria","Penal_Code_Violence",485,3,3,0.584
+"Nigeria","Self_Direction",473,2,2,0.591
+"Nigeria","Hedonism",471,2,2,0.591
+"North Macedonia","Tradition",309,2,2,0.079
+"North Macedonia","Intimate_Violence",312,3,3,0.382
+"North Macedonia","Self_Direction",309,2,2,0.491
+"North Macedonia","Security",309,2,2,0.501
+"North Macedonia","Withdrawal",309,3,3,0.512
+"North Macedonia","Conformity",309,2,2,0.522
+"North Macedonia","Power",309,2,2,0.541
+"North Macedonia","Universalism",309,3,3,0.556
+"Overall","Tradition",23211,2,2,0.356
+"Overall","Self_Direction",23213,2,2,0.477
+"Overall","Security",23210,2,2,0.511
+"Overall","Power",23214,2,2,0.529
+"Overall","Universalism",23198,3,3,0.576
+"Overall","Conformity",23208,2,2,0.588
+"Overall","Withdrawal",23260,3,3,0.595
+"Pakistan","Tradition",435,2,2,0.421
+"Pakistan","Power",436,2,2,0.439
+"Pakistan","Withdrawal",435,3,3,0.442
+"Pakistan","Hedonism",436,2,2,0.487
+"Pakistan","Security",436,2,2,0.512
+"Pakistan","Conformity",436,2,2,0.547
+"Pakistan","Intimate_Violence",437,3,3,0.557
+"Pakistan","Retaliation",435,3,3,0.566
+"Pakistan","Self_Direction",436,2,2,0.59
+"Philippines","Tradition",850,2,2,0.354
+"Philippines","Power",849,2,2,0.426
+"Philippines","Benevolence",850,2,2,0.461
+"Philippines","Self_Direction",850,2,2,0.486
+"Philippines","Conformity",850,2,2,0.542
+"Philippines","Security",848,2,2,0.549
+"Philippines","Universalism",850,3,3,0.569
+"Philippines","Hedonism",850,2,2,0.594
+"Poland","Tradition",652,2,2,0.437
+"Poland","Self_Direction",652,2,2,0.454
+"Poland","Intimate_Violence",659,3,3,0.48
+"Poland","Security",652,2,2,0.511
+"Poland","Retaliation",653,3,3,0.512
+"Poland","Universalism",652,3,3,0.543
+"Poland","War_Acceptance",659,3,3,0.547
+"Poland","Benevolence",652,2,2,0.572
+"Poland","Withdrawal",653,3,3,0.578
+"Poland","Power",652,2,2,0.578
+"Poland","Conformity",652,2,2,0.59
+"Portugal","Tradition",328,2,2,0.404
+"Portugal","Self_Direction",328,2,2,0.473
+"Portugal","Intimate_Violence",331,3,3,0.541
+"Portugal","Security",328,2,2,0.543
+"Portugal","Universalism",328,3,3,0.555
+"Portugal","Power",328,2,2,0.557
+"Portugal","Conformity",328,2,2,0.567
+"Romania","Security",466,2,2,0.4
+"Romania","Tradition",466,2,2,0.402
+"Romania","Self_Direction",466,2,2,0.428
+"Romania","Conformity",466,2,2,0.464
+"Romania","Power",466,2,2,0.506
+"Romania","Withdrawal",472,3,3,0.52
+"Romania","Universalism",466,3,3,0.524
+"Romania","Conservation",466,6,6,0.596
+"Russia","Tradition",295,2,2,0.375
+"Russia","Security",296,2,2,0.468
+"Russia","Withdrawal",305,3,3,0.49
+"Russia","Self_Direction",296,2,2,0.495
+"Russia","Universalism",293,3,3,0.506
+"Russia","Intimate_Violence",308,3,3,0.562
+"Russia","Power",296,2,2,0.581
+"Russia","Conformity",296,2,2,0.598
+"Saudi Arabia","Tradition",147,2,2,0.3
+"Saudi Arabia","Self_Direction",147,2,2,0.377
+"Saudi Arabia","Hedonism",147,2,2,0.442
+"Saudi Arabia","War_Acceptance",151,3,3,0.482
+"Saudi Arabia","Security",147,2,2,0.515
+"Saudi Arabia","Conformity",147,2,2,0.531
+"Saudi Arabia","Withdrawal",149,3,3,0.552
+"Saudi Arabia","Intimate_Violence",124,3,3,0.556
+"Saudi Arabia","Universalism",147,3,3,0.568
+"Serbia","Intimate_Violence",381,3,3,0.053
+"Serbia","Tradition",375,2,2,0.235
+"Serbia","Self_Direction",375,2,2,0.402
+"Serbia","Conformity",375,2,2,0.478
+"Serbia","Withdrawal",379,3,3,0.491
+"Serbia","Power",375,2,2,0.506
+"Serbia","Security",375,2,2,0.506
+"Serbia","Universalism",375,3,3,0.534
+"Serbia","Benevolence",375,2,2,0.588
+"Singapore","Self_Direction",325,2,2,0.364
+"Singapore","Tradition",325,2,2,0.375
+"Singapore","Power",325,2,2,0.509
+"Singapore","Withdrawal",326,3,3,0.553
+"Singapore","Universalism",325,3,3,0.568
+"Singapore","Conformity",325,2,2,0.588
+"Singapore","Retaliation",326,3,3,0.594
+"Slovakia","Tradition",269,2,2,0.184
+"Slovakia","Power",269,2,2,0.337
+"Slovakia","Self_Direction",270,2,2,0.377
+"Slovakia","Security",270,2,2,0.404
+"Slovakia","Withdrawal",273,3,3,0.452
+"Slovakia","Universalism",269,3,3,0.566
+"Slovakia","Conformity",269,2,2,0.568
+"Slovakia","War_Acceptance",273,3,3,0.581
+"Slovakia","Hedonism",269,2,2,0.587
+"South Africa","Power",121,2,2,0.362
+"South Africa","Tradition",120,2,2,0.401
+"South Africa","Withdrawal",122,3,3,0.479
+"South Africa","Achievement",121,2,2,0.53
+"South Africa","Stimulation",121,2,2,0.545
+"South Africa","Self_Direction",121,2,2,0.581
+"South Africa","Conformity",121,2,2,0.585
+"South Africa","Retaliation",122,3,3,0.589
+"Spain","Tradition",417,2,2,0.35
+"Spain","Self_Direction",417,2,2,0.409
+"Spain","Security",417,2,2,0.461
+"Spain","Withdrawal",421,3,3,0.561
+"Spain","Universalism",417,3,3,0.567
+"Spain","Conformity",417,2,2,0.595
+"Switzerland","Tradition",91,2,2,0.185
+"Switzerland","Power",91,2,2,0.267
+"Switzerland","Intimate_Violence",91,3,3,0.402
+"Switzerland","Security",91,2,2,0.442
+"Switzerland","Self_Direction",90,2,2,0.471
+"Switzerland","Retaliation",91,3,3,0.523
+"Switzerland","Universalism",91,3,3,0.524
+"Switzerland","Conformity",91,2,2,0.539
+"Switzerland","Conservation",91,6,6,0.595
+"Taiwan","Tradition",262,2,2,0.321
+"Taiwan","Benevolence",262,2,2,0.401
+"Taiwan","Power",262,2,2,0.459
+"Taiwan","Conformity",262,2,2,0.472
+"Taiwan","Self_Direction",262,2,2,0.479
+"Taiwan","Self_Face_Concern",264,4,4,0.5
+"Taiwan","Universalism",262,3,3,0.558
+"Taiwan","Security",262,2,2,0.571
+"Taiwan","War_Acceptance",266,3,3,0.574
+"Taiwan","Intimate_Violence",266,3,3,0.583
+"Thailand","Tradition",304,2,2,-0.067
+"Thailand","Conservation",304,6,6,0.411
+"Thailand","Security",304,2,2,0.42
+"Thailand","Universalism",304,3,3,0.442
+"Thailand","Self_Direction",304,2,2,0.484
+"Thailand","Power",304,2,2,0.487
+"Thailand","Benevolence",304,2,2,0.49
+"Thailand","Conformity",304,2,2,0.507
+"Thailand","Hedonism",304,2,2,0.529
+"Thailand","War_Acceptance",308,3,3,0.561
+"Thailand","Intimate_Violence",308,3,3,0.57
+"The Netherlands","Self_Direction",134,2,2,0.323
+"The Netherlands","Tradition",134,2,2,0.414
+"The Netherlands","Power",134,2,2,0.463
+"The Netherlands","Universalism",134,3,3,0.471
+"The Netherlands","Intimate_Violence",136,2,3,0.504
+"The Netherlands","War_Acceptance",136,3,3,0.542
+"The Netherlands","Hedonism",134,2,2,0.543
+"The Netherlands","Security",134,2,2,0.592
+"Turkey","Tradition",1871,2,2,0.371
+"Turkey","Intimate_Violence",1897,3,3,0.379
+"Turkey","Self_Direction",1871,2,2,0.414
+"Turkey","Power",1871,2,2,0.44
+"Turkey","Stimulation",1870,2,2,0.511
+"Turkey","Conformity",1870,2,2,0.52
+"Turkey","Security",1870,2,2,0.524
+"Turkey","Withdrawal",1878,3,3,0.538
+"Turkey","Hedonism",1871,2,2,0.576
+"Turkey","Universalism",1870,3,3,0.579
+"Ukraine","Tradition",428,2,2,0.141
+"Ukraine","Self_Direction",429,2,2,0.344
+"Ukraine","Security",429,2,2,0.4
+"Ukraine","Intimate_Violence",432,3,3,0.428
+"Ukraine","War_Acceptance",432,3,3,0.466
+"Ukraine","Conformity",429,2,2,0.486
+"Ukraine","Withdrawal",428,3,3,0.488
+"Ukraine","Retaliation",426,3,3,0.491
+"Ukraine","Universalism",429,3,3,0.5
+"Ukraine","Power",428,2,2,0.505
+"Ukraine","Benevolence",429,2,2,0.518
+"Ukraine","Conservation",428,6,6,0.59
+"United Arab Emirates","Power",61,2,2,0.048
+"United Arab Emirates","Intimate_Violence",62,3,3,0.307
+"United Arab Emirates","Self_Direction",61,2,2,0.348
+"United Arab Emirates","Withdrawal",61,3,3,0.517
+"United Arab Emirates","Benevolence",61,2,2,0.518
+"United Arab Emirates","Hedonism",61,2,2,0.527
+"United Arab Emirates","War_Acceptance",62,3,3,0.55
+"United Arab Emirates","Tradition",61,2,2,0.569
+"United Arab Emirates","Self_Enhancement",61,4,4,0.569
+"United Arab Emirates","Conformity",61,2,2,0.573
+"United Arab Emirates","Retaliation",61,3,3,0.592
+"United Kingdom","Tradition",509,2,2,0.364
+"United Kingdom","Security",509,2,2,0.447
+"United Kingdom","Self_Direction",509,2,2,0.509
+"United Kingdom","Universalism",509,3,3,0.579
+"United Kingdom","Benevolence",509,2,2,0.596
+"United States","Tradition",1550,2,2,0.388
+"United States","Self_Direction",1550,2,2,0.451
+"United States","Power",1551,2,2,0.479
+"United States","Security",1551,2,2,0.484
+"United States","Universalism",1551,3,3,0.562
+"United States","Conformity",1551,2,2,0.593
+"Uzbekistan","War_Acceptance",107,3,3,0.099
+"Uzbekistan","Intimate_Violence",107,3,3,0.236
+"Uzbekistan","Achievement",100,2,2,0.384
+"Uzbekistan","Power",99,2,2,0.413
+"Uzbekistan","Tradition",101,2,2,0.446
+"Uzbekistan","Conformity",100,2,2,0.447
+"Uzbekistan","Self_Direction",99,2,2,0.505
+"Uzbekistan","Security",100,2,2,0.544
+"Uzbekistan","Hedonism",101,2,2,0.548
+"Uzbekistan","MFQ_Purity",100,6,6,0.552
+"Uzbekistan","Corporal_Punishment",106,3,3,0.557
+"Uzbekistan","Benevolence",99,2,2,0.57
+"Uzbekistan","Self_Enhancement",98,4,4,0.584
+"Uzbekistan","Universalism",99,3,3,0.594
+"Vietnam","Security",170,2,2,0.419
+"Vietnam","Intimate_Violence",173,3,3,0.427
+"Vietnam","Self_Direction",170,2,2,0.44
+"Vietnam","Tradition",170,2,2,0.46
+"Vietnam","Conformity",170,2,2,0.489
+"Vietnam","Power",170,2,2,0.494
