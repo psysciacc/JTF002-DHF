@@ -54,11 +54,11 @@ autotable <- purrr::compose(
 * *Note*: Qualtrics datasets were exported and then renamed as dhf_data_v1 and dhf_data_v2 - found in the `raw data` folder. 
 
 ```{r}
-qualtrics_v1 <- read.csv("raw_data/Qualtrics/dhf_data_v1.csv", na.strings = c(" ", "")) %>% #loading data. Qualtrics includes missings as empty fields, so those are coded as NA
-  filter(StartDate != "Start Date" & StartDate != '{"ImportId":"startDate","timeZone":"America/Denver"}')  #removing the variable names imported by qualtrics
+qualtrics_v1 <- read.csv("raw_data/Qualtrics/dhf_data_v1.csv", na.strings = c(" ", "")) %>% # loading data. Qualtrics includes missings as empty fields, so those are coded as NA
+  filter(StartDate != "Start Date" & StartDate != '{"ImportId":"startDate","timeZone":"America/Denver"}')  # removing the variable names imported by qualtrics
 
-qualtrics_v2 <- read.csv("raw_data/Qualtrics/dhf_data_v2.csv", na.strings = c(" ", ""))  %>% #loading data Qualtrics includes missings as empty fields, so those are coded as NA
-  filter(StartDate != "Start Date" & StartDate != '{"ImportId":"startDate","timeZone":"America/Denver"}') #removing the variable names imported by qualtrics
+qualtrics_v2 <- read.csv("raw_data/Qualtrics/dhf_data_v2.csv", na.strings = c(" ", ""))  %>% # loading data Qualtrics includes missings as empty fields, so those are coded as NA
+  filter(StartDate != "Start Date" & StartDate != '{"ImportId":"startDate","timeZone":"America/Denver"}') # removing the variable names imported by qualtrics
 ```
 
 ## Clean up
@@ -100,7 +100,7 @@ nrow(qualtrics_total)
 
 ```{r}
 qualtrics_total <- qualtrics_total %>%
-  filter(is.na(Test)) # 
+  filter(is.na(Test))  
 
 nrow(qualtrics_total)
 ```
@@ -111,7 +111,7 @@ nrow(qualtrics_total)
 
 ```{r}
 qualtrics_total <- qualtrics_total %>%
-  filter(ConsentAlt != -99 | is.na(ConsentAlt))  #
+  filter(ConsentAlt != -99 | is.na(ConsentAlt))  
 
 nrow(qualtrics_total)
 ```
@@ -143,7 +143,7 @@ Note on data download on Gorilla:
 * select short form and Name+ID
 * move into language & place-specific folder under `raw_data`
 
-* Some participants have a "live" status, should they be included or only the "complete" participants?
+* Some participants have a "live" status, should they be included or only the "complete" participants? - all participants included
 
 ## Persian
 
@@ -156,7 +156,7 @@ Note on data download on Gorilla:
 ```{r}
 persian_behzadnia_consent <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_questionnaire-sq3w.csv") %>%
   select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
-  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+  rename(ResponseId = Participant.Private.ID, # renaming to match Qualtrics
          Progress = Participant.Status)
 ```
 
@@ -233,10 +233,10 @@ persian_behzadnia_pvqn <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_
 
 ```{r}
 persian_behzadnia_moral <- read.csv("raw_data/Gorilla/Persian Behzadnia/data_exp_216012-vall_questionnaire-o6w9.csv") %>%
-  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  filter(!is.na(UTC.Timestamp)) %>% # removing header row, which is given out by gorilla for some reason
   select(ResponseId = Participant.Private.ID, 
          ends_with("Quantised"),
-         ends_with("Other"),  #to include other gender etc. options 
+         ends_with("Other"),  # to include other gender etc. options 
          StartDate = UTC.Timestamp) 
 ```
 
@@ -267,7 +267,7 @@ persian_behzadnia_full <- persian_behzadnia_consent %>%
 ```{r}
 persian_heydari_consent <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_questionnaire-8lsd.csv") %>%
   select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
-  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+  rename(ResponseId = Participant.Private.ID, # renaming to match Qualtrics
          Progress = Participant.Status)
 ```
 
@@ -339,10 +339,10 @@ persian_heydari_pvqn <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_2062
 
 ```{r}
 persian_heydari_moral <- read.csv("raw_data/Gorilla/Persian heydari/data_exp_206283-vall_questionnaire-ppiz.csv") %>%
-  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  filter(!is.na(UTC.Timestamp)) %>% # removing header row, which is given out by gorilla for some reason
   select(ResponseId = Participant.Private.ID, 
          ends_with("Quantised"),
-         ends_with("Other"),  #to include other gender etc. options 
+         ends_with("Other"),  # to include other gender etc. options 
          StartDate = UTC.Timestamp) 
 ```
 
@@ -373,7 +373,7 @@ persian_heydari_full <- persian_heydari_consent %>%
 ```{r}
 persian_mehdinejad_consent <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_questionnaire-273y.csv") %>%
   select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
-  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+  rename(ResponseId = Participant.Private.ID, # renaming to match Qualtrics
          Progress = Participant.Status)
 ```
 
@@ -445,10 +445,10 @@ persian_mehdinejad_pvqn <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_ex
 
 ```{r}
 persian_mehdinejad_moral <- read.csv("raw_data/Gorilla/Persian mehdinejad/data_exp_225484-vall_questionnaire-f9qm.csv") %>%
-  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  filter(!is.na(UTC.Timestamp)) %>% # removing header row, which is given out by gorilla for some reason
   select(ResponseId = Participant.Private.ID, 
          ends_with("Quantised"),
-         ends_with("Other"),  #to include other gender etc. options 
+         ends_with("Other"),  # to include other gender etc. options 
          StartDate = UTC.Timestamp) 
 ```
 
@@ -479,7 +479,7 @@ persian_mehdinejad_full <- persian_mehdinejad_consent %>%
 ```{r}
 persian_tondro_consent <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_questionnaire-jdx2.csv") %>%
   select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
-  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+  rename(ResponseId = Participant.Private.ID, # renaming to match Qualtrics
          Progress = Participant.Status)
 ```
 
@@ -551,10 +551,10 @@ persian_tondro_pvqn <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994
 
 ```{r}
 persian_tondro_moral <- read.csv("raw_data/Gorilla/Persian tondro/data_exp_215994-vall_questionnaire-l93m.csv") %>%
-  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  filter(!is.na(UTC.Timestamp)) %>% # removing header row, which is given out by gorilla for some reason
   select(ResponseId = Participant.Private.ID, 
          ends_with("Quantised"),
-         ends_with("Other"),  #to include other gender etc. options 
+         ends_with("Other"),  # to include other gender etc. options 
          StartDate = UTC.Timestamp) 
 ```
 
@@ -585,7 +585,7 @@ persian_tondro_full <- persian_tondro_consent %>%
 ```{r}
 persian_vazirian_consent <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_questionnaire-ri58.csv") %>%
   select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
-  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+  rename(ResponseId = Participant.Private.ID, # renaming to match Qualtrics
          Progress = Participant.Status)
 ```
 
@@ -657,10 +657,10 @@ persian_vazirian_pvqn <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_22
 
 ```{r}
 persian_vazirian_moral <- read.csv("raw_data/Gorilla/Persian vazirian/data_exp_225485-vall_questionnaire-gad4.csv") %>%
-  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  filter(!is.na(UTC.Timestamp)) %>% # removing header row, which is given out by gorilla for some reason
   select(ResponseId = Participant.Private.ID, 
          ends_with("Quantised"),
-         ends_with("Other"),  #to include other gender etc. options 
+         ends_with("Other"),  # to include other gender etc. options 
          StartDate = UTC.Timestamp) 
 ```
 
@@ -692,7 +692,7 @@ persian_vazirian_full <- persian_vazirian_consent %>%
 ```{r}
 persian_zakeri_consent <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_questionnaire-r73s.csv") %>%
   select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
-  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+  rename(ResponseId = Participant.Private.ID, # renaming to match Qualtrics
          Progress = Participant.Status)
 ```
 
@@ -764,10 +764,10 @@ persian_zakeri_pvqn <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473
 
 ```{r}
 persian_zakeri_moral <- read.csv("raw_data/Gorilla/Persian zakeri/data_exp_225473-vall_questionnaire-gl5c.csv") %>%
-  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  filter(!is.na(UTC.Timestamp)) %>% # removing header row, which is given out by gorilla for some reason
   select(ResponseId = Participant.Private.ID, 
          ends_with("Quantised"),
-         ends_with("Other"),  #to include other gender etc. options 
+         ends_with("Other"),  # to include other gender etc. options 
          StartDate = UTC.Timestamp)
 ```
 
@@ -832,7 +832,7 @@ colnames(persian_all_recoded) <- persian_variablenames$V2
 ```{r}
 russian_efremova_consent <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-qxa3.csv") %>%
   select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
-  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+  rename(ResponseId = Participant.Private.ID, # renaming to match Qualtrics
          Progress = Participant.Status)
 ```
 
@@ -912,10 +912,10 @@ russian_efremova_pvqn_m <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_
 
 ```{r}
 russian_efremova_moral <- read.csv("raw_data/Gorilla/Russian efremova/data_exp_209889-vall_questionnaire-pjg5.csv") %>%
-  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  filter(!is.na(UTC.Timestamp)) %>% # removing header row, which is given out by gorilla for some reason
   select(ResponseId = Participant.Private.ID, 
          ends_with("Quantised"),
-         ends_with("Other"),  #to include other gender etc. options 
+         ends_with("Other"),  # to include other gender etc. options 
          StartDate = UTC.Timestamp) 
 ```
 
@@ -952,7 +952,7 @@ russian_efremova_full <- russian_efremova_consent %>%
 ```{r}
 russian_efremova2_consent <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-qxa3.csv") %>%
   select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
-  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+  rename(ResponseId = Participant.Private.ID, # renaming to match Qualtrics
          Progress = Participant.Status)
 ```
 
@@ -1032,10 +1032,10 @@ russian_efremova2_pvqn_m <- read.csv("raw_data/Gorilla/Russian efremova2/data_ex
 
 ```{r}
 russian_efremova2_moral <- read.csv("raw_data/Gorilla/Russian efremova2/data_exp_226252-vall_questionnaire-pjg5.csv") %>%
-  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  filter(!is.na(UTC.Timestamp)) %>% # removing header row, which is given out by gorilla for some reason
   select(ResponseId = Participant.Private.ID, 
          ends_with("Quantised"),
-         ends_with("Other"),  #to include other gender etc. options 
+         ends_with("Other"),  # to include other gender etc. options 
          StartDate = UTC.Timestamp) 
 ```
 
@@ -1072,7 +1072,7 @@ russian_efremova2_full <- russian_efremova2_consent %>%
 ```{r}
 russian_olga_consent <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-wmsj.csv") %>%
   select(Participant.Private.ID, Participant.Status, Consent.object.7.Quantised) %>%
-  rename(ResponseId = Participant.Private.ID, #renaming to match Qualtrics
+  rename(ResponseId = Participant.Private.ID, # renaming to match Qualtrics
          Progress = Participant.Status)
 ```
 
@@ -1152,16 +1152,16 @@ russian_olga_pvqn_m <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-v
 
 ```{r}
 russian_olga_moral <- read.csv("raw_data/Gorilla/Russian olga/data_exp_209877-vall_questionnaire-r7fa.csv") %>%
-  filter(!is.na(UTC.Timestamp)) %>% #removing header row, which is given out by gorilla for some reason
+  filter(!is.na(UTC.Timestamp)) %>% # removing header row, which is given out by gorilla for some reason
   select(ResponseId = Participant.Private.ID, 
          ends_with("Quantised"),
-         ends_with("Other"),  #to include other gender etc. options 
+         ends_with("Other"),  # to include other gender etc. options 
          StartDate = UTC.Timestamp) 
 ```
 
 **Debrief**
 
-Debrief only contains an info text and no measurements, therefore not added.
+* Debrief only contains an info text and no measurements, therefore not added.
 
 #### Combine into full dataset
 
@@ -1195,7 +1195,7 @@ russian_all <- russian_efremova_full %>%
 * Export column names to Excel
 
 ```{r}
-#Get column names for codebook
+# Get column names for codebook
 russian_all %>% 
   colnames() %>%
   write.csv("codebooks/Gorilla/variable_names_export_russian.csv", row.names = FALSE)
@@ -1245,10 +1245,23 @@ gorilla_all <- gorilla_all %>%
 
 ## Import
 
-```{r}
+```{r eval = F}
 # loading data. Marking empty fields as NAs
-africa_full <- read.csv("raw_data/Africa Long Life/ALLS_W6_anon.csv", na.strings = c(" ", ""))  
+africa_full <- read.csv("raw_data/Africa Long Life/ALLS_W6_anon_original.csv", na.strings = c(" ", ""))  
+
+# filter out columns we don't need so we aren't sharing full data
+africa_full <- africa_full %>% 
+  select(AGE_W1_CORE, ATTVIO12_W6, ATTVIO1_W6, COUNTRY_W6, 
+         DFH1_W6:DFH30_W6, DFHNORMS1_W6:DFHNORMS30_W6, 
+         EDUCATION_W6, ETHNICITY_SA_CORE, GENDER_CORE, 
+         RELIGION_W2_CORE, SELFFACE1_W6:SELFFACE13_W6)
+write.csv(africa_full, "raw_data/Africa Long Life/ALLS_W6_anon_shareable.csv")
 ```
+
+```{r}
+africa_full <- read.csv("raw_data/Africa Long Life/ALLS_W6_anon_shareable.csv")
+```
+
 
 ## Clean up
 
@@ -1351,7 +1364,7 @@ compare_df_cols(qualtrics_total, africa_recoded) %>%
   DT::datatable(caption = "Comparison of variables in Qualtrics and Africa data  - only non matching ones")
 ```
 
-* -> There are no columns in the Africa dataset that are not in the qualtrics dataset. Therefore ready to merge.
+* There are no columns in the Africa dataset that are not in the qualtrics dataset. Therefore ready to merge.
 
 ```{r}
 qualtrics_africa <- qualtrics_total %>%
@@ -1367,7 +1380,7 @@ qualtrics_africa <- qualtrics_africa %>%
   mutate(Age = na_if(Age, "NA"))
 ```
 
-* gender
+* Gender
 
 ```{r}
 qualtrics_africa <- qualtrics_africa %>%
@@ -1378,7 +1391,7 @@ qualtrics_africa <- qualtrics_africa %>%
                             TRUE ~ gender))
 ```
 
-* religion
+* Religion
 
 (Africa Long Study responses of Christianity, Hinduism, Islam, Judaism and no affiliation (= atheistic/agnostic) were coded using Qualtrics codes. Anything else, or multiple religions, were categorised as "other" and the response was transferred to the religion_7_text open response variable. As the end result, the coding matches that in the Qualtrics code book)
 
@@ -1397,7 +1410,7 @@ qualtrics_africa <- qualtrics_africa %>%
          religion_7_TEXT = case_when(datasource == "ALLS" & religion_qualtrics_codes == "7" ~ religion, #when response was "other", the exact response was copied to the open response variable
                                      datasource == "ALLS" & religion_qualtrics_codes != "7" ~ "-99", #when not other,-99 was assigned
          TRUE ~ religion_7_TEXT)) %>% #the remaining (qualtrics) responses stay as is
-  select(-religion) %>% #removing orginal religion variable so that...
+  select(-religion) %>% # removing orginal religion variable so that...
   rename(religion = religion_qualtrics_codes) # ...the recoded religion variable can be saved under the original name
 ```
 
@@ -1635,28 +1648,7 @@ nrow(dhf_all)
 ```{r}
 # examine for missing data 
 table(dhf_all$country_res_full, useNA = "ifany")
-
-dhf_all %>% 
-  group_by(country_res, country_res_full, Country, Country_full) %>% 
-  count()
-
-dhf_all <- dhf_all %>%
-  left_join(country_names, by = "Country", suffix = c("", "_lookup")) %>%
-  mutate(
-    Country_full = if_else(
-      is.na(Country_full),        # only replace if current value is NA
-      Country_full_lookup,        # take the one from lookup_df
-      Country_full                # otherwise keep the existing one
-    )
-  ) %>%
-  select(-Country_full_lookup)     # remove the temporary column
-
-View(dhf_all %>%
-  filter(is.na(Country_full)) %>%
-  select(Country, Country_full))
 ```
-
-ABOVE HERE IS WHERE I'M GETTING THE ISSUE: I can't work out why there are still 7 cases where there's no Country_full because I thought I fixed it. Also, note, haven't run from here onwards because I'm waiting for the new country-level dataset.
 
 ## add country metadata 
 
@@ -1664,7 +1656,7 @@ ABOVE HERE IS WHERE I'M GETTING THE ISSUE: I can't work out why there are still 
 
 ```{r message = FALSE}
 country_metadata <- read_csv("codebooks/countries_data.csv", show_col_types = FALSE) %>%
-  rename(Country_full = dhf_country_name) %>%
+  rename(country_res_full = dhf_country_name) %>%
   select(-country_name,
          -iso3c) 
 
@@ -1846,8 +1838,6 @@ dhf_all %>%
   count(gender) %>%
   autotable()
 ```
-
-* => will need to make this match, but I am leaving this to the analysis team as it will be easier to make these decision when looking at the data in more detail. 
 
 ## Checking all columns for correct codings between different datasources
 
@@ -2184,8 +2174,33 @@ dhf_all %>%
   pivot_wider(names_from = datasource, values_from = n) 
 ```
 
+# Remove problematic ids
+
+* please see included file from collaborators
+
+```{r}
+ids_to_remove <- c(
+  "R_4mg9OAGJnVmyZ6l", "R_47VhrUv8DJEgWud", "R_5fIZC2nRwMxNfEP", 
+  "R_4kFWx2utka2L1iF", "R_40pEe1Mft0wXL5j", "R_4svn08eoJ32Vokx", 
+  "R_4GgH6U4tcohP2eJ", "R_4JLe3nwWAqeXxqI", "R_6MbaD8EybY4Dtym",
+  "R_4lctmsVL7n1CGgl", "R_4HjEPMa1T8chdqu", "R_4uOfW8JfOhAWacq",
+  "R_4qr6cVIaR6IHuDb", "R_7TWXVg9kxiWqlRR", "R_9oqByEPOCQEKKQN",
+  "R_4nHKKXKNPQiSg2P", "R_4t7SNZCAKFlf70Z", "R_9FGrx9bPwloB5y9",
+  "R_4g6D6WY0jGZthA5", "R_97D07PlaQjWR3SB", "R_4Ph1AFEz0QpgBDG",
+  "R_9GK4NMvARDLUOC6", "R_4IaxX0p43GIFBg5", "R_4ybHw5YegE9JYad",
+  "R_4s1t4lEUUi8eBI2", "R_9sj0ERdhSNB5ny3", "R_51TuFqKhkfA66jL", 
+  "R_8kM9S2EKfX2pN2D", "R_2T7jWsepJeDSsP7", "R_8r0sGXiF3e3lP7W",
+  "R_8O0VGBtI3C02l4V", "R_8g8fu4BAkZYuyp2", "R_2fg6QXLbhOUOrLP",
+  "R_3HT6g58PJDpzGBB", "R_4VqcYKaDhLTxjsR", "R_42L08lIIlymSGKz", 
+  "R_9H1l3mAMjSgMB69", "R_4we63em3fB3mI37")
+
+nrow(dhf_all)
+
+sum(ids_to_remove %in% dhf_all$ResponseId)
+```
+
 # Exporting final dataset
 
 ```{r}
-write.csv(dhf_all, "processed_data/dhf_data_final.csv")
+rio::export(dhf_all, "processed_data/dhf_data_final.csv.zip")
 ```

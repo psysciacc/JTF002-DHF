@@ -48,3 +48,4 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 .DS_Store
+data/raw_data/Africa Long Life/ALLS_W6_anon_original.csv
