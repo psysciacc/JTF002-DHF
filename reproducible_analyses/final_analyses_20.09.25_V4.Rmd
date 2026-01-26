@@ -311,6 +311,7 @@ sum(table(dt$country_res_full, useNA = "ifany") > 50)
 ```
 
 ##Data exclusions based on demographics
+
 ```{r demographic-clean}
 #Age
 
@@ -371,6 +372,7 @@ dt4[dt4 == -999] <- NA
 ##dt4 should be used for all analysis except those involving behavioral measures##
 
 ```
+
 ## Behavior_comprehension checks
 
 -   Create a new dataset excluding participants who failed to correctly answer the comprehension questions in the dictator and/or ultimatum games (dt5). This dataset will be used for all analyses that involve the games.

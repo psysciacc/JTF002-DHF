@@ -17,6 +17,612 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Libraries
 
-## Data 
+```{r}
+library(rio)
+library(dplyr)
+library(psych)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+pct <- function(x) round(100 * x, 1)
+
+largest_group <- function(vec) {
+  tab <- prop.table(table(vec))
+  top <- names(which.max(tab))
+  p <- pct(max(tab, na.rm = TRUE))
+  paste0(top, " (", p, "%)")
+}
+```
+
+## SEM Variable Definition
+
+This section defines the correlated error for Level 1/2 analyses for Hypothesis 1 (and then used throughout). We define these values at the top here to keep from repeating them below for clarity on the parts of the model that change.
+
+```{r overall-variables}
+corr_endors <- '
+  dhf_endors_1 ~~ dhf_endors_2 +dhf_endors_3+dhf_endors_4+dhf_endors_5 + dhf_endors_6+dhf_endors_7+dhf_endors_8+dhf_endors_9+dhf_endors_10 + dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+  
+  dhf_endors_2 ~~ dhf_endors_3+dhf_endors_4+dhf_endors_5 + dhf_endors_6+dhf_endors_7+dhf_endors_8+dhf_endors_9+dhf_endors_10 + dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+ 
+  dhf_endors_3 ~~ dhf_endors_4+dhf_endors_5 + dhf_endors_6+dhf_endors_7+dhf_endors_8+dhf_endors_9+dhf_endors_10 + dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_4 ~~ dhf_endors_5 + dhf_endors_6+dhf_endors_7+dhf_endors_8+dhf_endors_9+dhf_endors_10 + dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_5 ~~ dhf_endors_6+dhf_endors_7+dhf_endors_8+dhf_endors_9+dhf_endors_10 + dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_6 ~~ dhf_endors_7+dhf_endors_8+dhf_endors_9+dhf_endors_10 + dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+  
+  dhf_endors_7 ~~ dhf_endors_8+dhf_endors_9+dhf_endors_10 + dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+  
+  dhf_endors_8 ~~ dhf_endors_9+dhf_endors_10 + dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_9 ~~ dhf_endors_10 + dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+  
+  dhf_endors_10 ~~ dhf_endors_11+dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+  
+  dhf_endors_11 ~~ dhf_endors_12+dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+    
+  dhf_endors_12 ~~ dhf_endors_13+dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+      
+  dhf_endors_13 ~~ dhf_endors_14+dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+        
+  dhf_endors_14 ~~ dhf_endors_15 + dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+          
+  dhf_endors_15 ~~ dhf_endors_16+dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+            
+  dhf_endors_16 ~~ dhf_endors_17+dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+              
+  dhf_endors_17 ~~ dhf_endors_18+dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+                
+  dhf_endors_18 ~~ dhf_endors_19+dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+                  
+  dhf_endors_19 ~~ dhf_endors_20 + dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+                    
+  dhf_endors_20 ~~ dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+  
+  dhf_endors_21 ~~ dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_22 ~~ dhf_endors_23+dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_23 ~~ dhf_endors_24+dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_24 ~~ dhf_endors_25 + dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_25 ~~ dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_26 ~~ dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_27 ~~ dhf_endors_28+dhf_endors_29+dhf_endors_30
+
+  dhf_endors_28 ~~ dhf_endors_29+dhf_endors_30
+
+  dhf_endors_29 ~~ dhf_endors_30'
+
+corr_norm <- '
+  dhf_norm_1 ~~ dhf_norm_2 +dhf_norm_3+dhf_norm_4+dhf_norm_5 + dhf_norm_6+dhf_norm_7+dhf_norm_8+dhf_norm_9+dhf_norm_10 + dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+  
+  dhf_norm_2 ~~ dhf_norm_3+dhf_norm_4+dhf_norm_5 + dhf_norm_6+dhf_norm_7+dhf_norm_8+dhf_norm_9+dhf_norm_10 + dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+ 
+  dhf_norm_3 ~~ dhf_norm_4+dhf_norm_5 + dhf_norm_6+dhf_norm_7+dhf_norm_8+dhf_norm_9+dhf_norm_10 + dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_4 ~~ dhf_norm_5 + dhf_norm_6+dhf_norm_7+dhf_norm_8+dhf_norm_9+dhf_norm_10 + dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_5 ~~ dhf_norm_6+dhf_norm_7+dhf_norm_8+dhf_norm_9+dhf_norm_10 + dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_6 ~~ dhf_norm_7+dhf_norm_8+dhf_norm_9+dhf_norm_10 + dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+  
+  dhf_norm_7 ~~ dhf_norm_8+dhf_norm_9+dhf_norm_10 + dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+  
+  dhf_norm_8 ~~ dhf_norm_9+dhf_norm_10 + dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_9 ~~ dhf_norm_10 + dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+  
+  dhf_norm_10 ~~ dhf_norm_11+dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+  
+  dhf_norm_11 ~~ dhf_norm_12+dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+    
+  dhf_norm_12 ~~ dhf_norm_13+dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+      
+  dhf_norm_13 ~~ dhf_norm_14+dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+        
+  dhf_norm_14 ~~ dhf_norm_15 + dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+          
+  dhf_norm_15 ~~ dhf_norm_16+dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+            
+  dhf_norm_16 ~~ dhf_norm_17+dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+              
+  dhf_norm_17 ~~ dhf_norm_18+dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+                
+  dhf_norm_18 ~~ dhf_norm_19+dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+                  
+  dhf_norm_19 ~~ dhf_norm_20 + dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+                    
+  dhf_norm_20 ~~ dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+  
+  dhf_norm_21 ~~ dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_22 ~~ dhf_norm_23+dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_23 ~~ dhf_norm_24+dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_24 ~~ dhf_norm_25 + dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_25 ~~ dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_26 ~~ dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_27 ~~ dhf_norm_28+dhf_norm_29+dhf_norm_30
+
+  dhf_norm_28 ~~ dhf_norm_29+dhf_norm_30
+
+  dhf_norm_29 ~~ dhf_norm_30'
+```
+
+# Data
+
+```{r import-data}
+# load data
+dt <- import("../data/processed_data/dhf_data_final.csv.zip")
+
+# example data structure 
+head(names(dt))
+```
+
+## Ethics 
+
+A total of 173 labs completed ethics documentation for data collection, and xx labs in xx geopolitical regions collected data for the study. Each of the final data collection labs obtained local ethical review (104), relied on the ethical review provided either by York University or by another Review Board in the same geopolitical region (60), or provided evidence that no ethical review was required (8). A record of approvals is hosted on the Open Science Framework (OSF; https://osf.io/mt6dw). We obtained informed consent from all participants.
+
+```{r}
+length(unique(dt$LabID))
+length(unique(dt$Country))
+```
+
+## Sample Summary
+
+```{r}
+#L: variable names changed to match the new data
+factorized_var_numbers<-
+  c(which(names(dt)=="gender"),
+    which(names(dt)=="Migration"),
+    which(names(dt)=="location_childhood"),
+    which(names(dt)=="location_current"),
+    which(names(dt)=="ethnicity"),
+    which(names(dt)=="religion"),
+    which(names(dt)=="education"),
+    which(names(dt)=="student"),
+    which(names(dt)=="income"),
+    which(names(dt)=="Country"),
+    which(names(dt)=="country_res_full"),
+    which(names(dt)=="Sample"),
+    which(names(dt)=="datasource"))
+
+numeric_var_numbers<-
+  c(which(names(dt)=="Age"))
+
+# refactor gender, age, education, state, race, migration 
+dt[,factorized_var_numbers] <- lapply(dt[,factorized_var_numbers], as.factor)
+dt[,numeric_var_numbers] <- as.numeric(dt[,numeric_var_numbers])
+```
+
+```{r}
+# Reciprocity ----
+# look at the scoring
+# table(dt$Reciprocity_1, useNA = "ifany") # not all response options are available for this var
+# table(dt$Reciprocity_6, useNA = "ifany") # for this variable all options are shown
+
+# recode variables to numeric
+dt <- dt %>%
+  mutate_at(vars(Reciprocity_1:Reciprocity_6), ~dplyr::case_when(
+    . == "Does not apply to me at all\r\n1\r\n" ~ 1,
+    . == "1" ~ 1,
+    . == "2" ~ 2,
+    . == "3" ~ 3,
+    . == "4" ~ 4,
+    . == "5" ~ 5,
+    . == "6" ~ 6,
+    . == "7" ~ 6,
+    . == "Applies to me perfectly\r\n7\r\n" ~ 7,
+    TRUE ~ NA_integer_
+  ))
+
+# examine data
+Recprocity_first_num <- which(names(dt)=="Reciprocity_1")
+Recprocity_last_num <- which(names(dt)=="Reciprocity_6")
+
+# calculate positive and negative reciprocity  
+dt$Positive_Reciprocity <- rowMeans(dt[c("Reciprocity_1","Reciprocity_2","Reciprocity_3")], na.rm=TRUE)
+dt$Negative_Reciprocity <- rowMeans(dt[c("Reciprocity_4","Reciprocity_5","Reciprocity_6")], na.rm=TRUE)
+```
 
 
+Data were collected by collaborating research labs using convenience sampling, snowball sampling, and/or random sampling methods for both student and community samples. The initial sample consisted of 38,575 participants.
+
+```{r}
+nrow(dt)
+```
+
+After applying exclusion criteria, the final sample included 26,511 participants from 64 countries, representing a retention rate of 68.7%. Age restrictions (< 18 years old) resulted in the exclusion of 424 participants (1.1%). 
+
+```{r demographic-clean}
+#Age
+table(dt$Age, useNA = "ifany") #strangely high amount of <NA>=8931
+
+#exclude participants who are <18
+dt1 <- subset(dt, Age >=18|is.na(Age)) #n=38151
+
+describe(dt1$Age) #18-99, M=25.5, SD=10.1
+
+nrow(dt) - nrow(dt1)
+```
+
+Migration status criteria (not born and raised in the country of data collection) led to the exclusion of 2,250 participants (5.9%). 
+
+```{r}
+#exclude those who were not born and raised in the country
+table(dt1$Migration, useNA = "ifany") #NAs are cases where question was not shown, so include
+dt2 <- subset(dt1, Migration==1|Migration==3|is.na(Migration)) #n=35901 
+
+nrow(dt1) - nrow(dt2)
+```
+
+The largest exclusion was due to attention check failures, with 9,281 participants (25.85%) failing two or more attention checks. 
+
+```{r}
+# exclude participants who failed 2 or 3 attention checks, except for ALLS countries where attention checks were not shown
+dt2$attention1 <- ifelse(dt2$attention_1==2|dt2$datasource == "ALLS", 1, 0)
+dt2$attention2 <- ifelse(dt2$attention_2==5|dt2$datasource == "ALLS", 1, 0)
+dt2$attention3 <- ifelse(dt2$attention_3==3|dt2$datasource == "ALLS", 1, 0)
+dt2$attention <- rowSums(dt2[c("attention1", "attention2", "attention3")], na.rm=T)
+dt3 <- subset(dt2, attention>=2) #n=26620  
+
+nrow(dt2) - nrow(dt3)
+```
+
+Finally, 109 participants (0.41%) were excluded because their countries had fewer than 50 participants in the final sample.
+
+```{r}
+# exclude countries with <50 participants and where country is missing
+# table(dt3$country_res_full, useNA = "ifany")
+dt3$country_res_full <- as.factor(dt3$country_res_full)
+
+dt4 <- dt3 %>%
+  group_by(country_res_full) %>%
+  filter(!is.na(country_res_full) & n() >= 50) %>%
+  ungroup() %>%
+  mutate(country_res_full = droplevels(country_res_full))
+
+# table(dt4$country_res_full, useNA = "ifany")  #Final total N=26511  
+
+sum(table(dt4$country_res_full, useNA = "ifany") >= 50)  #64 countries with >=50 observations
+sum(table(dt4$country_res_full, useNA = "ifany") >= 100) #57 countries with >=100 observations
+sum(table(dt4$country_res_full, useNA = "ifany") >= 300) #37 countries with >=300 observations
+
+nrow(dt3) - nrow(dt4)
+
+nrow(dt4) 
+
+#all -99 and -999 in the dataset are now assigned as missing 
+dt4[dt4 == -99] <- NA
+dt4[dt4 == -999] <- NA
+```
+
+The final sample (N = 26,511) ranged in age from 18 to 92 years old, M = 25.4, SD = 10.1. 
+
+```{r}
+describe(dt4$Age)
+```
+
+Women constituted 66% of the sample, men – 32%, non-binary people – 0.8%, and another 1.2% selected “other” or preferred not to answer. 
+
+```{r}
+table(dt4$gender, useNA = "ifany")
+prop.table(table(dt4$gender)) #66% women, 32% men, 0.8% NB, 1.2% other or no response  
+```
+
+Across countries, 70% were students and 70% belonged to the largest ethnic group in their country. 
+```{r}
+table(dt4$student, useNA = "ifany")
+prop.table(table(dt4$student)) #70% students, 30% not
+```
+
+In terms of religion, 43% identified as Christian, 26% had no religious affiliation (atheist/agnostic), 16% as Muslim, 2% as Jewish, 2% Hindu, 3% Buddhist, and 8% selected “other” or preferred not to answer. Sample size and composition by country is presented in Table S1.
+
+```{r}
+table(dt4$religion, useNA = "ifany")
+prop.table(table(dt4$religion)) #26% No affiliation, 43% Christian, 16% Muslim, 2% Jewish, 2% Hindu, 3% Buddhist, 8% other or do not want to respond
+```
+
+Table S1
+
+```{r}
+dt4 <- dt4 %>%
+  mutate(language = substr(UserLanguage, 1, 2))
+# table(dt4$language)
+
+lang_lookup <- c(
+  AR = "Arabic",
+  BG = "Bulgarian",
+  BN = "Bengali",
+  BS = "Bosnian",
+  CS = "Czech",
+  DE = "German",
+  EL = "Greek",
+  EN = "English",
+  ES = "Spanish",
+  FR = "French",
+  HE = "Hebrew",
+  HR = "Croatian",
+  HU = "Hungarian",
+  HY = "Armenian",
+  ID = "Indonesian",
+  IT = "Italian",
+  JA = "Japanese",
+  KA = "Georgian",
+  MK = "Macedonian",
+  NL = "Dutch",
+  PL = "Polish",
+  PT = "Portuguese",
+  RO = "Romanian",
+  RU = "Russian",
+  SK = "Slovak",
+  SQ = "Albanian",
+  SR = "Serbian",
+  SW = "Swahili",
+  TH = "Thai",
+  TR = "Turkish",
+  UK = "Ukrainian",
+  VI = "Vietnamese",
+  ZH = "Chinese"
+)
+
+dt4 <- dt4 %>% 
+  mutate(language = lang_lookup[substr(language, 1, 2)])
+
+country_summary <- dt4 %>%
+  group_by(country_res_full) %>%
+  summarise(
+    N = n(),
+    Age = paste0(
+      round(mean(Age, na.rm = TRUE), 1),
+      " (",
+      round(sd(Age, na.rm = TRUE), 1),
+      ")"
+    ),
+    Women = pct(mean(gender == 1, na.rm = TRUE)),
+    Largest_Religious = largest_group(religion),
+    Students = pct(mean(student == 1, na.rm = TRUE)),
+    .groups = "drop"
+  )
+
+language_summary <- dt4 %>%
+  group_by(country_res_full, language) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(country_res_full) %>%
+  mutate(
+    lang_pct = pct(n / sum(n)),
+    Language = paste0(language, " (", lang_pct, "%)")
+  ) %>%
+  select(country_res_full, Language)
+
+final_table <- language_summary %>%
+  left_join(country_summary, by = "country_res_full") %>%
+  relocate(country_res_full, N, Language, Age, Women,
+           Largest_Religious, Students)
+
+final_table
+```
+
+## Missing Data
+
+Missing data rates increased progressively from the beginning to the end of the questionnaire, ranging from 1.0% to 13.7%. 
+
+```{r}
+table(dt4$Progress, useNA = "ifany") 
+# looks like it's 2 percent to 49 percent?
+```
+
+The primary DHF variables (dignity, honor, and face endorsement and norm perception items) showed minimal missing data (1.0–2.7%). 
+
+```{r}
+miss_summary <- dt4 %>% 
+  select(dhf_endors_1:dhf_endors_30,
+         dhf_norm_1:dhf_norm_30) %>%
+  summarise(across(everything(),
+                   ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(),
+               names_to = "item",
+               values_to = "pct_missing")
+  
+range(miss_summary$pct_missing)
+```
+
+Demographic variables showed moderate missing rates, with gender having the lowest rate (2.8%), followed by age (5.3%) and religion (7.2%). Ethnicity (13.7%) and student status (13.6%) had the highest missing rates among demographics. 
+
+```{r}
+sum(is.na(dt4$gender)) / nrow(dt4)
+
+sum(is.na(dt4$Age)) / nrow(dt4)
+
+sum(is.na(dt4$religion)) / nrow(dt4)
+
+sum(is.na(dt4$education)) / nrow(dt4)
+
+sum(is.na(dt4$student)) / nrow(dt4)
+```
+
+Variables measured later in the questionnaire showed progressively higher missing rates: face concerns and reactions to provocation (1.6–11.8%), reciprocity measures (11.0%), personal values (12.4%), and moral foundations (13.2%). Overall, 89–99% of participants provided valid responses for each variable, indicating good data quality despite some attrition throughout the survey.
+
+```{r}
+# face
+miss_summary <- dt4 %>% 
+  select(conflict_role:insult3_3) %>%
+  summarise(across(everything(),
+                   ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(),
+               names_to = "item",
+               values_to = "pct_missing")
+  
+range(miss_summary$pct_missing)
+
+# reciprocity
+miss_summary <- dt4 %>% 
+  select(Reciprocity_1:Reciprocity_6) %>%
+  summarise(across(everything(),
+                   ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(),
+               names_to = "item",
+               values_to = "pct_missing")
+  
+range(miss_summary$pct_missing)
+
+# personal values 
+miss_m <- dt4 %>%
+  filter(valuesgender == 1) %>%
+  filter(!if_all(values_m_1:values_m_21, is.na)) %>%   
+  # drop all-missing people
+  summarise(across(values_m_1:values_m_21,
+                   ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(),
+               names_to = "item",
+               values_to = "pct_missing")
+
+range(miss_m$pct_missing)
+
+miss_f <- dt4 %>%
+  filter(valuesgender == 2) %>%
+  filter(!if_all(values_f_1:values_f_21, is.na)) %>%
+  summarise(across(values_f_1:values_f_21,
+                   ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(),
+               names_to = "item",
+               values_to = "pct_missing")
+
+range(miss_f$pct_missing)
+
+miss_n <- dt4 %>%
+  filter(valuesgender == 3) %>%
+  filter(!if_all(values_n_1:values_n_21, is.na)) %>%
+  summarise(across(values_n_1:values_n_21,
+                   ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(),
+               names_to = "item",
+               values_to = "pct_missing")
+
+range(miss_n$pct_missing)
+
+# moral foundations
+miss_summary <- dt4 %>% 
+  select(MFQ_1:MFQ_36) %>%
+  summarise(across(everything(),
+                   ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(),
+               names_to = "item",
+               values_to = "pct_missing")
+  
+range(miss_summary$pct_missing)
+```
+
+## Dignity, Honor, and Face Cultural Logics
+
+See pilot section for code. 
+
+## Prosocial Behavior 
+
+The results of both our pretests and the main study suggest that the behavioral patterns observed in this procedure are comparable to those observed in incentivized versions of these games. In the dictator game, 95% of all participants gave away some of their endowment, with an average donation of 48% of the endowment. This is larger than the average of 28% identified in an earlier meta-analysis of the incentivized version of the game (1), but note that the same meta-analysis found large cross-cultural differences in giving: in Western samples, where the majority of studies were conducted, the modal behavior was giving nothing, whereas in non-Western samples, the modal response was giving half. Considering the diversity of our sample, the giving rate of 48% is consistent with these results. 
+
+```{r}
+#dictator game
+dt4$dictator_cpass <- ifelse((dt4$Dictator.comp1.1_dich=="Correct"|dt4$Dictator.comp2.1_dich=="Correct")&(dt4$Dictator.comp1.2_dich=="Correct"|dt4$Dictator.comp2.2_dich=="Correct"),1,0)
+table(dt4$dictator_cpass, useNA = "ifany")
+dt5 <- subset(dt4, dictator_cpass==1) 
+##use dt5 for all tests that involve the Dictator Game##
+
+# dictator = universal prosociality for our experiment
+dt5$prosocial <- as.numeric(dt5$Dictator_decision)
+# examine the data 
+describe(dt5$prosocial) #Mean=4.77, SD=1.75, median=5
+```
+
+In the ultimatum game, in the role of the Receiver, 75% of participants rejected offers below 20%, compared to about 50% in incentivized games (2). In the role of the Proposer, on average, they proposed about 49%, which is in line with the average of 40-50% found in incentivized games (2). Additionally, we observed significant correlations between the behavioral measures of positive and negative reciprocity from this adaptation of the ultimatum game and their corresponding self-reported measures. 
+
+```{r}
+#ultimatum game
+dt4$ultimatum_cpass <- ifelse((dt4$Ultimatum.comp.1.1_dich=="Correct"|dt4$Ultimatum.comp.2.1_dich=="Correct")&(dt4$Ultimatum.comp.1.2_dich=="Correct"|dt4$Ultimatum.comp.2.2_dich=="Correct"),1,0)
+dt6 <- subset(dt4, ultimatum_cpass==1) #N=20626
+
+##use dt6 for all tests that involve the Ultimatum Game##
+
+# ultimatum_receiver = negative reciprocity
+# select those rows 
+receiver <- dt6 %>% 
+  select(ResponseId, `Ultimatum.Receiver_1`:`Ultimatum.Receiver_11`)
+
+# convert to long format for scoring
+receiver_long <- receiver %>%
+  pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
+
+# score the ultimatum receiver game - adapted for the coding (1=accept, 2=reject)
+receiver_long$change <- ifelse(receiver_long$decision == 1 & 
+                                 (((receiver_long$decision != dplyr::lag(receiver_long$decision))==TRUE)|
+                                    (receiver_long$proposed=="Ultimatum.Receiver_1")),1,0)
+
+
+receiver_long$proposed <- str_remove(receiver_long$proposed, "Ultimatum.Receiver_")
+receiver_long$UG_negrec <- ifelse(receiver_long$change==1, receiver_long$proposed, 0)
+
+neg_rec_df <- subset(receiver_long, receiver_long$UG_negrec!=0)
+neg_rec_df$dupl <- ifelse(duplicated(neg_rec_df$ResponseId)==TRUE, 1, 0)
+neg_rec_df <- subset(neg_rec_df, neg_rec_df$dupl==0)
+neg_rec_df <- neg_rec_df %>% 
+  select(ResponseId, UG_negrec)
+
+# Merge with dt6
+dt6 <- merge(dt6, neg_rec_df, by="ResponseId")
+dt6$UG_negrec <- as.numeric(dt6$UG_negrec)
+
+# examine data
+# 100*table(dt6$`Ultimatum.Receiver_1`) %>% prop.table() 
+100*table(dt6$`Ultimatum.Receiver_2`) %>% prop.table() 
+# 100*table(dt6$`Ultimatum.Receiver_3`) %>% prop.table() 
+# 100*table(dt6$`Ultimatum.Receiver_4`) %>% prop.table() 
+# 100*table(dt6$`Ultimatum.Receiver_5`) %>% prop.table() 
+
+# ultimatum_proposer = positive reciprocity
+proposer <- dt6 %>% 
+  select(ResponseId, `Ultimatum.Proposer_1`:`Ultimatum.Proposer_11`)
+
+# pivot longer to score the data 
+proposer_long <- proposer %>%
+  pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
+
+proposer_long$proposed <- str_remove(proposer_long$proposed, "Ultimatum.Proposer_")
+proposer_long[, c("proposed", "decision")] <- lapply(proposer_long[, c("proposed", "decision")], as.numeric)
+proposer_long$proposed <- proposer_long$proposed - 1
+
+# cor.test(proposer_long$proposed, proposer_long$decision) 
+# r between proposal to and from = .605***  
+describe(proposer_long$decision) 
+# m=4.89 (4.89/11*100=44.5%)
+
+proposer_long$pr <- ifelse(proposer_long$decision >= proposer_long$proposed, 1, 0)
+pos_rec_df <- aggregate(proposer_long$pr, by=list(proposer_long$ResponseId), FUN=sum)
+pos_rec_df$UG_posrec <- (pos_rec_df$x/11)*100
+pos_rec_df$ResponseId <- pos_rec_df$Group.1
+pos_rec_df <- pos_rec_df %>% 
+  select(ResponseId, UG_posrec)
+
+# create merged dataset
+dt6 <- merge(dt6, pos_rec_df, by="ResponseId")
+```
+
+Behavioral positive reciprocity correlated positively with self-reported positive reciprocity (r=.13***) and negatively with self-reported negative reciprocity (r=-.03***); behavioral negative reciprocity correlated positively with self-reported negative reciprocity (r=.11***) and negatively with self-reported positive reciprocity (r=-.04***), supporting the construct validity of these behavioral measures. These findings are in line with a growing body of literature indicating that designs using imaginary and real rewards produce very consistent findings (3–5).
+
+```{r}
+# examine correlations (adapted variable names)
+cor.test(dt6$Positive_Reciprocity, dt6$UG_posrec) 
+cor.test(dt6$Positive_Reciprocity, dt6$UG_negrec) 
+
+cor.test(dt6$Negative_Reciprocity, dt6$UG_negrec) 
+cor.test(dt6$Negative_Reciprocity, dt6$UG_posrec)
+```
