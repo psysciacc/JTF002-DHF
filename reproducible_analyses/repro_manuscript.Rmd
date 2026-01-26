@@ -333,7 +333,7 @@ table(dt4$religion, useNA = "ifany")
 prop.table(table(dt4$religion)) #26% No affiliation, 43% Christian, 16% Muslim, 2% Jewish, 2% Hindu, 3% Buddhist, 8% other or do not want to respond
 ```
 
-Table S1
+## Table S1
 
 ```{r}
 dt4 <- dt4 %>%
@@ -411,6 +411,8 @@ final_table <- language_summary %>%
            Largest_Religious, Students)
 
 final_table
+
+### missing ethnicity ### 
 ```
 
 ## Missing Data
@@ -626,3 +628,5 @@ cor.test(dt6$Positive_Reciprocity, dt6$UG_negrec)
 cor.test(dt6$Negative_Reciprocity, dt6$UG_negrec) 
 cor.test(dt6$Negative_Reciprocity, dt6$UG_posrec)
 ```
+
+## Pilot Study 1
