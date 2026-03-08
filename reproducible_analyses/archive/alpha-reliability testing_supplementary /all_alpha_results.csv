@@ -1,0 +1,2184 @@
+"Country","Scale","N","Valid_Items","Total_Items","Alpha"
+"Overall","Positive_Reciprocity",23590,3,3,0.729
+"Overall","Negative_Reciprocity",23591,3,3,0.829
+"Overall","Penal_Code_Violence",26206,3,3,0.787
+"Overall","War_Acceptance",26201,3,3,0.648
+"Overall","Corporal_Punishment",26209,3,3,0.832
+"Overall","Intimate_Violence",26029,3,3,0.661
+"Overall","Total_Violence_Scale",25982,12,12,0.826
+"Overall","Other_Face_Concern",26065,6,6,0.861
+"Overall","Self_Face_Concern",26073,4,4,0.816
+"Overall","Withdrawal",23260,3,3,0.595
+"Overall","Retaliation",23257,3,3,0.68
+"Overall","Humor",23254,3,3,0.721
+"Overall","MFQ_Care",22970,6,6,0.868
+"Overall","MFQ_Equality",22983,6,6,0.837
+"Overall","MFQ_Proportionality",22977,6,6,0.781
+"Overall","MFQ_Loyalty",22960,6,6,0.837
+"Overall","MFQ_Authority",22961,6,6,0.84
+"Overall","MFQ_Purity",22819,6,6,0.778
+"Overall","Intrinsic_Religiosity",22966,3,3,0.91
+"Overall","Subjective_Wellbeing",22937,5,5,0.862
+"Overall","Conformity",23208,2,2,0.588
+"Overall","Tradition",23211,2,2,0.356
+"Overall","Benevolence",23209,2,2,0.617
+"Overall","Universalism",23198,3,3,0.576
+"Overall","Self_Direction",23213,2,2,0.477
+"Overall","Stimulation",23211,2,2,0.691
+"Overall","Hedonism",23208,2,2,0.661
+"Overall","Achievement",23211,2,2,0.688
+"Overall","Power",23214,2,2,0.529
+"Overall","Security",23210,2,2,0.511
+"Overall","Self_Transcendence",23187,5,5,0.71
+"Overall","Self_Enhancement",23204,4,4,0.738
+"Overall","Openness_to_Change",23192,6,6,0.736
+"Overall","Conservation",23188,6,6,0.691
+"United States","Positive_Reciprocity",1577,3,3,0.765
+"United States","Negative_Reciprocity",1577,3,3,0.806
+"United States","Penal_Code_Violence",1577,3,3,0.718
+"United States","War_Acceptance",1575,3,3,0.708
+"United States","Corporal_Punishment",1577,3,3,0.859
+"United States","Intimate_Violence",1577,3,3,0.69
+"United States","Total_Violence_Scale",1575,12,12,0.836
+"United States","Other_Face_Concern",1569,6,6,0.829
+"United States","Self_Face_Concern",1570,4,4,0.766
+"United States","Withdrawal",1564,3,3,0.618
+"United States","Retaliation",1564,3,3,0.667
+"United States","Humor",1563,3,3,0.714
+"United States","MFQ_Care",1540,6,6,0.868
+"United States","MFQ_Equality",1540,6,6,0.82
+"United States","MFQ_Proportionality",1540,6,6,0.752
+"United States","MFQ_Loyalty",1536,6,6,0.779
+"United States","MFQ_Authority",1539,6,6,0.817
+"United States","MFQ_Purity",1540,6,6,0.788
+"United States","Intrinsic_Religiosity",1542,3,3,0.916
+"United States","Subjective_Wellbeing",1540,5,5,0.855
+"United States","Conformity",1551,2,2,0.593
+"United States","Tradition",1550,2,2,0.388
+"United States","Benevolence",1551,2,2,0.642
+"United States","Universalism",1551,3,3,0.562
+"United States","Self_Direction",1550,2,2,0.451
+"United States","Stimulation",1551,2,2,0.718
+"United States","Hedonism",1551,2,2,0.621
+"United States","Achievement",1549,2,2,0.651
+"United States","Power",1551,2,2,0.479
+"United States","Security",1551,2,2,0.484
+"United States","Self_Transcendence",1551,5,5,0.721
+"United States","Self_Enhancement",1549,4,4,0.708
+"United States","Openness_to_Change",1550,6,6,0.741
+"United States","Conservation",1550,6,6,0.683
+"Hong Kong","Positive_Reciprocity",91,3,3,0.823
+"Hong Kong","Negative_Reciprocity",91,3,3,0.891
+"Hong Kong","Penal_Code_Violence",91,3,3,0.716
+"Hong Kong","War_Acceptance",91,3,3,0.712
+"Hong Kong","Corporal_Punishment",91,3,3,0.764
+"Hong Kong","Intimate_Violence",91,3,3,0.377
+"Hong Kong","Total_Violence_Scale",91,12,12,0.78
+"Hong Kong","Other_Face_Concern",91,6,6,0.79
+"Hong Kong","Self_Face_Concern",91,4,4,0.789
+"Hong Kong","Withdrawal",90,3,3,0.568
+"Hong Kong","Retaliation",90,3,3,0.618
+"Hong Kong","Humor",90,3,3,0.613
+"Hong Kong","MFQ_Care",90,6,6,0.87
+"Hong Kong","MFQ_Equality",90,6,6,0.849
+"Hong Kong","MFQ_Proportionality",90,6,6,0.721
+"Hong Kong","MFQ_Loyalty",90,6,6,0.798
+"Hong Kong","MFQ_Authority",90,6,6,0.802
+"Hong Kong","MFQ_Purity",90,6,6,0.761
+"Hong Kong","Intrinsic_Religiosity",90,3,3,0.933
+"Hong Kong","Subjective_Wellbeing",90,5,5,0.844
+"Hong Kong","Conformity",90,2,2,0.528
+"Hong Kong","Tradition",90,2,2,0.26
+"Hong Kong","Benevolence",90,2,2,0.651
+"Hong Kong","Universalism",90,3,3,0.672
+"Hong Kong","Self_Direction",90,2,2,0.294
+"Hong Kong","Stimulation",90,2,2,0.665
+"Hong Kong","Hedonism",90,2,2,0.564
+"Hong Kong","Achievement",90,2,2,0.723
+"Hong Kong","Power",90,2,2,0.415
+"Hong Kong","Security",90,2,2,0.446
+"Hong Kong","Self_Transcendence",90,5,5,0.764
+"Hong Kong","Self_Enhancement",90,4,4,0.736
+"Hong Kong","Openness_to_Change",90,6,6,0.63
+"Hong Kong","Conservation",90,6,6,0.655
+"United Kingdom","Positive_Reciprocity",514,3,3,0.78
+"United Kingdom","Negative_Reciprocity",514,3,3,0.832
+"United Kingdom","Penal_Code_Violence",514,3,3,0.81
+"United Kingdom","War_Acceptance",514,3,3,0.746
+"United Kingdom","Corporal_Punishment",514,3,3,0.881
+"United Kingdom","Intimate_Violence",514,3,3,0.747
+"United Kingdom","Total_Violence_Scale",514,12,12,0.868
+"United Kingdom","Other_Face_Concern",510,6,6,0.86
+"United Kingdom","Self_Face_Concern",510,4,4,0.803
+"United Kingdom","Withdrawal",510,3,3,0.638
+"United Kingdom","Retaliation",510,3,3,0.702
+"United Kingdom","Humor",511,3,3,0.689
+"United Kingdom","MFQ_Care",503,6,6,0.884
+"United Kingdom","MFQ_Equality",505,6,6,0.83
+"United Kingdom","MFQ_Proportionality",504,6,6,0.811
+"United Kingdom","MFQ_Loyalty",504,6,6,0.847
+"United Kingdom","MFQ_Authority",505,6,6,0.868
+"United Kingdom","MFQ_Purity",505,6,6,0.807
+"United Kingdom","Intrinsic_Religiosity",506,3,3,0.938
+"United Kingdom","Subjective_Wellbeing",504,5,5,0.884
+"United Kingdom","Conformity",509,2,2,0.698
+"United Kingdom","Tradition",509,2,2,0.364
+"United Kingdom","Benevolence",509,2,2,0.596
+"United Kingdom","Universalism",509,3,3,0.579
+"United Kingdom","Self_Direction",509,2,2,0.509
+"United Kingdom","Stimulation",509,2,2,0.764
+"United Kingdom","Hedonism",509,2,2,0.717
+"United Kingdom","Achievement",509,2,2,0.779
+"United Kingdom","Power",509,2,2,0.644
+"United Kingdom","Security",509,2,2,0.447
+"United Kingdom","Self_Transcendence",509,5,5,0.72
+"United Kingdom","Self_Enhancement",509,4,4,0.808
+"United Kingdom","Openness_to_Change",509,6,6,0.763
+"United Kingdom","Conservation",509,6,6,0.729
+"Canada","Positive_Reciprocity",701,3,3,0.729
+"Canada","Negative_Reciprocity",701,3,3,0.803
+"Canada","Penal_Code_Violence",701,3,3,0.785
+"Canada","War_Acceptance",701,3,3,0.74
+"Canada","Corporal_Punishment",701,3,3,0.863
+"Canada","Intimate_Violence",700,3,3,0.551
+"Canada","Total_Violence_Scale",700,12,12,0.825
+"Canada","Other_Face_Concern",700,6,6,0.834
+"Canada","Self_Face_Concern",700,4,4,0.781
+"Canada","Withdrawal",698,3,3,0.662
+"Canada","Retaliation",699,3,3,0.638
+"Canada","Humor",698,3,3,0.712
+"Canada","MFQ_Care",695,6,6,0.861
+"Canada","MFQ_Equality",693,6,6,0.803
+"Canada","MFQ_Proportionality",694,6,6,0.745
+"Canada","MFQ_Loyalty",695,6,6,0.787
+"Canada","MFQ_Authority",694,6,6,0.832
+"Canada","MFQ_Purity",695,6,6,0.754
+"Canada","Intrinsic_Religiosity",695,3,3,0.92
+"Canada","Subjective_Wellbeing",695,5,5,0.863
+"Canada","Conformity",697,2,2,0.607
+"Canada","Tradition",697,2,2,0.301
+"Canada","Benevolence",697,2,2,0.591
+"Canada","Universalism",697,3,3,0.503
+"Canada","Self_Direction",697,2,2,0.446
+"Canada","Stimulation",697,2,2,0.734
+"Canada","Hedonism",697,2,2,0.663
+"Canada","Achievement",697,2,2,0.651
+"Canada","Power",697,2,2,0.407
+"Canada","Security",697,2,2,0.484
+"Canada","Self_Transcendence",697,5,5,0.667
+"Canada","Self_Enhancement",697,4,4,0.664
+"Canada","Openness_to_Change",697,6,6,0.702
+"Canada","Conservation",697,6,6,0.648
+"China","Positive_Reciprocity",364,3,3,0.754
+"China","Negative_Reciprocity",364,3,3,0.857
+"China","Penal_Code_Violence",363,3,3,0.709
+"China","War_Acceptance",363,3,3,0.409
+"China","Corporal_Punishment",363,3,3,0.703
+"China","Intimate_Violence",363,3,3,0.534
+"China","Total_Violence_Scale",363,12,12,0.703
+"China","Other_Face_Concern",362,6,6,0.855
+"China","Self_Face_Concern",362,4,4,0.71
+"China","Withdrawal",361,3,3,0.683
+"China","Retaliation",361,3,3,0.666
+"China","Humor",361,3,3,0.731
+"China","MFQ_Care",359,6,6,0.888
+"China","MFQ_Equality",359,6,6,0.828
+"China","MFQ_Proportionality",359,6,6,0.796
+"China","MFQ_Loyalty",359,6,6,0.894
+"China","MFQ_Authority",358,6,6,0.797
+"China","MFQ_Purity",359,6,6,0.735
+"China","Intrinsic_Religiosity",359,3,3,0.823
+"China","Subjective_Wellbeing",359,5,5,0.874
+"China","Conformity",360,2,2,0.507
+"China","Tradition",360,2,2,0.42
+"China","Benevolence",360,2,2,0.502
+"China","Universalism",360,3,3,0.592
+"China","Self_Direction",360,2,2,0.544
+"China","Stimulation",360,2,2,0.745
+"China","Hedonism",360,2,2,0.585
+"China","Achievement",359,2,2,0.696
+"China","Power",360,2,2,0.36
+"China","Security",360,2,2,0.525
+"China","Self_Transcendence",360,5,5,0.704
+"China","Self_Enhancement",359,4,4,0.629
+"China","Openness_to_Change",360,6,6,0.786
+"China","Conservation",360,6,6,0.66
+"India","Positive_Reciprocity",388,3,3,0.724
+"India","Negative_Reciprocity",388,3,3,0.818
+"India","Penal_Code_Violence",388,3,3,0.63
+"India","War_Acceptance",388,3,3,0.624
+"India","Corporal_Punishment",387,3,3,0.782
+"India","Intimate_Violence",386,3,3,0.56
+"India","Total_Violence_Scale",385,12,12,0.756
+"India","Other_Face_Concern",375,6,6,0.834
+"India","Self_Face_Concern",374,4,4,0.785
+"India","Withdrawal",281,3,3,0.61
+"India","Retaliation",281,3,3,0.62
+"India","Humor",281,3,3,0.648
+"India","MFQ_Care",353,6,6,0.875
+"India","MFQ_Equality",354,6,6,0.821
+"India","MFQ_Proportionality",354,6,6,0.754
+"India","MFQ_Loyalty",352,6,6,0.812
+"India","MFQ_Authority",354,6,6,0.855
+"India","MFQ_Purity",352,6,6,0.755
+"India","Intrinsic_Religiosity",351,3,3,0.823
+"India","Subjective_Wellbeing",350,5,5,0.832
+"India","Conformity",364,2,2,0.518
+"India","Tradition",364,2,2,0.131
+"India","Benevolence",364,2,2,0.579
+"India","Universalism",363,3,3,0.536
+"India","Self_Direction",364,2,2,0.488
+"India","Stimulation",363,2,2,0.628
+"India","Hedonism",364,2,2,0.481
+"India","Achievement",364,2,2,0.661
+"India","Power",364,2,2,0.48
+"India","Security",364,2,2,0.46
+"India","Self_Transcendence",363,5,5,0.681
+"India","Self_Enhancement",364,4,4,0.69
+"India","Openness_to_Change",363,6,6,0.679
+"India","Conservation",364,6,6,0.576
+"Saudi Arabia","Positive_Reciprocity",152,3,3,0.727
+"Saudi Arabia","Negative_Reciprocity",151,3,3,0.763
+"Saudi Arabia","Penal_Code_Violence",151,3,3,0.64
+"Saudi Arabia","War_Acceptance",151,3,3,0.482
+"Saudi Arabia","Corporal_Punishment",151,3,3,0.651
+"Saudi Arabia","Intimate_Violence",124,3,3,0.556
+"Saudi Arabia","Total_Violence_Scale",124,12,12,0.703
+"Saudi Arabia","Other_Face_Concern",149,6,6,0.813
+"Saudi Arabia","Self_Face_Concern",149,4,4,0.686
+"Saudi Arabia","Withdrawal",149,3,3,0.552
+"Saudi Arabia","Retaliation",148,3,3,0.687
+"Saudi Arabia","Humor",148,3,3,0.645
+"Saudi Arabia","MFQ_Care",141,6,6,0.84
+"Saudi Arabia","MFQ_Equality",142,6,6,0.756
+"Saudi Arabia","MFQ_Proportionality",142,6,6,0.786
+"Saudi Arabia","MFQ_Loyalty",142,6,6,0.841
+"Saudi Arabia","MFQ_Authority",141,6,6,0.77
+"Saudi Arabia","MFQ_Purity",142,6,6,0.647
+"Saudi Arabia","Intrinsic_Religiosity",141,3,3,0.62
+"Saudi Arabia","Subjective_Wellbeing",141,5,5,0.844
+"Saudi Arabia","Conformity",147,2,2,0.531
+"Saudi Arabia","Tradition",147,2,2,0.3
+"Saudi Arabia","Benevolence",147,2,2,0.614
+"Saudi Arabia","Universalism",147,3,3,0.568
+"Saudi Arabia","Self_Direction",147,2,2,0.377
+"Saudi Arabia","Stimulation",147,2,2,0.745
+"Saudi Arabia","Hedonism",147,2,2,0.442
+"Saudi Arabia","Achievement",147,2,2,0.732
+"Saudi Arabia","Power",147,2,2,0.683
+"Saudi Arabia","Security",147,2,2,0.515
+"Saudi Arabia","Self_Transcendence",147,5,5,0.671
+"Saudi Arabia","Self_Enhancement",147,4,4,0.743
+"Saudi Arabia","Openness_to_Change",147,6,6,0.69
+"Saudi Arabia","Conservation",147,6,6,0.613
+"Israel","Positive_Reciprocity",444,3,3,0.642
+"Israel","Negative_Reciprocity",444,3,3,0.792
+"Israel","Penal_Code_Violence",444,3,3,0.697
+"Israel","War_Acceptance",444,3,3,0.484
+"Israel","Corporal_Punishment",444,3,3,0.833
+"Israel","Intimate_Violence",439,3,3,0.618
+"Israel","Total_Violence_Scale",439,12,12,0.76
+"Israel","Other_Face_Concern",442,6,6,0.873
+"Israel","Self_Face_Concern",442,4,4,0.747
+"Israel","Withdrawal",443,3,3,0.57
+"Israel","Retaliation",443,3,3,0.578
+"Israel","Humor",443,3,3,0.641
+"Israel","MFQ_Care",442,6,6,0.834
+"Israel","MFQ_Equality",442,6,6,0.822
+"Israel","MFQ_Proportionality",441,6,6,0.704
+"Israel","MFQ_Loyalty",441,6,6,0.74
+"Israel","MFQ_Authority",439,6,6,0.693
+"Israel","MFQ_Purity",436,6,6,0.638
+"Israel","Intrinsic_Religiosity",442,3,3,0.937
+"Israel","Subjective_Wellbeing",443,5,5,0.827
+"Israel","Conformity",443,2,2,0.598
+"Israel","Tradition",443,2,2,0.334
+"Israel","Benevolence",443,2,2,0.576
+"Israel","Universalism",443,3,3,0.518
+"Israel","Self_Direction",443,2,2,0.444
+"Israel","Stimulation",443,2,2,0.74
+"Israel","Hedonism",443,2,2,0.624
+"Israel","Achievement",443,2,2,0.741
+"Israel","Power",443,2,2,0.489
+"Israel","Security",443,2,2,0.377
+"Israel","Self_Transcendence",443,5,5,0.64
+"Israel","Self_Enhancement",443,4,4,0.738
+"Israel","Openness_to_Change",443,6,6,0.713
+"Israel","Conservation",443,6,6,0.58
+"New Zealand","Positive_Reciprocity",229,3,3,0.817
+"New Zealand","Negative_Reciprocity",229,3,3,0.82
+"New Zealand","Penal_Code_Violence",229,3,3,0.728
+"New Zealand","War_Acceptance",229,3,3,0.652
+"New Zealand","Corporal_Punishment",229,3,3,0.843
+"New Zealand","Intimate_Violence",229,3,3,0.6
+"New Zealand","Total_Violence_Scale",229,12,12,0.796
+"New Zealand","Other_Face_Concern",226,6,6,0.864
+"New Zealand","Self_Face_Concern",226,4,4,0.78
+"New Zealand","Withdrawal",223,3,3,0.647
+"New Zealand","Retaliation",223,3,3,0.677
+"New Zealand","Humor",223,3,3,0.653
+"New Zealand","MFQ_Care",222,6,6,0.879
+"New Zealand","MFQ_Equality",222,6,6,0.848
+"New Zealand","MFQ_Proportionality",222,6,6,0.82
+"New Zealand","MFQ_Loyalty",222,6,6,0.76
+"New Zealand","MFQ_Authority",222,6,6,0.813
+"New Zealand","MFQ_Purity",221,6,6,0.736
+"New Zealand","Intrinsic_Religiosity",221,3,3,0.893
+"New Zealand","Subjective_Wellbeing",221,5,5,0.851
+"New Zealand","Conformity",222,2,2,0.676
+"New Zealand","Tradition",222,2,2,0.34
+"New Zealand","Benevolence",222,2,2,0.678
+"New Zealand","Universalism",222,3,3,0.592
+"New Zealand","Self_Direction",222,2,2,0.389
+"New Zealand","Stimulation",222,2,2,0.77
+"New Zealand","Hedonism",222,2,2,0.684
+"New Zealand","Achievement",222,2,2,0.657
+"New Zealand","Power",222,2,2,0.463
+"New Zealand","Security",222,2,2,0.539
+"New Zealand","Self_Transcendence",222,5,5,0.7
+"New Zealand","Self_Enhancement",222,4,4,0.706
+"New Zealand","Openness_to_Change",222,6,6,0.72
+"New Zealand","Conservation",222,6,6,0.669
+"Argentina","Positive_Reciprocity",139,3,3,0.787
+"Argentina","Negative_Reciprocity",139,3,3,0.868
+"Argentina","Penal_Code_Violence",139,3,3,0.902
+"Argentina","War_Acceptance",139,3,3,0.708
+"Argentina","Corporal_Punishment",139,3,3,0.874
+"Argentina","Intimate_Violence",139,3,3,0.728
+"Argentina","Total_Violence_Scale",139,12,12,0.842
+"Argentina","Other_Face_Concern",137,6,6,0.819
+"Argentina","Self_Face_Concern",136,4,4,0.765
+"Argentina","Withdrawal",136,3,3,0.65
+"Argentina","Retaliation",136,3,3,0.739
+"Argentina","Humor",136,3,3,0.725
+"Argentina","MFQ_Care",131,6,6,0.894
+"Argentina","MFQ_Equality",131,6,6,0.851
+"Argentina","MFQ_Proportionality",131,6,6,0.775
+"Argentina","MFQ_Loyalty",131,6,6,0.836
+"Argentina","MFQ_Authority",131,6,6,0.815
+"Argentina","MFQ_Purity",131,6,6,0.723
+"Argentina","Intrinsic_Religiosity",131,3,3,0.909
+"Argentina","Subjective_Wellbeing",130,5,5,0.902
+"Argentina","Conformity",134,2,2,0.474
+"Argentina","Tradition",134,2,2,0.263
+"Argentina","Benevolence",134,2,2,0.658
+"Argentina","Universalism",134,3,3,0.555
+"Argentina","Self_Direction",134,2,2,0.39
+"Argentina","Stimulation",134,2,2,0.695
+"Argentina","Hedonism",134,2,2,0.546
+"Argentina","Achievement",134,2,2,0.757
+"Argentina","Power",134,2,2,0.539
+"Argentina","Security",134,2,2,0.263
+"Argentina","Self_Transcendence",134,5,5,0.716
+"Argentina","Self_Enhancement",134,4,4,0.742
+"Argentina","Openness_to_Change",134,6,6,0.72
+"Argentina","Conservation",134,6,6,0.56
+"Italy","Positive_Reciprocity",566,3,3,0.8
+"Italy","Negative_Reciprocity",566,3,3,0.834
+"Italy","Penal_Code_Violence",566,3,3,0.867
+"Italy","War_Acceptance",565,3,3,0.74
+"Italy","Corporal_Punishment",565,3,3,0.818
+"Italy","Intimate_Violence",564,3,3,0.696
+"Italy","Total_Violence_Scale",564,12,12,0.846
+"Italy","Other_Face_Concern",564,6,6,0.79
+"Italy","Self_Face_Concern",564,4,4,0.739
+"Italy","Withdrawal",564,3,3,0.604
+"Italy","Retaliation",564,3,3,0.677
+"Italy","Humor",564,3,3,0.713
+"Italy","MFQ_Care",559,6,6,0.876
+"Italy","MFQ_Equality",560,6,6,0.853
+"Italy","MFQ_Proportionality",560,6,6,0.789
+"Italy","MFQ_Loyalty",560,6,6,0.817
+"Italy","MFQ_Authority",560,6,6,0.864
+"Italy","MFQ_Purity",560,6,6,0.724
+"Italy","Intrinsic_Religiosity",559,3,3,0.906
+"Italy","Subjective_Wellbeing",557,5,5,0.87
+"Italy","Conformity",562,2,2,0.524
+"Italy","Tradition",562,2,2,0.297
+"Italy","Benevolence",562,2,2,0.678
+"Italy","Universalism",562,3,3,0.612
+"Italy","Self_Direction",562,2,2,0.533
+"Italy","Stimulation",562,2,2,0.581
+"Italy","Hedonism",562,2,2,0.688
+"Italy","Achievement",562,2,2,0.728
+"Italy","Power",562,2,2,0.441
+"Italy","Security",562,2,2,0.492
+"Italy","Self_Transcendence",562,5,5,0.747
+"Italy","Self_Enhancement",562,4,4,0.725
+"Italy","Openness_to_Change",562,6,6,0.707
+"Italy","Conservation",562,6,6,0.658
+"Switzerland","Positive_Reciprocity",91,3,3,0.787
+"Switzerland","Negative_Reciprocity",91,3,3,0.873
+"Switzerland","Penal_Code_Violence",91,3,3,0.744
+"Switzerland","War_Acceptance",91,3,3,0.775
+"Switzerland","Corporal_Punishment",91,3,3,0.862
+"Switzerland","Intimate_Violence",91,3,3,0.402
+"Switzerland","Total_Violence_Scale",91,12,12,0.78
+"Switzerland","Other_Face_Concern",91,6,6,0.8
+"Switzerland","Self_Face_Concern",91,4,4,0.782
+"Switzerland","Withdrawal",91,3,3,0.625
+"Switzerland","Retaliation",91,3,3,0.523
+"Switzerland","Humor",91,3,3,0.741
+"Switzerland","MFQ_Care",91,6,6,0.892
+"Switzerland","MFQ_Equality",91,6,6,0.802
+"Switzerland","MFQ_Proportionality",91,6,6,0.803
+"Switzerland","MFQ_Loyalty",91,6,6,0.789
+"Switzerland","MFQ_Authority",91,6,6,0.84
+"Switzerland","MFQ_Purity",91,6,6,0.778
+"Switzerland","Intrinsic_Religiosity",91,3,3,0.916
+"Switzerland","Subjective_Wellbeing",91,5,5,0.89
+"Switzerland","Conformity",91,2,2,0.539
+"Switzerland","Tradition",91,2,2,0.185
+"Switzerland","Benevolence",91,2,2,0.644
+"Switzerland","Universalism",91,3,3,0.524
+"Switzerland","Self_Direction",90,2,2,0.471
+"Switzerland","Stimulation",91,2,2,0.797
+"Switzerland","Hedonism",91,2,2,0.759
+"Switzerland","Achievement",91,2,2,0.616
+"Switzerland","Power",91,2,2,0.267
+"Switzerland","Security",91,2,2,0.442
+"Switzerland","Self_Transcendence",91,5,5,0.67
+"Switzerland","Self_Enhancement",91,4,4,0.693
+"Switzerland","Openness_to_Change",90,6,6,0.771
+"Switzerland","Conservation",91,6,6,0.595
+"Australia","Positive_Reciprocity",905,3,3,0.787
+"Australia","Negative_Reciprocity",905,3,3,0.854
+"Australia","Penal_Code_Violence",885,3,3,0.824
+"Australia","War_Acceptance",885,3,3,0.723
+"Australia","Corporal_Punishment",885,3,3,0.864
+"Australia","Intimate_Violence",885,3,3,0.657
+"Australia","Total_Violence_Scale",885,12,12,0.842
+"Australia","Other_Face_Concern",903,6,6,0.858
+"Australia","Self_Face_Concern",903,4,4,0.778
+"Australia","Withdrawal",902,3,3,0.648
+"Australia","Retaliation",902,3,3,0.724
+"Australia","Humor",902,3,3,0.722
+"Australia","MFQ_Care",896,6,6,0.891
+"Australia","MFQ_Equality",896,6,6,0.833
+"Australia","MFQ_Proportionality",896,6,6,0.802
+"Australia","MFQ_Loyalty",897,6,6,0.801
+"Australia","MFQ_Authority",895,6,6,0.828
+"Australia","MFQ_Purity",897,6,6,0.762
+"Australia","Intrinsic_Religiosity",896,3,3,0.939
+"Australia","Subjective_Wellbeing",896,5,5,0.878
+"Australia","Conformity",900,2,2,0.654
+"Australia","Tradition",900,2,2,0.33
+"Australia","Benevolence",900,2,2,0.66
+"Australia","Universalism",899,3,3,0.586
+"Australia","Self_Direction",900,2,2,0.487
+"Australia","Stimulation",900,2,2,0.777
+"Australia","Hedonism",900,2,2,0.706
+"Australia","Achievement",900,2,2,0.75
+"Australia","Power",900,2,2,0.518
+"Australia","Security",900,2,2,0.481
+"Australia","Self_Transcendence",899,5,5,0.695
+"Australia","Self_Enhancement",900,4,4,0.768
+"Australia","Openness_to_Change",900,6,6,0.738
+"Australia","Conservation",900,6,6,0.692
+"Romania","Positive_Reciprocity",478,3,3,0.759
+"Romania","Negative_Reciprocity",478,3,3,0.843
+"Romania","Penal_Code_Violence",478,3,3,0.829
+"Romania","War_Acceptance",478,3,3,0.7
+"Romania","Corporal_Punishment",478,3,3,0.866
+"Romania","Intimate_Violence",477,3,3,0.604
+"Romania","Total_Violence_Scale",477,12,12,0.827
+"Romania","Other_Face_Concern",475,6,6,0.783
+"Romania","Self_Face_Concern",475,4,4,0.81
+"Romania","Withdrawal",472,3,3,0.52
+"Romania","Retaliation",472,3,3,0.699
+"Romania","Humor",473,3,3,0.715
+"Romania","MFQ_Care",455,6,6,0.891
+"Romania","MFQ_Equality",456,6,6,0.849
+"Romania","MFQ_Proportionality",456,6,6,0.77
+"Romania","MFQ_Loyalty",456,6,6,0.794
+"Romania","MFQ_Authority",456,6,6,0.834
+"Romania","MFQ_Purity",456,6,6,0.73
+"Romania","Intrinsic_Religiosity",457,3,3,0.924
+"Romania","Subjective_Wellbeing",454,5,5,0.895
+"Romania","Conformity",466,2,2,0.464
+"Romania","Tradition",466,2,2,0.402
+"Romania","Benevolence",466,2,2,0.607
+"Romania","Universalism",466,3,3,0.524
+"Romania","Self_Direction",466,2,2,0.428
+"Romania","Stimulation",466,2,2,0.667
+"Romania","Hedonism",466,2,2,0.772
+"Romania","Achievement",466,2,2,0.691
+"Romania","Power",466,2,2,0.506
+"Romania","Security",466,2,2,0.4
+"Romania","Self_Transcendence",466,5,5,0.687
+"Romania","Self_Enhancement",466,4,4,0.735
+"Romania","Openness_to_Change",466,6,6,0.744
+"Romania","Conservation",466,6,6,0.596
+"Serbia","Positive_Reciprocity",381,3,3,0.773
+"Serbia","Negative_Reciprocity",381,3,3,0.808
+"Serbia","Penal_Code_Violence",381,3,3,0.849
+"Serbia","War_Acceptance",381,3,3,0.642
+"Serbia","Corporal_Punishment",381,3,3,0.822
+"Serbia","Intimate_Violence",381,3,3,0.053
+"Serbia","Total_Violence_Scale",381,12,12,0.778
+"Serbia","Other_Face_Concern",380,6,6,0.787
+"Serbia","Self_Face_Concern",380,4,4,0.774
+"Serbia","Withdrawal",379,3,3,0.491
+"Serbia","Retaliation",379,3,3,0.623
+"Serbia","Humor",379,3,3,0.677
+"Serbia","MFQ_Care",372,6,6,0.871
+"Serbia","MFQ_Equality",372,6,6,0.854
+"Serbia","MFQ_Proportionality",372,6,6,0.759
+"Serbia","MFQ_Loyalty",372,6,6,0.849
+"Serbia","MFQ_Authority",372,6,6,0.883
+"Serbia","MFQ_Purity",372,6,6,0.75
+"Serbia","Intrinsic_Religiosity",372,3,3,0.902
+"Serbia","Subjective_Wellbeing",370,5,5,0.853
+"Serbia","Conformity",375,2,2,0.478
+"Serbia","Tradition",375,2,2,0.235
+"Serbia","Benevolence",375,2,2,0.588
+"Serbia","Universalism",375,3,3,0.534
+"Serbia","Self_Direction",375,2,2,0.402
+"Serbia","Stimulation",375,2,2,0.695
+"Serbia","Hedonism",375,2,2,0.767
+"Serbia","Achievement",375,2,2,0.687
+"Serbia","Power",375,2,2,0.506
+"Serbia","Security",375,2,2,0.506
+"Serbia","Self_Transcendence",375,5,5,0.667
+"Serbia","Self_Enhancement",375,4,4,0.719
+"Serbia","Openness_to_Change",375,6,6,0.689
+"Serbia","Conservation",375,6,6,0.665
+"United Arab Emirates","Positive_Reciprocity",62,3,3,0.778
+"United Arab Emirates","Negative_Reciprocity",62,3,3,0.761
+"United Arab Emirates","Penal_Code_Violence",62,3,3,0.625
+"United Arab Emirates","War_Acceptance",62,3,3,0.55
+"United Arab Emirates","Corporal_Punishment",62,3,3,0.791
+"United Arab Emirates","Intimate_Violence",62,3,3,0.307
+"United Arab Emirates","Total_Violence_Scale",62,12,12,0.79
+"United Arab Emirates","Other_Face_Concern",61,6,6,0.874
+"United Arab Emirates","Self_Face_Concern",61,4,4,0.879
+"United Arab Emirates","Withdrawal",61,3,3,0.517
+"United Arab Emirates","Retaliation",61,3,3,0.592
+"United Arab Emirates","Humor",61,3,3,0.73
+"United Arab Emirates","MFQ_Care",59,6,6,0.844
+"United Arab Emirates","MFQ_Equality",59,6,6,0.836
+"United Arab Emirates","MFQ_Proportionality",59,6,6,0.807
+"United Arab Emirates","MFQ_Loyalty",59,6,6,0.879
+"United Arab Emirates","MFQ_Authority",59,6,6,0.832
+"United Arab Emirates","MFQ_Purity",59,6,6,0.855
+"United Arab Emirates","Intrinsic_Religiosity",59,3,3,0.686
+"United Arab Emirates","Subjective_Wellbeing",59,5,5,0.824
+"United Arab Emirates","Conformity",61,2,2,0.573
+"United Arab Emirates","Tradition",61,2,2,0.569
+"United Arab Emirates","Benevolence",61,2,2,0.518
+"United Arab Emirates","Universalism",61,3,3,0.68
+"United Arab Emirates","Self_Direction",61,2,2,0.348
+"United Arab Emirates","Stimulation",61,2,2,0.666
+"United Arab Emirates","Hedonism",61,2,2,0.527
+"United Arab Emirates","Achievement",61,2,2,0.674
+"United Arab Emirates","Power",61,2,2,0.048
+"United Arab Emirates","Security",61,2,2,0.698
+"United Arab Emirates","Self_Transcendence",61,5,5,0.749
+"United Arab Emirates","Self_Enhancement",61,4,4,0.569
+"United Arab Emirates","Openness_to_Change",61,6,6,0.636
+"United Arab Emirates","Conservation",61,6,6,0.753
+"Malaysia","Positive_Reciprocity",310,3,3,0.675
+"Malaysia","Negative_Reciprocity",311,3,3,0.739
+"Malaysia","Penal_Code_Violence",311,3,3,0.652
+"Malaysia","War_Acceptance",311,3,3,0.523
+"Malaysia","Corporal_Punishment",311,3,3,0.549
+"Malaysia","Intimate_Violence",310,3,3,0.641
+"Malaysia","Total_Violence_Scale",310,12,12,0.704
+"Malaysia","Other_Face_Concern",303,6,6,0.763
+"Malaysia","Self_Face_Concern",306,4,4,0.709
+"Malaysia","Withdrawal",303,3,3,0.563
+"Malaysia","Retaliation",304,3,3,0.518
+"Malaysia","Humor",305,3,3,0.661
+"Malaysia","MFQ_Care",302,6,6,0.842
+"Malaysia","MFQ_Equality",302,6,6,0.774
+"Malaysia","MFQ_Proportionality",301,6,6,0.758
+"Malaysia","MFQ_Loyalty",302,6,6,0.749
+"Malaysia","MFQ_Authority",302,6,6,0.736
+"Malaysia","MFQ_Purity",302,6,6,0.685
+"Malaysia","Intrinsic_Religiosity",301,3,3,0.861
+"Malaysia","Subjective_Wellbeing",301,5,5,0.814
+"Malaysia","Conformity",302,2,2,0.442
+"Malaysia","Tradition",302,2,2,0.311
+"Malaysia","Benevolence",302,2,2,0.593
+"Malaysia","Universalism",302,3,3,0.505
+"Malaysia","Self_Direction",301,2,2,0.544
+"Malaysia","Stimulation",301,2,2,0.631
+"Malaysia","Hedonism",301,2,2,0.464
+"Malaysia","Achievement",302,2,2,0.645
+"Malaysia","Power",302,2,2,0.402
+"Malaysia","Security",302,2,2,0.443
+"Malaysia","Self_Transcendence",302,5,5,0.706
+"Malaysia","Self_Enhancement",302,4,4,0.703
+"Malaysia","Openness_to_Change",301,6,6,0.708
+"Malaysia","Conservation",302,6,6,0.619
+"Thailand","Positive_Reciprocity",308,3,3,0.76
+"Thailand","Negative_Reciprocity",308,3,3,0.844
+"Thailand","Penal_Code_Violence",308,3,3,0.798
+"Thailand","War_Acceptance",308,3,3,0.561
+"Thailand","Corporal_Punishment",308,3,3,0.672
+"Thailand","Intimate_Violence",308,3,3,0.57
+"Thailand","Total_Violence_Scale",308,12,12,0.79
+"Thailand","Other_Face_Concern",306,6,6,0.727
+"Thailand","Self_Face_Concern",306,4,4,0.621
+"Thailand","Withdrawal",305,3,3,0.722
+"Thailand","Retaliation",305,3,3,0.703
+"Thailand","Humor",305,3,3,0.774
+"Thailand","MFQ_Care",301,6,6,0.829
+"Thailand","MFQ_Equality",301,6,6,0.763
+"Thailand","MFQ_Proportionality",301,6,6,0.648
+"Thailand","MFQ_Loyalty",301,6,6,0.817
+"Thailand","MFQ_Authority",301,6,6,0.753
+"Thailand","MFQ_Purity",301,6,6,0.769
+"Thailand","Intrinsic_Religiosity",301,3,3,0.824
+"Thailand","Subjective_Wellbeing",301,5,5,0.857
+"Thailand","Conformity",304,2,2,0.507
+"Thailand","Tradition",304,2,2,-0.067
+"Thailand","Benevolence",304,2,2,0.49
+"Thailand","Universalism",304,3,3,0.442
+"Thailand","Self_Direction",304,2,2,0.484
+"Thailand","Stimulation",304,2,2,0.691
+"Thailand","Hedonism",304,2,2,0.529
+"Thailand","Achievement",304,2,2,0.613
+"Thailand","Power",304,2,2,0.487
+"Thailand","Security",304,2,2,0.42
+"Thailand","Self_Transcendence",304,5,5,0.616
+"Thailand","Self_Enhancement",304,4,4,0.696
+"Thailand","Openness_to_Change",304,6,6,0.703
+"Thailand","Conservation",304,6,6,0.411
+"Bosnia-Herzegovina","Positive_Reciprocity",399,3,3,0.75
+"Bosnia-Herzegovina","Negative_Reciprocity",399,3,3,0.85
+"Bosnia-Herzegovina","Penal_Code_Violence",399,3,3,0.838
+"Bosnia-Herzegovina","War_Acceptance",399,3,3,0.503
+"Bosnia-Herzegovina","Corporal_Punishment",399,3,3,0.794
+"Bosnia-Herzegovina","Intimate_Violence",399,3,3,0.242
+"Bosnia-Herzegovina","Total_Violence_Scale",399,12,12,0.727
+"Bosnia-Herzegovina","Other_Face_Concern",395,6,6,0.846
+"Bosnia-Herzegovina","Self_Face_Concern",395,4,4,0.763
+"Bosnia-Herzegovina","Withdrawal",389,3,3,0.533
+"Bosnia-Herzegovina","Retaliation",389,3,3,0.613
+"Bosnia-Herzegovina","Humor",389,3,3,0.62
+"Bosnia-Herzegovina","MFQ_Care",371,6,6,0.869
+"Bosnia-Herzegovina","MFQ_Equality",371,6,6,0.819
+"Bosnia-Herzegovina","MFQ_Proportionality",371,6,6,0.84
+"Bosnia-Herzegovina","MFQ_Loyalty",371,6,6,0.852
+"Bosnia-Herzegovina","MFQ_Authority",372,6,6,0.837
+"Bosnia-Herzegovina","MFQ_Purity",371,6,6,0.803
+"Bosnia-Herzegovina","Intrinsic_Religiosity",370,3,3,0.911
+"Bosnia-Herzegovina","Subjective_Wellbeing",367,5,5,0.875
+"Bosnia-Herzegovina","Conformity",382,2,2,0.576
+"Bosnia-Herzegovina","Tradition",383,2,2,0.416
+"Bosnia-Herzegovina","Benevolence",382,2,2,0.604
+"Bosnia-Herzegovina","Universalism",382,3,3,0.599
+"Bosnia-Herzegovina","Self_Direction",383,2,2,0.339
+"Bosnia-Herzegovina","Stimulation",383,2,2,0.765
+"Bosnia-Herzegovina","Hedonism",381,2,2,0.833
+"Bosnia-Herzegovina","Achievement",383,2,2,0.588
+"Bosnia-Herzegovina","Power",382,2,2,0.538
+"Bosnia-Herzegovina","Security",382,2,2,0.427
+"Bosnia-Herzegovina","Self_Transcendence",381,5,5,0.702
+"Bosnia-Herzegovina","Self_Enhancement",382,4,4,0.667
+"Bosnia-Herzegovina","Openness_to_Change",381,6,6,0.764
+"Bosnia-Herzegovina","Conservation",381,6,6,0.647
+"Nigeria","Positive_Reciprocity",487,3,3,0.786
+"Nigeria","Negative_Reciprocity",487,3,3,0.836
+"Nigeria","Penal_Code_Violence",485,3,3,0.584
+"Nigeria","War_Acceptance",484,3,3,0.606
+"Nigeria","Corporal_Punishment",486,3,3,0.738
+"Nigeria","Intimate_Violence",486,3,3,0.61
+"Nigeria","Total_Violence_Scale",483,12,12,0.8
+"Nigeria","Other_Face_Concern",479,6,6,0.822
+"Nigeria","Self_Face_Concern",476,4,4,0.784
+"Nigeria","Withdrawal",475,3,3,0.639
+"Nigeria","Retaliation",475,3,3,0.69
+"Nigeria","Humor",475,3,3,0.75
+"Nigeria","MFQ_Care",464,6,6,0.842
+"Nigeria","MFQ_Equality",467,6,6,0.838
+"Nigeria","MFQ_Proportionality",467,6,6,0.755
+"Nigeria","MFQ_Loyalty",468,6,6,0.81
+"Nigeria","MFQ_Authority",469,6,6,0.788
+"Nigeria","MFQ_Purity",468,6,6,0.687
+"Nigeria","Intrinsic_Religiosity",465,3,3,0.73
+"Nigeria","Subjective_Wellbeing",467,5,5,0.82
+"Nigeria","Conformity",472,2,2,0.513
+"Nigeria","Tradition",473,2,2,0.364
+"Nigeria","Benevolence",473,2,2,0.559
+"Nigeria","Universalism",471,3,3,0.667
+"Nigeria","Self_Direction",473,2,2,0.591
+"Nigeria","Stimulation",473,2,2,0.495
+"Nigeria","Hedonism",471,2,2,0.591
+"Nigeria","Achievement",472,2,2,0.609
+"Nigeria","Power",473,2,2,0.407
+"Nigeria","Security",473,2,2,0.607
+"Nigeria","Self_Transcendence",471,5,5,0.79
+"Nigeria","Self_Enhancement",472,4,4,0.698
+"Nigeria","Openness_to_Change",471,6,6,0.775
+"Nigeria","Conservation",472,6,6,0.751
+"Kenya","Positive_Reciprocity",223,3,3,0.62
+"Kenya","Negative_Reciprocity",223,3,3,0.791
+"Kenya","Penal_Code_Violence",1192,3,3,0.751
+"Kenya","War_Acceptance",1191,3,3,0.747
+"Kenya","Corporal_Punishment",1192,3,3,0.686
+"Kenya","Intimate_Violence",1192,3,3,0.71
+"Kenya","Total_Violence_Scale",1191,12,12,0.846
+"Kenya","Other_Face_Concern",1190,6,6,0.835
+"Kenya","Self_Face_Concern",1190,4,4,0.813
+"Kenya","Withdrawal",223,3,3,0.566
+"Kenya","Retaliation",223,3,3,0.778
+"Kenya","Humor",223,3,3,0.731
+"Kenya","MFQ_Care",222,6,6,0.842
+"Kenya","MFQ_Equality",223,6,6,0.793
+"Kenya","MFQ_Proportionality",223,6,6,0.685
+"Kenya","MFQ_Loyalty",223,6,6,0.829
+"Kenya","MFQ_Authority",223,6,6,0.753
+"Kenya","MFQ_Purity",223,6,6,0.719
+"Kenya","Intrinsic_Religiosity",223,3,3,0.668
+"Kenya","Subjective_Wellbeing",223,5,5,0.816
+"Kenya","Conformity",222,2,2,0.565
+"Kenya","Tradition",223,2,2,0.324
+"Kenya","Benevolence",222,2,2,0.464
+"Kenya","Universalism",223,3,3,0.64
+"Kenya","Self_Direction",223,2,2,0.517
+"Kenya","Stimulation",223,2,2,0.484
+"Kenya","Hedonism",222,2,2,0.656
+"Kenya","Achievement",223,2,2,0.547
+"Kenya","Power",223,2,2,0.63
+"Kenya","Security",223,2,2,0.643
+"Kenya","Self_Transcendence",222,5,5,0.739
+"Kenya","Self_Enhancement",223,4,4,0.723
+"Kenya","Openness_to_Change",222,6,6,0.726
+"Kenya","Conservation",222,6,6,0.76
+"Philippines","Positive_Reciprocity",860,3,3,0.69
+"Philippines","Negative_Reciprocity",860,3,3,0.851
+"Philippines","Penal_Code_Violence",859,3,3,0.66
+"Philippines","War_Acceptance",860,3,3,0.707
+"Philippines","Corporal_Punishment",859,3,3,0.754
+"Philippines","Intimate_Violence",860,3,3,0.627
+"Philippines","Total_Violence_Scale",858,12,12,0.82
+"Philippines","Other_Face_Concern",854,6,6,0.811
+"Philippines","Self_Face_Concern",854,4,4,0.753
+"Philippines","Withdrawal",847,3,3,0.63
+"Philippines","Retaliation",848,3,3,0.718
+"Philippines","Humor",848,3,3,0.765
+"Philippines","MFQ_Care",844,6,6,0.83
+"Philippines","MFQ_Equality",843,6,6,0.788
+"Philippines","MFQ_Proportionality",845,6,6,0.755
+"Philippines","MFQ_Loyalty",842,6,6,0.809
+"Philippines","MFQ_Authority",842,6,6,0.789
+"Philippines","MFQ_Purity",845,6,6,0.756
+"Philippines","Intrinsic_Religiosity",842,3,3,0.83
+"Philippines","Subjective_Wellbeing",840,5,5,0.853
+"Philippines","Conformity",850,2,2,0.542
+"Philippines","Tradition",850,2,2,0.354
+"Philippines","Benevolence",850,2,2,0.461
+"Philippines","Universalism",850,3,3,0.569
+"Philippines","Self_Direction",850,2,2,0.486
+"Philippines","Stimulation",850,2,2,0.648
+"Philippines","Hedonism",850,2,2,0.594
+"Philippines","Achievement",850,2,2,0.618
+"Philippines","Power",849,2,2,0.426
+"Philippines","Security",848,2,2,0.549
+"Philippines","Self_Transcendence",850,5,5,0.68
+"Philippines","Self_Enhancement",849,4,4,0.687
+"Philippines","Openness_to_Change",850,6,6,0.738
+"Philippines","Conservation",848,6,6,0.681
+"South Africa","Positive_Reciprocity",126,3,3,0.672
+"South Africa","Negative_Reciprocity",126,3,3,0.758
+"South Africa","Penal_Code_Violence",896,3,3,0.798
+"South Africa","War_Acceptance",897,3,3,0.784
+"South Africa","Corporal_Punishment",899,3,3,0.794
+"South Africa","Intimate_Violence",898,3,3,0.827
+"South Africa","Total_Violence_Scale",894,12,12,0.844
+"South Africa","Other_Face_Concern",892,6,6,0.863
+"South Africa","Self_Face_Concern",893,4,4,0.858
+"South Africa","Withdrawal",122,3,3,0.479
+"South Africa","Retaliation",122,3,3,0.589
+"South Africa","Humor",122,3,3,0.794
+"South Africa","MFQ_Care",113,6,6,0.859
+"South Africa","MFQ_Equality",113,6,6,0.765
+"South Africa","MFQ_Proportionality",113,6,6,0.678
+"South Africa","MFQ_Loyalty",113,6,6,0.765
+"South Africa","MFQ_Authority",112,6,6,0.756
+"South Africa","MFQ_Purity",113,6,6,0.696
+"South Africa","Intrinsic_Religiosity",113,3,3,0.896
+"South Africa","Subjective_Wellbeing",113,5,5,0.862
+"South Africa","Conformity",121,2,2,0.585
+"South Africa","Tradition",120,2,2,0.401
+"South Africa","Benevolence",121,2,2,0.722
+"South Africa","Universalism",120,3,3,0.679
+"South Africa","Self_Direction",121,2,2,0.581
+"South Africa","Stimulation",121,2,2,0.545
+"South Africa","Hedonism",120,2,2,0.696
+"South Africa","Achievement",121,2,2,0.53
+"South Africa","Power",121,2,2,0.362
+"South Africa","Security",121,2,2,0.62
+"South Africa","Self_Transcendence",120,5,5,0.794
+"South Africa","Self_Enhancement",121,4,4,0.6
+"South Africa","Openness_to_Change",120,6,6,0.766
+"South Africa","Conservation",120,6,6,0.674
+"Spain","Positive_Reciprocity",426,3,3,0.803
+"Spain","Negative_Reciprocity",426,3,3,0.858
+"Spain","Penal_Code_Violence",426,3,3,0.855
+"Spain","War_Acceptance",426,3,3,0.701
+"Spain","Corporal_Punishment",424,3,3,0.87
+"Spain","Intimate_Violence",425,3,3,0.798
+"Spain","Total_Violence_Scale",423,12,12,0.875
+"Spain","Other_Face_Concern",422,6,6,0.8
+"Spain","Self_Face_Concern",423,4,4,0.776
+"Spain","Withdrawal",421,3,3,0.561
+"Spain","Retaliation",421,3,3,0.616
+"Spain","Humor",420,3,3,0.648
+"Spain","MFQ_Care",415,6,6,0.856
+"Spain","MFQ_Equality",416,6,6,0.858
+"Spain","MFQ_Proportionality",416,6,6,0.784
+"Spain","MFQ_Loyalty",414,6,6,0.835
+"Spain","MFQ_Authority",416,6,6,0.867
+"Spain","MFQ_Purity",414,6,6,0.746
+"Spain","Intrinsic_Religiosity",416,3,3,0.945
+"Spain","Subjective_Wellbeing",416,5,5,0.874
+"Spain","Conformity",417,2,2,0.595
+"Spain","Tradition",417,2,2,0.35
+"Spain","Benevolence",417,2,2,0.674
+"Spain","Universalism",417,3,3,0.567
+"Spain","Self_Direction",417,2,2,0.409
+"Spain","Stimulation",417,2,2,0.726
+"Spain","Hedonism",417,2,2,0.666
+"Spain","Achievement",417,2,2,0.71
+"Spain","Power",417,2,2,0.615
+"Spain","Security",417,2,2,0.461
+"Spain","Self_Transcendence",417,5,5,0.696
+"Spain","Self_Enhancement",417,4,4,0.782
+"Spain","Openness_to_Change",417,6,6,0.769
+"Spain","Conservation",417,6,6,0.69
+"Singapore","Positive_Reciprocity",327,3,3,0.783
+"Singapore","Negative_Reciprocity",327,3,3,0.88
+"Singapore","Penal_Code_Violence",327,3,3,0.739
+"Singapore","War_Acceptance",327,3,3,0.694
+"Singapore","Corporal_Punishment",327,3,3,0.806
+"Singapore","Intimate_Violence",327,3,3,0.683
+"Singapore","Total_Violence_Scale",327,12,12,0.835
+"Singapore","Other_Face_Concern",326,6,6,0.867
+"Singapore","Self_Face_Concern",326,4,4,0.828
+"Singapore","Withdrawal",326,3,3,0.553
+"Singapore","Retaliation",326,3,3,0.594
+"Singapore","Humor",326,3,3,0.667
+"Singapore","MFQ_Care",323,6,6,0.888
+"Singapore","MFQ_Equality",322,6,6,0.823
+"Singapore","MFQ_Proportionality",323,6,6,0.808
+"Singapore","MFQ_Loyalty",323,6,6,0.836
+"Singapore","MFQ_Authority",323,6,6,0.822
+"Singapore","MFQ_Purity",322,6,6,0.765
+"Singapore","Intrinsic_Religiosity",323,3,3,0.916
+"Singapore","Subjective_Wellbeing",322,5,5,0.884
+"Singapore","Conformity",325,2,2,0.588
+"Singapore","Tradition",325,2,2,0.375
+"Singapore","Benevolence",325,2,2,0.693
+"Singapore","Universalism",325,3,3,0.568
+"Singapore","Self_Direction",325,2,2,0.364
+"Singapore","Stimulation",325,2,2,0.677
+"Singapore","Hedonism",325,2,2,0.633
+"Singapore","Achievement",325,2,2,0.79
+"Singapore","Power",325,2,2,0.509
+"Singapore","Security",325,2,2,0.651
+"Singapore","Self_Transcendence",325,5,5,0.722
+"Singapore","Self_Enhancement",325,4,4,0.772
+"Singapore","Openness_to_Change",325,6,6,0.724
+"Singapore","Conservation",325,6,6,0.708
+"Ghana","Positive_Reciprocity",62,3,3,0.901
+"Ghana","Negative_Reciprocity",62,3,3,0.737
+"Ghana","Penal_Code_Violence",62,3,3,0.619
+"Ghana","War_Acceptance",62,3,3,0.65
+"Ghana","Corporal_Punishment",62,3,3,0.719
+"Ghana","Intimate_Violence",62,3,3,0.59
+"Ghana","Total_Violence_Scale",62,12,12,0.871
+"Ghana","Other_Face_Concern",62,6,6,0.862
+"Ghana","Self_Face_Concern",62,4,4,0.697
+"Ghana","Withdrawal",62,3,3,0.565
+"Ghana","Retaliation",62,3,3,0.548
+"Ghana","Humor",62,3,3,0.706
+"Ghana","MFQ_Care",62,6,6,0.828
+"Ghana","MFQ_Equality",62,6,6,0.803
+"Ghana","MFQ_Proportionality",62,6,6,0.747
+"Ghana","MFQ_Loyalty",62,6,6,0.795
+"Ghana","MFQ_Authority",61,6,6,0.723
+"Ghana","MFQ_Purity",61,6,6,0.674
+"Ghana","Intrinsic_Religiosity",62,3,3,0.786
+"Ghana","Subjective_Wellbeing",62,5,5,0.797
+"Ghana","Conformity",62,2,2,0.65
+"Ghana","Tradition",62,2,2,0.676
+"Ghana","Benevolence",62,2,2,0.709
+"Ghana","Universalism",62,3,3,0.723
+"Ghana","Self_Direction",62,2,2,0.663
+"Ghana","Stimulation",62,2,2,0.47
+"Ghana","Hedonism",62,2,2,0.613
+"Ghana","Achievement",62,2,2,0.507
+"Ghana","Power",62,2,2,0.593
+"Ghana","Security",62,2,2,0.728
+"Ghana","Self_Transcendence",62,5,5,0.814
+"Ghana","Self_Enhancement",62,4,4,0.724
+"Ghana","Openness_to_Change",62,6,6,0.719
+"Ghana","Conservation",62,6,6,0.786
+"Armenia","Positive_Reciprocity",336,3,3,0.719
+"Armenia","Negative_Reciprocity",336,3,3,0.743
+"Armenia","Penal_Code_Violence",335,3,3,0.754
+"Armenia","War_Acceptance",336,3,3,0.424
+"Armenia","Corporal_Punishment",336,3,3,0.729
+"Armenia","Intimate_Violence",336,3,3,0.567
+"Armenia","Total_Violence_Scale",335,12,12,0.734
+"Armenia","Other_Face_Concern",335,6,6,0.753
+"Armenia","Self_Face_Concern",334,4,4,0.763
+"Armenia","Withdrawal",328,3,3,0.541
+"Armenia","Retaliation",328,3,3,0.567
+"Armenia","Humor",328,3,3,0.589
+"Armenia","MFQ_Care",323,6,6,0.875
+"Armenia","MFQ_Equality",321,6,6,0.816
+"Armenia","MFQ_Proportionality",323,6,6,0.778
+"Armenia","MFQ_Loyalty",321,6,6,0.847
+"Armenia","MFQ_Authority",321,6,6,0.745
+"Armenia","MFQ_Purity",321,6,6,0.719
+"Armenia","Intrinsic_Religiosity",321,3,3,0.869
+"Armenia","Subjective_Wellbeing",319,5,5,0.858
+"Armenia","Conformity",332,2,2,0.425
+"Armenia","Tradition",332,2,2,0.372
+"Armenia","Benevolence",332,2,2,0.672
+"Armenia","Universalism",331,3,3,0.411
+"Armenia","Self_Direction",332,2,2,0.389
+"Armenia","Stimulation",332,2,2,0.634
+"Armenia","Hedonism",332,2,2,0.713
+"Armenia","Achievement",331,2,2,0.655
+"Armenia","Power",331,2,2,0.519
+"Armenia","Security",331,2,2,0.505
+"Armenia","Self_Transcendence",331,5,5,0.634
+"Armenia","Self_Enhancement",331,4,4,0.722
+"Armenia","Openness_to_Change",332,6,6,0.738
+"Armenia","Conservation",331,6,6,0.578
+"Pakistan","Positive_Reciprocity",436,3,3,0.752
+"Pakistan","Negative_Reciprocity",436,3,3,0.803
+"Pakistan","Penal_Code_Violence",436,3,3,0.638
+"Pakistan","War_Acceptance",436,3,3,0.703
+"Pakistan","Corporal_Punishment",437,3,3,0.762
+"Pakistan","Intimate_Violence",437,3,3,0.557
+"Pakistan","Total_Violence_Scale",436,12,12,0.779
+"Pakistan","Other_Face_Concern",437,6,6,0.83
+"Pakistan","Self_Face_Concern",436,4,4,0.731
+"Pakistan","Withdrawal",435,3,3,0.442
+"Pakistan","Retaliation",435,3,3,0.566
+"Pakistan","Humor",436,3,3,0.632
+"Pakistan","MFQ_Care",434,6,6,0.846
+"Pakistan","MFQ_Equality",432,6,6,0.812
+"Pakistan","MFQ_Proportionality",434,6,6,0.732
+"Pakistan","MFQ_Loyalty",434,6,6,0.793
+"Pakistan","MFQ_Authority",433,6,6,0.787
+"Pakistan","MFQ_Purity",433,6,6,0.646
+"Pakistan","Intrinsic_Religiosity",432,3,3,0.646
+"Pakistan","Subjective_Wellbeing",431,5,5,0.826
+"Pakistan","Conformity",436,2,2,0.547
+"Pakistan","Tradition",435,2,2,0.421
+"Pakistan","Benevolence",436,2,2,0.64
+"Pakistan","Universalism",436,3,3,0.606
+"Pakistan","Self_Direction",436,2,2,0.59
+"Pakistan","Stimulation",436,2,2,0.649
+"Pakistan","Hedonism",436,2,2,0.487
+"Pakistan","Achievement",436,2,2,0.616
+"Pakistan","Power",436,2,2,0.439
+"Pakistan","Security",436,2,2,0.512
+"Pakistan","Self_Transcendence",436,5,5,0.75
+"Pakistan","Self_Enhancement",436,4,4,0.672
+"Pakistan","Openness_to_Change",436,6,6,0.74
+"Pakistan","Conservation",435,6,6,0.683
+"Greece","Positive_Reciprocity",442,3,3,0.661
+"Greece","Negative_Reciprocity",442,3,3,0.82
+"Greece","Penal_Code_Violence",442,3,3,0.847
+"Greece","War_Acceptance",442,3,3,0.658
+"Greece","Corporal_Punishment",442,3,3,0.796
+"Greece","Intimate_Violence",442,3,3,0.161
+"Greece","Total_Violence_Scale",442,12,12,0.731
+"Greece","Other_Face_Concern",438,6,6,0.749
+"Greece","Self_Face_Concern",438,4,4,0.798
+"Greece","Withdrawal",435,3,3,0.57
+"Greece","Retaliation",435,3,3,0.659
+"Greece","Humor",435,3,3,0.68
+"Greece","MFQ_Care",428,6,6,0.833
+"Greece","MFQ_Equality",428,6,6,0.83
+"Greece","MFQ_Proportionality",428,6,6,0.753
+"Greece","MFQ_Loyalty",428,6,6,0.783
+"Greece","MFQ_Authority",427,6,6,0.8
+"Greece","MFQ_Purity",428,6,6,0.712
+"Greece","Intrinsic_Religiosity",427,3,3,0.87
+"Greece","Subjective_Wellbeing",426,5,5,0.846
+"Greece","Conformity",431,2,2,0.502
+"Greece","Tradition",432,2,2,0.428
+"Greece","Benevolence",432,2,2,0.589
+"Greece","Universalism",432,3,3,0.512
+"Greece","Self_Direction",432,2,2,0.455
+"Greece","Stimulation",432,2,2,0.692
+"Greece","Hedonism",432,2,2,0.602
+"Greece","Achievement",432,2,2,0.674
+"Greece","Power",432,2,2,0.418
+"Greece","Security",432,2,2,0.397
+"Greece","Self_Transcendence",432,5,5,0.684
+"Greece","Self_Enhancement",432,4,4,0.663
+"Greece","Openness_to_Change",432,6,6,0.68
+"Greece","Conservation",431,6,6,0.691
+"Poland","Positive_Reciprocity",659,3,3,0.748
+"Poland","Negative_Reciprocity",659,3,3,0.833
+"Poland","Penal_Code_Violence",659,3,3,0.813
+"Poland","War_Acceptance",659,3,3,0.547
+"Poland","Corporal_Punishment",659,3,3,0.868
+"Poland","Intimate_Violence",659,3,3,0.48
+"Poland","Total_Violence_Scale",659,12,12,0.801
+"Poland","Other_Face_Concern",656,6,6,0.821
+"Poland","Self_Face_Concern",656,4,4,0.773
+"Poland","Withdrawal",653,3,3,0.578
+"Poland","Retaliation",653,3,3,0.512
+"Poland","Humor",652,3,3,0.613
+"Poland","MFQ_Care",649,6,6,0.864
+"Poland","MFQ_Equality",649,6,6,0.859
+"Poland","MFQ_Proportionality",649,6,6,0.753
+"Poland","MFQ_Loyalty",648,6,6,0.788
+"Poland","MFQ_Authority",649,6,6,0.806
+"Poland","MFQ_Purity",649,6,6,0.704
+"Poland","Intrinsic_Religiosity",649,3,3,0.887
+"Poland","Subjective_Wellbeing",647,5,5,0.864
+"Poland","Conformity",652,2,2,0.59
+"Poland","Tradition",652,2,2,0.437
+"Poland","Benevolence",652,2,2,0.572
+"Poland","Universalism",652,3,3,0.543
+"Poland","Self_Direction",652,2,2,0.454
+"Poland","Stimulation",652,2,2,0.73
+"Poland","Hedonism",652,2,2,0.755
+"Poland","Achievement",652,2,2,0.739
+"Poland","Power",652,2,2,0.578
+"Poland","Security",652,2,2,0.511
+"Poland","Self_Transcendence",652,5,5,0.677
+"Poland","Self_Enhancement",652,4,4,0.756
+"Poland","Openness_to_Change",652,6,6,0.761
+"Poland","Conservation",652,6,6,0.663
+"Turkey","Positive_Reciprocity",1896,3,3,0.714
+"Turkey","Negative_Reciprocity",1896,3,3,0.879
+"Turkey","Penal_Code_Violence",1895,3,3,0.808
+"Turkey","War_Acceptance",1895,3,3,0.654
+"Turkey","Corporal_Punishment",1896,3,3,0.762
+"Turkey","Intimate_Violence",1897,3,3,0.379
+"Turkey","Total_Violence_Scale",1892,12,12,0.773
+"Turkey","Other_Face_Concern",1885,6,6,0.796
+"Turkey","Self_Face_Concern",1888,4,4,0.773
+"Turkey","Withdrawal",1878,3,3,0.538
+"Turkey","Retaliation",1879,3,3,0.722
+"Turkey","Humor",1875,3,3,0.75
+"Turkey","MFQ_Care",1852,6,6,0.859
+"Turkey","MFQ_Equality",1852,6,6,0.83
+"Turkey","MFQ_Proportionality",1854,6,6,0.813
+"Turkey","MFQ_Loyalty",1855,6,6,0.857
+"Turkey","MFQ_Authority",1854,6,6,0.848
+"Turkey","MFQ_Purity",1853,6,6,0.738
+"Turkey","Intrinsic_Religiosity",1853,3,3,0.869
+"Turkey","Subjective_Wellbeing",1853,5,5,0.855
+"Turkey","Conformity",1870,2,2,0.52
+"Turkey","Tradition",1871,2,2,0.371
+"Turkey","Benevolence",1870,2,2,0.606
+"Turkey","Universalism",1870,3,3,0.579
+"Turkey","Self_Direction",1871,2,2,0.414
+"Turkey","Stimulation",1870,2,2,0.511
+"Turkey","Hedonism",1871,2,2,0.576
+"Turkey","Achievement",1871,2,2,0.636
+"Turkey","Power",1871,2,2,0.44
+"Turkey","Security",1870,2,2,0.524
+"Turkey","Self_Transcendence",1869,5,5,0.678
+"Turkey","Self_Enhancement",1871,4,4,0.682
+"Turkey","Openness_to_Change",1870,6,6,0.705
+"Turkey","Conservation",1869,6,6,0.677
+"Uzbekistan","Positive_Reciprocity",108,3,3,0.799
+"Uzbekistan","Negative_Reciprocity",108,3,3,0.678
+"Uzbekistan","Penal_Code_Violence",106,3,3,0.684
+"Uzbekistan","War_Acceptance",107,3,3,0.099
+"Uzbekistan","Corporal_Punishment",106,3,3,0.557
+"Uzbekistan","Intimate_Violence",107,3,3,0.236
+"Uzbekistan","Total_Violence_Scale",103,12,12,0.647
+"Uzbekistan","Other_Face_Concern",105,6,6,0.717
+"Uzbekistan","Self_Face_Concern",104,4,4,0.667
+"Uzbekistan","Withdrawal",103,3,3,0.661
+"Uzbekistan","Retaliation",100,3,3,0.805
+"Uzbekistan","Humor",102,3,3,0.682
+"Uzbekistan","MFQ_Care",96,6,6,0.826
+"Uzbekistan","MFQ_Equality",96,6,6,0.794
+"Uzbekistan","MFQ_Proportionality",98,6,6,0.789
+"Uzbekistan","MFQ_Loyalty",96,6,6,0.846
+"Uzbekistan","MFQ_Authority",97,6,6,0.727
+"Uzbekistan","MFQ_Purity",100,6,6,0.552
+"Uzbekistan","Intrinsic_Religiosity",97,3,3,0.836
+"Uzbekistan","Subjective_Wellbeing",97,5,5,0.899
+"Uzbekistan","Conformity",100,2,2,0.447
+"Uzbekistan","Tradition",101,2,2,0.446
+"Uzbekistan","Benevolence",99,2,2,0.57
+"Uzbekistan","Universalism",99,3,3,0.594
+"Uzbekistan","Self_Direction",99,2,2,0.505
+"Uzbekistan","Stimulation",101,2,2,0.674
+"Uzbekistan","Hedonism",101,2,2,0.548
+"Uzbekistan","Achievement",100,2,2,0.384
+"Uzbekistan","Power",99,2,2,0.413
+"Uzbekistan","Security",100,2,2,0.544
+"Uzbekistan","Self_Transcendence",97,5,5,0.718
+"Uzbekistan","Self_Enhancement",98,4,4,0.584
+"Uzbekistan","Openness_to_Change",97,6,6,0.783
+"Uzbekistan","Conservation",99,6,6,0.687
+"Germany","Positive_Reciprocity",699,3,3,0.753
+"Germany","Negative_Reciprocity",699,3,3,0.827
+"Germany","Penal_Code_Violence",699,3,3,0.83
+"Germany","War_Acceptance",699,3,3,0.583
+"Germany","Corporal_Punishment",699,3,3,0.886
+"Germany","Intimate_Violence",698,3,3,0.498
+"Germany","Total_Violence_Scale",698,12,12,0.81
+"Germany","Other_Face_Concern",697,6,6,0.822
+"Germany","Self_Face_Concern",698,4,4,0.74
+"Germany","Withdrawal",696,3,3,0.612
+"Germany","Retaliation",696,3,3,0.73
+"Germany","Humor",696,3,3,0.681
+"Germany","MFQ_Care",691,6,6,0.866
+"Germany","MFQ_Equality",691,6,6,0.87
+"Germany","MFQ_Proportionality",690,6,6,0.812
+"Germany","MFQ_Loyalty",691,6,6,0.79
+"Germany","MFQ_Authority",691,6,6,0.807
+"Germany","MFQ_Purity",690,6,6,0.709
+"Germany","Intrinsic_Religiosity",691,3,3,0.919
+"Germany","Subjective_Wellbeing",690,5,5,0.866
+"Germany","Conformity",695,2,2,0.497
+"Germany","Tradition",695,2,2,0.26
+"Germany","Benevolence",695,2,2,0.63
+"Germany","Universalism",695,3,3,0.632
+"Germany","Self_Direction",695,2,2,0.428
+"Germany","Stimulation",695,2,2,0.791
+"Germany","Hedonism",695,2,2,0.775
+"Germany","Achievement",695,2,2,0.713
+"Germany","Power",695,2,2,0.572
+"Germany","Security",695,2,2,0.475
+"Germany","Self_Transcendence",695,5,5,0.712
+"Germany","Self_Enhancement",695,4,4,0.774
+"Germany","Openness_to_Change",695,6,6,0.766
+"Germany","Conservation",695,6,6,0.626
+"France","Positive_Reciprocity",435,3,3,0.772
+"France","Negative_Reciprocity",435,3,3,0.862
+"France","Penal_Code_Violence",435,3,3,0.809
+"France","War_Acceptance",435,3,3,0.697
+"France","Corporal_Punishment",435,3,3,0.9
+"France","Intimate_Violence",435,3,3,0.851
+"France","Total_Violence_Scale",435,12,12,0.91
+"France","Other_Face_Concern",434,6,6,0.853
+"France","Self_Face_Concern",433,4,4,0.805
+"France","Withdrawal",431,3,3,0.625
+"France","Retaliation",431,3,3,0.531
+"France","Humor",431,3,3,0.745
+"France","MFQ_Care",423,6,6,0.871
+"France","MFQ_Equality",424,6,6,0.894
+"France","MFQ_Proportionality",423,6,6,0.736
+"France","MFQ_Loyalty",424,6,6,0.843
+"France","MFQ_Authority",424,6,6,0.845
+"France","MFQ_Purity",424,6,6,0.771
+"France","Intrinsic_Religiosity",424,3,3,0.937
+"France","Subjective_Wellbeing",424,5,5,0.856
+"France","Conformity",430,2,2,0.652
+"France","Tradition",430,2,2,0.338
+"France","Benevolence",430,2,2,0.56
+"France","Universalism",430,3,3,0.563
+"France","Self_Direction",430,2,2,0.398
+"France","Stimulation",430,2,2,0.617
+"France","Hedonism",430,2,2,0.56
+"France","Achievement",430,2,2,0.727
+"France","Power",430,2,2,0.569
+"France","Security",429,2,2,0.497
+"France","Self_Transcendence",430,5,5,0.662
+"France","Self_Enhancement",430,4,4,0.756
+"France","Openness_to_Change",430,6,6,0.667
+"France","Conservation",429,6,6,0.69
+"Austria","Positive_Reciprocity",232,3,3,0.813
+"Austria","Negative_Reciprocity",232,3,3,0.844
+"Austria","Penal_Code_Violence",232,3,3,0.865
+"Austria","War_Acceptance",232,3,3,0.641
+"Austria","Corporal_Punishment",232,3,3,0.882
+"Austria","Intimate_Violence",232,3,3,0.769
+"Austria","Total_Violence_Scale",232,12,12,0.884
+"Austria","Other_Face_Concern",231,6,6,0.824
+"Austria","Self_Face_Concern",232,4,4,0.787
+"Austria","Withdrawal",232,3,3,0.538
+"Austria","Retaliation",232,3,3,0.704
+"Austria","Humor",232,3,3,0.728
+"Austria","MFQ_Care",230,6,6,0.889
+"Austria","MFQ_Equality",230,6,6,0.85
+"Austria","MFQ_Proportionality",230,6,6,0.815
+"Austria","MFQ_Loyalty",229,6,6,0.827
+"Austria","MFQ_Authority",230,6,6,0.849
+"Austria","MFQ_Purity",230,6,6,0.783
+"Austria","Intrinsic_Religiosity",230,3,3,0.895
+"Austria","Subjective_Wellbeing",230,5,5,0.842
+"Austria","Conformity",230,2,2,0.593
+"Austria","Tradition",230,2,2,0.343
+"Austria","Benevolence",230,2,2,0.717
+"Austria","Universalism",230,3,3,0.728
+"Austria","Self_Direction",230,2,2,0.426
+"Austria","Stimulation",230,2,2,0.742
+"Austria","Hedonism",230,2,2,0.746
+"Austria","Achievement",230,2,2,0.751
+"Austria","Power",230,2,2,0.46
+"Austria","Security",230,2,2,0.564
+"Austria","Self_Transcendence",230,5,5,0.801
+"Austria","Self_Enhancement",230,4,4,0.751
+"Austria","Openness_to_Change",230,6,6,0.731
+"Austria","Conservation",230,6,6,0.705
+"Ukraine","Positive_Reciprocity",432,3,3,0.762
+"Ukraine","Negative_Reciprocity",432,3,3,0.82
+"Ukraine","Penal_Code_Violence",431,3,3,0.631
+"Ukraine","War_Acceptance",432,3,3,0.466
+"Ukraine","Corporal_Punishment",432,3,3,0.749
+"Ukraine","Intimate_Violence",432,3,3,0.428
+"Ukraine","Total_Violence_Scale",431,12,12,0.66
+"Ukraine","Other_Face_Concern",429,6,6,0.817
+"Ukraine","Self_Face_Concern",430,4,4,0.753
+"Ukraine","Withdrawal",428,3,3,0.488
+"Ukraine","Retaliation",426,3,3,0.491
+"Ukraine","Humor",428,3,3,0.671
+"Ukraine","MFQ_Care",425,6,6,0.866
+"Ukraine","MFQ_Equality",425,6,6,0.826
+"Ukraine","MFQ_Proportionality",426,6,6,0.804
+"Ukraine","MFQ_Loyalty",424,6,6,0.826
+"Ukraine","MFQ_Authority",426,6,6,0.753
+"Ukraine","MFQ_Purity",425,6,6,0.762
+"Ukraine","Intrinsic_Religiosity",426,3,3,0.857
+"Ukraine","Subjective_Wellbeing",426,5,5,0.841
+"Ukraine","Conformity",429,2,2,0.486
+"Ukraine","Tradition",428,2,2,0.141
+"Ukraine","Benevolence",429,2,2,0.518
+"Ukraine","Universalism",429,3,3,0.5
+"Ukraine","Self_Direction",429,2,2,0.344
+"Ukraine","Stimulation",429,2,2,0.625
+"Ukraine","Hedonism",429,2,2,0.718
+"Ukraine","Achievement",429,2,2,0.74
+"Ukraine","Power",428,2,2,0.505
+"Ukraine","Security",429,2,2,0.4
+"Ukraine","Self_Transcendence",429,5,5,0.621
+"Ukraine","Self_Enhancement",428,4,4,0.758
+"Ukraine","Openness_to_Change",429,6,6,0.728
+"Ukraine","Conservation",428,6,6,0.59
+"Hungary","Positive_Reciprocity",418,3,3,0.752
+"Hungary","Negative_Reciprocity",418,3,3,0.833
+"Hungary","Penal_Code_Violence",418,3,3,0.819
+"Hungary","War_Acceptance",418,3,3,0.577
+"Hungary","Corporal_Punishment",418,3,3,0.828
+"Hungary","Intimate_Violence",417,3,3,0.493
+"Hungary","Total_Violence_Scale",417,12,12,0.785
+"Hungary","Other_Face_Concern",417,6,6,0.854
+"Hungary","Self_Face_Concern",417,4,4,0.72
+"Hungary","Withdrawal",418,3,3,0.54
+"Hungary","Retaliation",418,3,3,0.49
+"Hungary","Humor",418,3,3,0.609
+"Hungary","MFQ_Care",416,6,6,0.848
+"Hungary","MFQ_Equality",417,6,6,0.817
+"Hungary","MFQ_Proportionality",417,6,6,0.794
+"Hungary","MFQ_Loyalty",417,6,6,0.781
+"Hungary","MFQ_Authority",417,6,6,0.751
+"Hungary","MFQ_Purity",417,6,6,0.733
+"Hungary","Intrinsic_Religiosity",416,3,3,0.906
+"Hungary","Subjective_Wellbeing",415,5,5,0.871
+"Hungary","Conformity",418,2,2,0.624
+"Hungary","Tradition",418,2,2,0.207
+"Hungary","Benevolence",418,2,2,0.518
+"Hungary","Universalism",418,3,3,0.424
+"Hungary","Self_Direction",418,2,2,0.445
+"Hungary","Stimulation",418,2,2,0.695
+"Hungary","Hedonism",418,2,2,0.709
+"Hungary","Achievement",418,2,2,0.751
+"Hungary","Power",418,2,2,0.528
+"Hungary","Security",418,2,2,0.376
+"Hungary","Self_Transcendence",418,5,5,0.64
+"Hungary","Self_Enhancement",418,4,4,0.758
+"Hungary","Openness_to_Change",418,6,6,0.706
+"Hungary","Conservation",418,6,6,0.671
+"Slovakia","Positive_Reciprocity",274,3,3,0.84
+"Slovakia","Negative_Reciprocity",273,3,3,0.805
+"Slovakia","Penal_Code_Violence",273,3,3,0.792
+"Slovakia","War_Acceptance",273,3,3,0.581
+"Slovakia","Corporal_Punishment",274,3,3,0.823
+"Slovakia","Intimate_Violence",274,3,3,0.653
+"Slovakia","Total_Violence_Scale",273,12,12,0.828
+"Slovakia","Other_Face_Concern",272,6,6,0.858
+"Slovakia","Self_Face_Concern",270,4,4,0.768
+"Slovakia","Withdrawal",273,3,3,0.452
+"Slovakia","Retaliation",272,3,3,0.61
+"Slovakia","Humor",273,3,3,0.692
+"Slovakia","MFQ_Care",268,6,6,0.865
+"Slovakia","MFQ_Equality",268,6,6,0.815
+"Slovakia","MFQ_Proportionality",267,6,6,0.787
+"Slovakia","MFQ_Loyalty",267,6,6,0.78
+"Slovakia","MFQ_Authority",267,6,6,0.82
+"Slovakia","MFQ_Purity",266,6,6,0.743
+"Slovakia","Intrinsic_Religiosity",269,3,3,0.941
+"Slovakia","Subjective_Wellbeing",269,5,5,0.86
+"Slovakia","Conformity",269,2,2,0.568
+"Slovakia","Tradition",269,2,2,0.184
+"Slovakia","Benevolence",269,2,2,0.693
+"Slovakia","Universalism",269,3,3,0.566
+"Slovakia","Self_Direction",270,2,2,0.377
+"Slovakia","Stimulation",269,2,2,0.707
+"Slovakia","Hedonism",269,2,2,0.587
+"Slovakia","Achievement",270,2,2,0.719
+"Slovakia","Power",269,2,2,0.337
+"Slovakia","Security",270,2,2,0.404
+"Slovakia","Self_Transcendence",269,5,5,0.717
+"Slovakia","Self_Enhancement",269,4,4,0.701
+"Slovakia","Openness_to_Change",269,6,6,0.691
+"Slovakia","Conservation",269,6,6,0.617
+"Vietnam","Positive_Reciprocity",173,3,3,0.75
+"Vietnam","Negative_Reciprocity",173,3,3,0.805
+"Vietnam","Penal_Code_Violence",173,3,3,0.729
+"Vietnam","War_Acceptance",173,3,3,0.755
+"Vietnam","Corporal_Punishment",173,3,3,0.706
+"Vietnam","Intimate_Violence",173,3,3,0.427
+"Vietnam","Total_Violence_Scale",173,12,12,0.814
+"Vietnam","Other_Face_Concern",171,6,6,0.848
+"Vietnam","Self_Face_Concern",171,4,4,0.784
+"Vietnam","Withdrawal",171,3,3,0.642
+"Vietnam","Retaliation",171,3,3,0.64
+"Vietnam","Humor",171,3,3,0.762
+"Vietnam","MFQ_Care",164,6,6,0.848
+"Vietnam","MFQ_Equality",165,6,6,0.876
+"Vietnam","MFQ_Proportionality",164,6,6,0.755
+"Vietnam","MFQ_Loyalty",164,6,6,0.888
+"Vietnam","MFQ_Authority",164,6,6,0.815
+"Vietnam","MFQ_Purity",163,6,6,0.765
+"Vietnam","Intrinsic_Religiosity",162,3,3,0.896
+"Vietnam","Subjective_Wellbeing",164,5,5,0.778
+"Vietnam","Conformity",170,2,2,0.489
+"Vietnam","Tradition",170,2,2,0.46
+"Vietnam","Benevolence",170,2,2,0.627
+"Vietnam","Universalism",170,3,3,0.659
+"Vietnam","Self_Direction",170,2,2,0.44
+"Vietnam","Stimulation",170,2,2,0.69
+"Vietnam","Hedonism",169,2,2,0.653
+"Vietnam","Achievement",170,2,2,0.728
+"Vietnam","Power",170,2,2,0.494
+"Vietnam","Security",170,2,2,0.419
+"Vietnam","Self_Transcendence",170,5,5,0.753
+"Vietnam","Self_Enhancement",170,4,4,0.739
+"Vietnam","Openness_to_Change",169,6,6,0.745
+"Vietnam","Conservation",170,6,6,0.719
+"Croatia","Positive_Reciprocity",671,3,3,0.716
+"Croatia","Negative_Reciprocity",671,3,3,0.867
+"Croatia","Penal_Code_Violence",671,3,3,0.828
+"Croatia","War_Acceptance",671,3,3,0.621
+"Croatia","Corporal_Punishment",671,3,3,0.858
+"Croatia","Intimate_Violence",671,3,3,0.527
+"Croatia","Total_Violence_Scale",671,12,12,0.805
+"Croatia","Other_Face_Concern",666,6,6,0.819
+"Croatia","Self_Face_Concern",667,4,4,0.767
+"Croatia","Withdrawal",666,3,3,0.466
+"Croatia","Retaliation",667,3,3,0.613
+"Croatia","Humor",667,3,3,0.656
+"Croatia","MFQ_Care",658,6,6,0.863
+"Croatia","MFQ_Equality",657,6,6,0.823
+"Croatia","MFQ_Proportionality",657,6,6,0.816
+"Croatia","MFQ_Loyalty",658,6,6,0.832
+"Croatia","MFQ_Authority",658,6,6,0.836
+"Croatia","MFQ_Purity",657,6,6,0.763
+"Croatia","Intrinsic_Religiosity",657,3,3,0.909
+"Croatia","Subjective_Wellbeing",657,5,5,0.849
+"Croatia","Conformity",663,2,2,0.59
+"Croatia","Tradition",664,2,2,0.298
+"Croatia","Benevolence",664,2,2,0.69
+"Croatia","Universalism",664,3,3,0.557
+"Croatia","Self_Direction",664,2,2,0.376
+"Croatia","Stimulation",664,2,2,0.82
+"Croatia","Hedonism",664,2,2,0.823
+"Croatia","Achievement",664,2,2,0.696
+"Croatia","Power",664,2,2,0.49
+"Croatia","Security",663,2,2,0.459
+"Croatia","Self_Transcendence",664,5,5,0.711
+"Croatia","Self_Enhancement",664,4,4,0.727
+"Croatia","Openness_to_Change",664,6,6,0.745
+"Croatia","Conservation",663,6,6,0.645
+"Cameroon","Positive_Reciprocity",157,3,3,0.885
+"Cameroon","Negative_Reciprocity",158,3,3,0.885
+"Cameroon","Penal_Code_Violence",158,3,3,0.75
+"Cameroon","War_Acceptance",157,3,3,0.838
+"Cameroon","Corporal_Punishment",158,3,3,0.792
+"Cameroon","Intimate_Violence",157,3,3,0.728
+"Cameroon","Total_Violence_Scale",156,12,12,0.885
+"Cameroon","Other_Face_Concern",156,6,6,0.87
+"Cameroon","Self_Face_Concern",157,4,4,0.891
+"Cameroon","Withdrawal",155,3,3,0.805
+"Cameroon","Retaliation",155,3,3,0.843
+"Cameroon","Humor",153,3,3,0.882
+"Cameroon","MFQ_Care",153,6,6,0.85
+"Cameroon","MFQ_Equality",153,6,6,0.882
+"Cameroon","MFQ_Proportionality",151,6,6,0.835
+"Cameroon","MFQ_Loyalty",152,6,6,0.855
+"Cameroon","MFQ_Authority",153,6,6,0.845
+"Cameroon","MFQ_Purity",153,6,6,0.754
+"Cameroon","Intrinsic_Religiosity",151,3,3,0.866
+"Cameroon","Subjective_Wellbeing",152,5,5,0.912
+"Cameroon","Conformity",154,2,2,0.616
+"Cameroon","Tradition",154,2,2,0.675
+"Cameroon","Benevolence",154,2,2,0.68
+"Cameroon","Universalism",154,3,3,0.824
+"Cameroon","Self_Direction",154,2,2,0.775
+"Cameroon","Stimulation",154,2,2,0.767
+"Cameroon","Hedonism",154,2,2,0.702
+"Cameroon","Achievement",154,2,2,0.707
+"Cameroon","Power",154,2,2,0.745
+"Cameroon","Security",154,2,2,0.746
+"Cameroon","Self_Transcendence",154,5,5,0.859
+"Cameroon","Self_Enhancement",154,4,4,0.859
+"Cameroon","Openness_to_Change",154,6,6,0.884
+"Cameroon","Conservation",154,6,6,0.87
+"Ireland","Positive_Reciprocity",73,3,3,0.695
+"Ireland","Negative_Reciprocity",73,3,3,0.861
+"Ireland","Penal_Code_Violence",73,3,3,0.84
+"Ireland","War_Acceptance",73,3,3,0.772
+"Ireland","Corporal_Punishment",73,3,3,0.923
+"Ireland","Intimate_Violence",73,3,3,-0.156
+"Ireland","Total_Violence_Scale",73,12,12,0.821
+"Ireland","Other_Face_Concern",73,6,6,0.881
+"Ireland","Self_Face_Concern",73,4,4,0.687
+"Ireland","Withdrawal",73,3,3,0.705
+"Ireland","Retaliation",73,3,3,0.615
+"Ireland","Humor",73,3,3,0.794
+"Ireland","MFQ_Care",72,6,6,0.867
+"Ireland","MFQ_Equality",72,6,6,0.774
+"Ireland","MFQ_Proportionality",72,6,6,0.798
+"Ireland","MFQ_Loyalty",72,6,6,0.858
+"Ireland","MFQ_Authority",72,6,6,0.892
+"Ireland","MFQ_Purity",72,6,6,0.807
+"Ireland","Intrinsic_Religiosity",72,3,3,0.914
+"Ireland","Subjective_Wellbeing",72,5,5,0.923
+"Ireland","Conformity",73,2,2,0.585
+"Ireland","Tradition",73,2,2,0.322
+"Ireland","Benevolence",73,2,2,0.49
+"Ireland","Universalism",73,3,3,0.51
+"Ireland","Self_Direction",73,2,2,0.614
+"Ireland","Stimulation",73,2,2,0.747
+"Ireland","Hedonism",73,2,2,0.441
+"Ireland","Achievement",73,2,2,0.662
+"Ireland","Power",73,2,2,0.533
+"Ireland","Security",73,2,2,0.512
+"Ireland","Self_Transcendence",73,5,5,0.654
+"Ireland","Self_Enhancement",73,4,4,0.763
+"Ireland","Openness_to_Change",73,6,6,0.688
+"Ireland","Conservation",73,6,6,0.685
+"Mexico","Positive_Reciprocity",140,3,3,0.812
+"Mexico","Negative_Reciprocity",140,3,3,0.771
+"Mexico","Penal_Code_Violence",140,3,3,0.786
+"Mexico","War_Acceptance",140,3,3,0.587
+"Mexico","Corporal_Punishment",140,3,3,0.803
+"Mexico","Intimate_Violence",140,3,3,0.652
+"Mexico","Total_Violence_Scale",140,12,12,0.781
+"Mexico","Other_Face_Concern",140,6,6,0.797
+"Mexico","Self_Face_Concern",140,4,4,0.756
+"Mexico","Withdrawal",140,3,3,0.568
+"Mexico","Retaliation",140,3,3,0.696
+"Mexico","Humor",140,3,3,0.75
+"Mexico","MFQ_Care",133,6,6,0.872
+"Mexico","MFQ_Equality",133,6,6,0.814
+"Mexico","MFQ_Proportionality",133,6,6,0.805
+"Mexico","MFQ_Loyalty",133,6,6,0.83
+"Mexico","MFQ_Authority",133,6,6,0.827
+"Mexico","MFQ_Purity",133,6,6,0.685
+"Mexico","Intrinsic_Religiosity",133,3,3,0.864
+"Mexico","Subjective_Wellbeing",133,5,5,0.85
+"Mexico","Conformity",137,2,2,0.511
+"Mexico","Tradition",137,2,2,0.123
+"Mexico","Benevolence",137,2,2,0.625
+"Mexico","Universalism",137,3,3,0.648
+"Mexico","Self_Direction",137,2,2,0.459
+"Mexico","Stimulation",137,2,2,0.536
+"Mexico","Hedonism",137,2,2,0.589
+"Mexico","Achievement",137,2,2,0.635
+"Mexico","Power",137,2,2,0.538
+"Mexico","Security",137,2,2,0.666
+"Mexico","Self_Transcendence",137,5,5,0.719
+"Mexico","Self_Enhancement",137,4,4,0.706
+"Mexico","Openness_to_Change",137,6,6,0.707
+"Mexico","Conservation",137,6,6,0.654
+"Morocco","Positive_Reciprocity",175,3,3,0.731
+"Morocco","Negative_Reciprocity",174,3,3,0.727
+"Morocco","Penal_Code_Violence",175,3,3,0.689
+"Morocco","War_Acceptance",175,3,3,0.632
+"Morocco","Corporal_Punishment",175,3,3,0.682
+"Morocco","Intimate_Violence",175,3,3,0.606
+"Morocco","Total_Violence_Scale",175,12,12,0.758
+"Morocco","Other_Face_Concern",175,6,6,0.87
+"Morocco","Self_Face_Concern",175,4,4,0.791
+"Morocco","Withdrawal",175,3,3,0.438
+"Morocco","Retaliation",175,3,3,0.657
+"Morocco","Humor",175,3,3,0.72
+"Morocco","MFQ_Care",170,6,6,0.868
+"Morocco","MFQ_Equality",170,6,6,0.737
+"Morocco","MFQ_Proportionality",170,6,6,0.76
+"Morocco","MFQ_Loyalty",170,6,6,0.856
+"Morocco","MFQ_Authority",169,6,6,0.732
+"Morocco","MFQ_Purity",170,6,6,0.569
+"Morocco","Intrinsic_Religiosity",170,3,3,0.417
+"Morocco","Subjective_Wellbeing",170,5,5,0.837
+"Morocco","Conformity",173,2,2,0.599
+"Morocco","Tradition",172,2,2,0.2
+"Morocco","Benevolence",173,2,2,0.486
+"Morocco","Universalism",173,3,3,0.539
+"Morocco","Self_Direction",173,2,2,0.552
+"Morocco","Stimulation",173,2,2,0.68
+"Morocco","Hedonism",173,2,2,0.349
+"Morocco","Achievement",173,2,2,0.655
+"Morocco","Power",173,2,2,0.242
+"Morocco","Security",173,2,2,0.592
+"Morocco","Self_Transcendence",173,5,5,0.683
+"Morocco","Self_Enhancement",173,4,4,0.593
+"Morocco","Openness_to_Change",173,6,6,0.707
+"Morocco","Conservation",172,6,6,0.665
+"Kuwait","Positive_Reciprocity",180,3,3,0.751
+"Kuwait","Negative_Reciprocity",180,3,3,0.727
+"Kuwait","Penal_Code_Violence",180,3,3,0.679
+"Kuwait","War_Acceptance",180,3,3,0.62
+"Kuwait","Corporal_Punishment",180,3,3,0.808
+"Kuwait","Intimate_Violence",35,3,3,0.308
+"Kuwait","Total_Violence_Scale",35,12,12,0.827
+"Kuwait","Other_Face_Concern",177,6,6,0.84
+"Kuwait","Self_Face_Concern",177,4,4,0.754
+"Kuwait","Withdrawal",174,3,3,0.584
+"Kuwait","Retaliation",174,3,3,0.506
+"Kuwait","Humor",174,3,3,0.673
+"Kuwait","MFQ_Care",171,6,6,0.838
+"Kuwait","MFQ_Equality",172,6,6,0.794
+"Kuwait","MFQ_Proportionality",172,6,6,0.75
+"Kuwait","MFQ_Loyalty",171,6,6,0.829
+"Kuwait","MFQ_Authority",170,6,6,0.835
+"Kuwait","MFQ_Purity",33,6,6,0.806
+"Kuwait","Intrinsic_Religiosity",172,3,3,0.883
+"Kuwait","Subjective_Wellbeing",170,5,5,0.852
+"Kuwait","Conformity",173,2,2,0.461
+"Kuwait","Tradition",173,2,2,0.354
+"Kuwait","Benevolence",173,2,2,0.559
+"Kuwait","Universalism",172,3,3,0.575
+"Kuwait","Self_Direction",173,2,2,0.433
+"Kuwait","Stimulation",173,2,2,0.681
+"Kuwait","Hedonism",173,2,2,0.71
+"Kuwait","Achievement",173,2,2,0.696
+"Kuwait","Power",173,2,2,0.477
+"Kuwait","Security",173,2,2,0.55
+"Kuwait","Self_Transcendence",172,5,5,0.742
+"Kuwait","Self_Enhancement",173,4,4,0.711
+"Kuwait","Openness_to_Change",173,6,6,0.696
+"Kuwait","Conservation",173,6,6,0.637
+"Lebanon","Positive_Reciprocity",87,3,3,0.654
+"Lebanon","Negative_Reciprocity",87,3,3,0.818
+"Lebanon","Penal_Code_Violence",87,3,3,0.769
+"Lebanon","War_Acceptance",87,3,3,0.612
+"Lebanon","Corporal_Punishment",87,3,3,0.773
+"Lebanon","Intimate_Violence",87,3,3,0.536
+"Lebanon","Total_Violence_Scale",87,12,12,0.841
+"Lebanon","Other_Face_Concern",86,6,6,0.84
+"Lebanon","Self_Face_Concern",86,4,4,0.876
+"Lebanon","Withdrawal",85,3,3,0.435
+"Lebanon","Retaliation",85,3,3,0.707
+"Lebanon","Humor",85,3,3,0.691
+"Lebanon","MFQ_Care",83,6,6,0.842
+"Lebanon","MFQ_Equality",83,6,6,0.634
+"Lebanon","MFQ_Proportionality",83,6,6,0.79
+"Lebanon","MFQ_Loyalty",83,6,6,0.808
+"Lebanon","MFQ_Authority",83,6,6,0.835
+"Lebanon","MFQ_Purity",83,6,6,0.828
+"Lebanon","Intrinsic_Religiosity",83,3,3,0.935
+"Lebanon","Subjective_Wellbeing",83,5,5,0.829
+"Lebanon","Conformity",84,2,2,0.522
+"Lebanon","Tradition",84,2,2,0.516
+"Lebanon","Benevolence",84,2,2,0.807
+"Lebanon","Universalism",84,3,3,0.82
+"Lebanon","Self_Direction",84,2,2,0.713
+"Lebanon","Stimulation",84,2,2,0.869
+"Lebanon","Hedonism",84,2,2,0.745
+"Lebanon","Achievement",84,2,2,0.718
+"Lebanon","Power",84,2,2,0.574
+"Lebanon","Security",84,2,2,0.624
+"Lebanon","Self_Transcendence",84,5,5,0.84
+"Lebanon","Self_Enhancement",84,4,4,0.774
+"Lebanon","Openness_to_Change",84,6,6,0.758
+"Lebanon","Conservation",84,6,6,0.79
+"Japan","Positive_Reciprocity",424,3,3,0.778
+"Japan","Negative_Reciprocity",424,3,3,0.854
+"Japan","Penal_Code_Violence",424,3,3,0.69
+"Japan","War_Acceptance",424,3,3,0.685
+"Japan","Corporal_Punishment",424,3,3,0.766
+"Japan","Intimate_Violence",424,3,3,0.541
+"Japan","Total_Violence_Scale",424,12,12,0.767
+"Japan","Other_Face_Concern",423,6,6,0.811
+"Japan","Self_Face_Concern",423,4,4,0.68
+"Japan","Withdrawal",424,3,3,0.663
+"Japan","Retaliation",424,3,3,0.631
+"Japan","Humor",424,3,3,0.712
+"Japan","MFQ_Care",424,6,6,0.819
+"Japan","MFQ_Equality",424,6,6,0.769
+"Japan","MFQ_Proportionality",424,6,6,0.772
+"Japan","MFQ_Loyalty",424,6,6,0.801
+"Japan","MFQ_Authority",423,6,6,0.741
+"Japan","MFQ_Purity",424,6,6,0.528
+"Japan","Intrinsic_Religiosity",423,3,3,0.773
+"Japan","Subjective_Wellbeing",424,5,5,0.867
+"Japan","Conformity",424,2,2,0.535
+"Japan","Tradition",424,2,2,0.118
+"Japan","Benevolence",424,2,2,0.501
+"Japan","Universalism",424,3,3,0.507
+"Japan","Self_Direction",424,2,2,0.519
+"Japan","Stimulation",424,2,2,0.72
+"Japan","Hedonism",423,2,2,0.56
+"Japan","Achievement",424,2,2,0.78
+"Japan","Power",424,2,2,0.533
+"Japan","Security",424,2,2,0.433
+"Japan","Self_Transcendence",424,5,5,0.651
+"Japan","Self_Enhancement",424,4,4,0.767
+"Japan","Openness_to_Change",423,6,6,0.715
+"Japan","Conservation",424,6,6,0.591
+"Czech Republic","Positive_Reciprocity",391,3,3,0.77
+"Czech Republic","Negative_Reciprocity",391,3,3,0.775
+"Czech Republic","Penal_Code_Violence",391,3,3,0.781
+"Czech Republic","War_Acceptance",391,3,3,0.468
+"Czech Republic","Corporal_Punishment",391,3,3,0.831
+"Czech Republic","Intimate_Violence",391,3,3,0.315
+"Czech Republic","Total_Violence_Scale",391,12,12,0.709
+"Czech Republic","Other_Face_Concern",389,6,6,0.791
+"Czech Republic","Self_Face_Concern",389,4,4,0.759
+"Czech Republic","Withdrawal",388,3,3,0.527
+"Czech Republic","Retaliation",388,3,3,0.663
+"Czech Republic","Humor",388,3,3,0.734
+"Czech Republic","MFQ_Care",382,6,6,0.856
+"Czech Republic","MFQ_Equality",382,6,6,0.845
+"Czech Republic","MFQ_Proportionality",382,6,6,0.784
+"Czech Republic","MFQ_Loyalty",382,6,6,0.769
+"Czech Republic","MFQ_Authority",381,6,6,0.803
+"Czech Republic","MFQ_Purity",381,6,6,0.691
+"Czech Republic","Intrinsic_Religiosity",381,3,3,0.891
+"Czech Republic","Subjective_Wellbeing",379,5,5,0.849
+"Czech Republic","Conformity",385,2,2,0.626
+"Czech Republic","Tradition",386,2,2,0.193
+"Czech Republic","Benevolence",386,2,2,0.562
+"Czech Republic","Universalism",386,3,3,0.457
+"Czech Republic","Self_Direction",386,2,2,0.523
+"Czech Republic","Stimulation",386,2,2,0.728
+"Czech Republic","Hedonism",386,2,2,0.793
+"Czech Republic","Achievement",386,2,2,0.765
+"Czech Republic","Power",386,2,2,0.572
+"Czech Republic","Security",386,2,2,0.587
+"Czech Republic","Self_Transcendence",386,5,5,0.638
+"Czech Republic","Self_Enhancement",386,4,4,0.781
+"Czech Republic","Openness_to_Change",386,6,6,0.766
+"Czech Republic","Conservation",385,6,6,0.661
+"Portugal","Positive_Reciprocity",331,3,3,0.676
+"Portugal","Negative_Reciprocity",331,3,3,0.827
+"Portugal","Penal_Code_Violence",331,3,3,0.854
+"Portugal","War_Acceptance",331,3,3,0.6
+"Portugal","Corporal_Punishment",331,3,3,0.86
+"Portugal","Intimate_Violence",331,3,3,0.541
+"Portugal","Total_Violence_Scale",331,12,12,0.798
+"Portugal","Other_Face_Concern",331,6,6,0.848
+"Portugal","Self_Face_Concern",331,4,4,0.741
+"Portugal","Withdrawal",331,3,3,0.629
+"Portugal","Retaliation",331,3,3,0.689
+"Portugal","Humor",331,3,3,0.643
+"Portugal","MFQ_Care",327,6,6,0.894
+"Portugal","MFQ_Equality",327,6,6,0.88
+"Portugal","MFQ_Proportionality",327,6,6,0.804
+"Portugal","MFQ_Loyalty",327,6,6,0.787
+"Portugal","MFQ_Authority",327,6,6,0.847
+"Portugal","MFQ_Purity",327,6,6,0.691
+"Portugal","Intrinsic_Religiosity",326,3,3,0.896
+"Portugal","Subjective_Wellbeing",326,5,5,0.896
+"Portugal","Conformity",328,2,2,0.567
+"Portugal","Tradition",328,2,2,0.404
+"Portugal","Benevolence",328,2,2,0.717
+"Portugal","Universalism",328,3,3,0.555
+"Portugal","Self_Direction",328,2,2,0.473
+"Portugal","Stimulation",328,2,2,0.731
+"Portugal","Hedonism",328,2,2,0.651
+"Portugal","Achievement",328,2,2,0.807
+"Portugal","Power",328,2,2,0.557
+"Portugal","Security",328,2,2,0.543
+"Portugal","Self_Transcendence",328,5,5,0.697
+"Portugal","Self_Enhancement",328,4,4,0.728
+"Portugal","Openness_to_Change",328,6,6,0.728
+"Portugal","Conservation",328,6,6,0.624
+"Indonesia","Positive_Reciprocity",277,3,3,0.68
+"Indonesia","Negative_Reciprocity",277,3,3,0.815
+"Indonesia","Penal_Code_Violence",277,3,3,0.652
+"Indonesia","War_Acceptance",277,3,3,0.445
+"Indonesia","Corporal_Punishment",277,3,3,0.751
+"Indonesia","Intimate_Violence",277,3,3,0.43
+"Indonesia","Total_Violence_Scale",277,12,12,0.727
+"Indonesia","Other_Face_Concern",274,6,6,0.771
+"Indonesia","Self_Face_Concern",274,4,4,0.61
+"Indonesia","Withdrawal",273,3,3,0.322
+"Indonesia","Retaliation",274,3,3,0.63
+"Indonesia","Humor",274,3,3,0.577
+"Indonesia","MFQ_Care",271,6,6,0.84
+"Indonesia","MFQ_Equality",271,6,6,0.727
+"Indonesia","MFQ_Proportionality",271,6,6,0.748
+"Indonesia","MFQ_Loyalty",271,6,6,0.756
+"Indonesia","MFQ_Authority",269,6,6,0.754
+"Indonesia","MFQ_Purity",271,6,6,0.609
+"Indonesia","Intrinsic_Religiosity",271,3,3,0.841
+"Indonesia","Subjective_Wellbeing",271,5,5,0.828
+"Indonesia","Conformity",274,2,2,0.532
+"Indonesia","Tradition",274,2,2,0.33
+"Indonesia","Benevolence",274,2,2,0.451
+"Indonesia","Universalism",274,3,3,0.529
+"Indonesia","Self_Direction",274,2,2,0.452
+"Indonesia","Stimulation",274,2,2,0.679
+"Indonesia","Hedonism",274,2,2,0.471
+"Indonesia","Achievement",274,2,2,0.675
+"Indonesia","Power",274,2,2,0.475
+"Indonesia","Security",274,2,2,0.617
+"Indonesia","Self_Transcendence",274,5,5,0.692
+"Indonesia","Self_Enhancement",274,4,4,0.7
+"Indonesia","Openness_to_Change",274,6,6,0.681
+"Indonesia","Conservation",274,6,6,0.686
+"North Macedonia","Positive_Reciprocity",312,3,3,0.609
+"North Macedonia","Negative_Reciprocity",312,3,3,0.811
+"North Macedonia","Penal_Code_Violence",312,3,3,0.739
+"North Macedonia","War_Acceptance",312,3,3,0.636
+"North Macedonia","Corporal_Punishment",311,3,3,0.752
+"North Macedonia","Intimate_Violence",312,3,3,0.382
+"North Macedonia","Total_Violence_Scale",311,12,12,0.728
+"North Macedonia","Other_Face_Concern",310,6,6,0.831
+"North Macedonia","Self_Face_Concern",310,4,4,0.685
+"North Macedonia","Withdrawal",309,3,3,0.512
+"North Macedonia","Retaliation",309,3,3,0.651
+"North Macedonia","Humor",309,3,3,0.623
+"North Macedonia","MFQ_Care",306,6,6,0.863
+"North Macedonia","MFQ_Equality",306,6,6,0.801
+"North Macedonia","MFQ_Proportionality",306,6,6,0.778
+"North Macedonia","MFQ_Loyalty",305,6,6,0.795
+"North Macedonia","MFQ_Authority",306,6,6,0.825
+"North Macedonia","MFQ_Purity",305,6,6,0.7
+"North Macedonia","Intrinsic_Religiosity",304,3,3,0.922
+"North Macedonia","Subjective_Wellbeing",303,5,5,0.842
+"North Macedonia","Conformity",309,2,2,0.522
+"North Macedonia","Tradition",309,2,2,0.079
+"North Macedonia","Benevolence",309,2,2,0.733
+"North Macedonia","Universalism",309,3,3,0.556
+"North Macedonia","Self_Direction",309,2,2,0.491
+"North Macedonia","Stimulation",309,2,2,0.812
+"North Macedonia","Hedonism",309,2,2,0.804
+"North Macedonia","Achievement",309,2,2,0.657
+"North Macedonia","Power",309,2,2,0.541
+"North Macedonia","Security",309,2,2,0.501
+"North Macedonia","Self_Transcendence",309,5,5,0.759
+"North Macedonia","Self_Enhancement",309,4,4,0.703
+"North Macedonia","Openness_to_Change",309,6,6,0.77
+"North Macedonia","Conservation",309,6,6,0.614
+"Ethiopia","Positive_Reciprocity",299,3,3,0.628
+"Ethiopia","Negative_Reciprocity",299,3,3,0.644
+"Ethiopia","Penal_Code_Violence",299,3,3,0.586
+"Ethiopia","War_Acceptance",299,3,3,0.44
+"Ethiopia","Corporal_Punishment",299,3,3,0.542
+"Ethiopia","Intimate_Violence",299,3,3,0.274
+"Ethiopia","Total_Violence_Scale",299,12,12,0.701
+"Ethiopia","Other_Face_Concern",298,6,6,0.834
+"Ethiopia","Self_Face_Concern",299,4,4,0.76
+"Ethiopia","Withdrawal",299,3,3,0.593
+"Ethiopia","Retaliation",299,3,3,0.779
+"Ethiopia","Humor",299,3,3,0.816
+"Ethiopia","MFQ_Care",297,6,6,0.84
+"Ethiopia","MFQ_Equality",297,6,6,0.808
+"Ethiopia","MFQ_Proportionality",297,6,6,0.815
+"Ethiopia","MFQ_Loyalty",297,6,6,0.711
+"Ethiopia","MFQ_Authority",295,6,6,0.748
+"Ethiopia","MFQ_Purity",296,6,6,0.664
+"Ethiopia","Intrinsic_Religiosity",295,3,3,0.733
+"Ethiopia","Subjective_Wellbeing",294,5,5,0.792
+"Ethiopia","Conformity",297,2,2,0.475
+"Ethiopia","Tradition",296,2,2,0.436
+"Ethiopia","Benevolence",297,2,2,0.694
+"Ethiopia","Universalism",296,3,3,0.665
+"Ethiopia","Self_Direction",297,2,2,0.616
+"Ethiopia","Stimulation",297,2,2,0.483
+"Ethiopia","Hedonism",297,2,2,0.618
+"Ethiopia","Achievement",297,2,2,0.468
+"Ethiopia","Power",297,2,2,0.427
+"Ethiopia","Security",297,2,2,0.619
+"Ethiopia","Self_Transcendence",296,5,5,0.816
+"Ethiopia","Self_Enhancement",297,4,4,0.668
+"Ethiopia","Openness_to_Change",297,6,6,0.789
+"Ethiopia","Conservation",296,6,6,0.739
+"Chile","Positive_Reciprocity",363,3,3,0.737
+"Chile","Negative_Reciprocity",363,3,3,0.793
+"Chile","Penal_Code_Violence",363,3,3,0.789
+"Chile","War_Acceptance",362,3,3,0.634
+"Chile","Corporal_Punishment",363,3,3,0.844
+"Chile","Intimate_Violence",363,3,3,0.58
+"Chile","Total_Violence_Scale",362,12,12,0.819
+"Chile","Other_Face_Concern",361,6,6,0.82
+"Chile","Self_Face_Concern",361,4,4,0.737
+"Chile","Withdrawal",355,3,3,0.536
+"Chile","Retaliation",355,3,3,0.677
+"Chile","Humor",355,3,3,0.737
+"Chile","MFQ_Care",343,6,6,0.869
+"Chile","MFQ_Equality",342,6,6,0.867
+"Chile","MFQ_Proportionality",342,6,6,0.738
+"Chile","MFQ_Loyalty",343,6,6,0.81
+"Chile","MFQ_Authority",343,6,6,0.858
+"Chile","MFQ_Purity",343,6,6,0.748
+"Chile","Intrinsic_Religiosity",340,3,3,0.894
+"Chile","Subjective_Wellbeing",339,5,5,0.877
+"Chile","Conformity",348,2,2,0.588
+"Chile","Tradition",348,2,2,0.252
+"Chile","Benevolence",348,2,2,0.57
+"Chile","Universalism",348,3,3,0.527
+"Chile","Self_Direction",348,2,2,0.464
+"Chile","Stimulation",348,2,2,0.585
+"Chile","Hedonism",348,2,2,0.457
+"Chile","Achievement",348,2,2,0.703
+"Chile","Power",348,2,2,0.545
+"Chile","Security",348,2,2,0.493
+"Chile","Self_Transcendence",348,5,5,0.666
+"Chile","Self_Enhancement",348,4,4,0.728
+"Chile","Openness_to_Change",348,6,6,0.714
+"Chile","Conservation",348,6,6,0.6
+"Kazakhstan","Positive_Reciprocity",93,3,3,0.761
+"Kazakhstan","Negative_Reciprocity",93,3,3,0.861
+"Kazakhstan","Penal_Code_Violence",93,3,3,0.616
+"Kazakhstan","War_Acceptance",93,3,3,0.483
+"Kazakhstan","Corporal_Punishment",93,3,3,0.82
+"Kazakhstan","Intimate_Violence",93,3,3,0.345
+"Kazakhstan","Total_Violence_Scale",93,12,12,0.684
+"Kazakhstan","Other_Face_Concern",91,6,6,0.775
+"Kazakhstan","Self_Face_Concern",92,4,4,0.639
+"Kazakhstan","Withdrawal",92,3,3,0.477
+"Kazakhstan","Retaliation",91,3,3,0.663
+"Kazakhstan","Humor",92,3,3,0.591
+"Kazakhstan","MFQ_Care",87,6,6,0.903
+"Kazakhstan","MFQ_Equality",87,6,6,0.851
+"Kazakhstan","MFQ_Proportionality",86,6,6,0.809
+"Kazakhstan","MFQ_Loyalty",86,6,6,0.827
+"Kazakhstan","MFQ_Authority",87,6,6,0.789
+"Kazakhstan","MFQ_Purity",87,6,6,0.81
+"Kazakhstan","Intrinsic_Religiosity",86,3,3,0.87
+"Kazakhstan","Subjective_Wellbeing",87,5,5,0.917
+"Kazakhstan","Conformity",90,2,2,0.582
+"Kazakhstan","Tradition",90,2,2,0.284
+"Kazakhstan","Benevolence",90,2,2,0.471
+"Kazakhstan","Universalism",90,3,3,0.303
+"Kazakhstan","Self_Direction",90,2,2,0.395
+"Kazakhstan","Stimulation",90,2,2,0.452
+"Kazakhstan","Hedonism",90,2,2,0.462
+"Kazakhstan","Achievement",90,2,2,0.672
+"Kazakhstan","Power",90,2,2,0.564
+"Kazakhstan","Security",89,2,2,0.49
+"Kazakhstan","Self_Transcendence",90,5,5,0.572
+"Kazakhstan","Self_Enhancement",90,4,4,0.737
+"Kazakhstan","Openness_to_Change",90,6,6,0.683
+"Kazakhstan","Conservation",89,6,6,0.572
+"Bangladesh","Positive_Reciprocity",290,3,3,0.583
+"Bangladesh","Negative_Reciprocity",290,3,3,0.821
+"Bangladesh","Penal_Code_Violence",290,3,3,0.533
+"Bangladesh","War_Acceptance",290,3,3,0.668
+"Bangladesh","Corporal_Punishment",290,3,3,0.696
+"Bangladesh","Intimate_Violence",290,3,3,0.487
+"Bangladesh","Total_Violence_Scale",290,12,12,0.785
+"Bangladesh","Other_Face_Concern",288,6,6,0.82
+"Bangladesh","Self_Face_Concern",289,4,4,0.687
+"Bangladesh","Withdrawal",289,3,3,0.708
+"Bangladesh","Retaliation",289,3,3,0.732
+"Bangladesh","Humor",289,3,3,0.754
+"Bangladesh","MFQ_Care",286,6,6,0.879
+"Bangladesh","MFQ_Equality",286,6,6,0.829
+"Bangladesh","MFQ_Proportionality",285,6,6,0.799
+"Bangladesh","MFQ_Loyalty",286,6,6,0.86
+"Bangladesh","MFQ_Authority",284,6,6,0.828
+"Bangladesh","MFQ_Purity",283,6,6,0.727
+"Bangladesh","Intrinsic_Religiosity",285,3,3,0.771
+"Bangladesh","Subjective_Wellbeing",285,5,5,0.814
+"Bangladesh","Conformity",287,2,2,0.453
+"Bangladesh","Tradition",287,2,2,0.452
+"Bangladesh","Benevolence",287,2,2,0.732
+"Bangladesh","Universalism",286,3,3,0.577
+"Bangladesh","Self_Direction",287,2,2,0.469
+"Bangladesh","Stimulation",287,2,2,0.403
+"Bangladesh","Hedonism",287,2,2,0.674
+"Bangladesh","Achievement",287,2,2,0.484
+"Bangladesh","Power",287,2,2,0.412
+"Bangladesh","Security",287,2,2,0.596
+"Bangladesh","Self_Transcendence",286,5,5,0.787
+"Bangladesh","Self_Enhancement",287,4,4,0.724
+"Bangladesh","Openness_to_Change",287,6,6,0.769
+"Bangladesh","Conservation",287,6,6,0.739
+"Taiwan","Positive_Reciprocity",266,3,3,0.786
+"Taiwan","Negative_Reciprocity",266,3,3,0.87
+"Taiwan","Penal_Code_Violence",266,3,3,0.834
+"Taiwan","War_Acceptance",266,3,3,0.574
+"Taiwan","Corporal_Punishment",266,3,3,0.802
+"Taiwan","Intimate_Violence",266,3,3,0.583
+"Taiwan","Total_Violence_Scale",266,12,12,0.797
+"Taiwan","Other_Face_Concern",264,6,6,0.829
+"Taiwan","Self_Face_Concern",264,4,4,0.5
+"Taiwan","Withdrawal",263,3,3,0.721
+"Taiwan","Retaliation",263,3,3,0.668
+"Taiwan","Humor",263,3,3,0.74
+"Taiwan","MFQ_Care",260,6,6,0.85
+"Taiwan","MFQ_Equality",260,6,6,0.85
+"Taiwan","MFQ_Proportionality",260,6,6,0.75
+"Taiwan","MFQ_Loyalty",260,6,6,0.733
+"Taiwan","MFQ_Authority",260,6,6,0.786
+"Taiwan","MFQ_Purity",260,6,6,0.755
+"Taiwan","Intrinsic_Religiosity",260,3,3,0.906
+"Taiwan","Subjective_Wellbeing",260,5,5,0.893
+"Taiwan","Conformity",262,2,2,0.472
+"Taiwan","Tradition",262,2,2,0.321
+"Taiwan","Benevolence",262,2,2,0.401
+"Taiwan","Universalism",262,3,3,0.558
+"Taiwan","Self_Direction",262,2,2,0.479
+"Taiwan","Stimulation",262,2,2,0.797
+"Taiwan","Hedonism",262,2,2,0.653
+"Taiwan","Achievement",262,2,2,0.786
+"Taiwan","Power",262,2,2,0.459
+"Taiwan","Security",262,2,2,0.571
+"Taiwan","Self_Transcendence",262,5,5,0.655
+"Taiwan","Self_Enhancement",262,4,4,0.678
+"Taiwan","Openness_to_Change",262,6,6,0.768
+"Taiwan","Conservation",262,6,6,0.602
+"Georgia","Positive_Reciprocity",286,3,3,0.786
+"Georgia","Negative_Reciprocity",286,3,3,0.844
+"Georgia","Penal_Code_Violence",285,3,3,0.745
+"Georgia","War_Acceptance",285,3,3,0.67
+"Georgia","Corporal_Punishment",286,3,3,0.829
+"Georgia","Intimate_Violence",286,3,3,0.406
+"Georgia","Total_Violence_Scale",284,12,12,0.767
+"Georgia","Other_Face_Concern",281,6,6,0.821
+"Georgia","Self_Face_Concern",282,4,4,0.827
+"Georgia","Withdrawal",280,3,3,0.543
+"Georgia","Retaliation",282,3,3,0.66
+"Georgia","Humor",280,3,3,0.561
+"Georgia","MFQ_Care",274,6,6,0.864
+"Georgia","MFQ_Equality",274,6,6,0.8
+"Georgia","MFQ_Proportionality",273,6,6,0.805
+"Georgia","MFQ_Loyalty",270,6,6,0.807
+"Georgia","MFQ_Authority",273,6,6,0.756
+"Georgia","MFQ_Purity",273,6,6,0.76
+"Georgia","Intrinsic_Religiosity",273,3,3,0.884
+"Georgia","Subjective_Wellbeing",274,5,5,0.831
+"Georgia","Conformity",276,2,2,0.525
+"Georgia","Tradition",276,2,2,0.396
+"Georgia","Benevolence",276,2,2,0.592
+"Georgia","Universalism",273,3,3,0.648
+"Georgia","Self_Direction",276,2,2,0.388
+"Georgia","Stimulation",274,2,2,0.55
+"Georgia","Hedonism",276,2,2,0.634
+"Georgia","Achievement",276,2,2,0.729
+"Georgia","Power",275,2,2,0.547
+"Georgia","Security",275,2,2,0.443
+"Georgia","Self_Transcendence",273,5,5,0.744
+"Georgia","Self_Enhancement",275,4,4,0.76
+"Georgia","Openness_to_Change",274,6,6,0.733
+"Georgia","Conservation",274,6,6,0.627
+"Bulgaria","Positive_Reciprocity",287,3,3,0.761
+"Bulgaria","Negative_Reciprocity",287,3,3,0.823
+"Bulgaria","Penal_Code_Violence",286,3,3,0.803
+"Bulgaria","War_Acceptance",286,3,3,0.477
+"Bulgaria","Corporal_Punishment",287,3,3,0.878
+"Bulgaria","Intimate_Violence",287,3,3,0.279
+"Bulgaria","Total_Violence_Scale",286,12,12,0.735
+"Bulgaria","Other_Face_Concern",285,6,6,0.863
+"Bulgaria","Self_Face_Concern",285,4,4,0.759
+"Bulgaria","Withdrawal",285,3,3,0.59
+"Bulgaria","Retaliation",285,3,3,0.599
+"Bulgaria","Humor",285,3,3,0.66
+"Bulgaria","MFQ_Care",282,6,6,0.878
+"Bulgaria","MFQ_Equality",283,6,6,0.846
+"Bulgaria","MFQ_Proportionality",282,6,6,0.785
+"Bulgaria","MFQ_Loyalty",282,6,6,0.818
+"Bulgaria","MFQ_Authority",282,6,6,0.806
+"Bulgaria","MFQ_Purity",282,6,6,0.633
+"Bulgaria","Intrinsic_Religiosity",282,3,3,0.884
+"Bulgaria","Subjective_Wellbeing",282,5,5,0.842
+"Bulgaria","Conformity",282,2,2,0.532
+"Bulgaria","Tradition",282,2,2,0.223
+"Bulgaria","Benevolence",279,2,2,0.538
+"Bulgaria","Universalism",282,3,3,0.463
+"Bulgaria","Self_Direction",282,2,2,0.427
+"Bulgaria","Stimulation",282,2,2,0.738
+"Bulgaria","Hedonism",282,2,2,0.665
+"Bulgaria","Achievement",282,2,2,0.744
+"Bulgaria","Power",282,2,2,0.442
+"Bulgaria","Security",282,2,2,0.465
+"Bulgaria","Self_Transcendence",279,5,5,0.622
+"Bulgaria","Self_Enhancement",282,4,4,0.722
+"Bulgaria","Openness_to_Change",282,6,6,0.733
+"Bulgaria","Conservation",282,6,6,0.606
+"The Netherlands","Positive_Reciprocity",136,3,3,0.706
+"The Netherlands","Negative_Reciprocity",136,3,3,0.819
+"The Netherlands","Penal_Code_Violence",136,3,3,0.68
+"The Netherlands","War_Acceptance",136,3,3,0.542
+"The Netherlands","Corporal_Punishment",136,3,3,0.75
+"The Netherlands","Intimate_Violence",136,2,3,0.504
+"The Netherlands","Total_Violence_Scale",136,11,12,0.693
+"The Netherlands","Other_Face_Concern",135,6,6,0.799
+"The Netherlands","Self_Face_Concern",135,4,4,0.722
+"The Netherlands","Withdrawal",135,3,3,0.632
+"The Netherlands","Retaliation",135,3,3,0.618
+"The Netherlands","Humor",135,3,3,0.63
+"The Netherlands","MFQ_Care",134,6,6,0.84
+"The Netherlands","MFQ_Equality",134,6,6,0.771
+"The Netherlands","MFQ_Proportionality",134,6,6,0.727
+"The Netherlands","MFQ_Loyalty",134,6,6,0.726
+"The Netherlands","MFQ_Authority",134,6,6,0.734
+"The Netherlands","MFQ_Purity",134,6,6,0.739
+"The Netherlands","Intrinsic_Religiosity",134,3,3,0.953
+"The Netherlands","Subjective_Wellbeing",134,5,5,0.87
+"The Netherlands","Conformity",134,2,2,0.604
+"The Netherlands","Tradition",134,2,2,0.414
+"The Netherlands","Benevolence",134,2,2,0.729
+"The Netherlands","Universalism",134,3,3,0.471
+"The Netherlands","Self_Direction",134,2,2,0.323
+"The Netherlands","Stimulation",134,2,2,0.714
+"The Netherlands","Hedonism",134,2,2,0.543
+"The Netherlands","Achievement",134,2,2,0.717
+"The Netherlands","Power",134,2,2,0.463
+"The Netherlands","Security",134,2,2,0.592
+"The Netherlands","Self_Transcendence",134,5,5,0.615
+"The Netherlands","Self_Enhancement",134,4,4,0.707
+"The Netherlands","Openness_to_Change",134,6,6,0.601
+"The Netherlands","Conservation",134,6,6,0.665
+"Brazil","Positive_Reciprocity",304,3,3,0.66
+"Brazil","Negative_Reciprocity",304,3,3,0.728
+"Brazil","Penal_Code_Violence",304,3,3,0.841
+"Brazil","War_Acceptance",304,3,3,0.554
+"Brazil","Corporal_Punishment",304,3,3,0.839
+"Brazil","Intimate_Violence",304,3,3,0.272
+"Brazil","Total_Violence_Scale",304,12,12,0.788
+"Brazil","Other_Face_Concern",301,6,6,0.819
+"Brazil","Self_Face_Concern",300,4,4,0.76
+"Brazil","Withdrawal",301,3,3,0.487
+"Brazil","Retaliation",301,3,3,0.69
+"Brazil","Humor",301,3,3,0.684
+"Brazil","MFQ_Care",294,6,6,0.805
+"Brazil","MFQ_Equality",295,6,6,0.857
+"Brazil","MFQ_Proportionality",295,6,6,0.758
+"Brazil","MFQ_Loyalty",295,6,6,0.801
+"Brazil","MFQ_Authority",293,6,6,0.844
+"Brazil","MFQ_Purity",292,6,6,0.74
+"Brazil","Intrinsic_Religiosity",294,3,3,0.875
+"Brazil","Subjective_Wellbeing",294,5,5,0.863
+"Brazil","Conformity",300,2,2,0.549
+"Brazil","Tradition",300,2,2,0.417
+"Brazil","Benevolence",300,2,2,0.49
+"Brazil","Universalism",300,3,3,0.554
+"Brazil","Self_Direction",299,2,2,0.368
+"Brazil","Stimulation",300,2,2,0.702
+"Brazil","Hedonism",300,2,2,0.381
+"Brazil","Achievement",300,2,2,0.658
+"Brazil","Power",300,2,2,0.51
+"Brazil","Security",300,2,2,0.39
+"Brazil","Self_Transcendence",300,5,5,0.685
+"Brazil","Self_Enhancement",300,4,4,0.703
+"Brazil","Openness_to_Change",299,6,6,0.652
+"Brazil","Conservation",300,6,6,0.65
+"Kosovo","Positive_Reciprocity",206,3,3,0.73
+"Kosovo","Negative_Reciprocity",207,3,3,0.777
+"Kosovo","Penal_Code_Violence",207,3,3,0.798
+"Kosovo","War_Acceptance",206,3,3,0.651
+"Kosovo","Corporal_Punishment",207,3,3,0.846
+"Kosovo","Intimate_Violence",206,3,3,0.645
+"Kosovo","Total_Violence_Scale",205,12,12,0.831
+"Kosovo","Other_Face_Concern",206,6,6,0.79
+"Kosovo","Self_Face_Concern",205,4,4,0.833
+"Kosovo","Withdrawal",206,3,3,0.563
+"Kosovo","Retaliation",204,3,3,0.59
+"Kosovo","Humor",204,3,3,0.751
+"Kosovo","MFQ_Care",202,6,6,0.797
+"Kosovo","MFQ_Equality",204,6,6,0.834
+"Kosovo","MFQ_Proportionality",204,6,6,0.783
+"Kosovo","MFQ_Loyalty",203,6,6,0.819
+"Kosovo","MFQ_Authority",201,6,6,0.742
+"Kosovo","MFQ_Purity",203,6,6,0.573
+"Kosovo","Intrinsic_Religiosity",203,3,3,0.805
+"Kosovo","Subjective_Wellbeing",203,5,5,0.841
+"Kosovo","Conformity",203,2,2,0.464
+"Kosovo","Tradition",204,2,2,0.261
+"Kosovo","Benevolence",204,2,2,0.538
+"Kosovo","Universalism",203,3,3,0.538
+"Kosovo","Self_Direction",203,2,2,0.503
+"Kosovo","Stimulation",204,2,2,0.606
+"Kosovo","Hedonism",204,2,2,0.557
+"Kosovo","Achievement",204,2,2,0.672
+"Kosovo","Power",204,2,2,0.581
+"Kosovo","Security",204,2,2,0.45
+"Kosovo","Self_Transcendence",203,5,5,0.717
+"Kosovo","Self_Enhancement",204,4,4,0.684
+"Kosovo","Openness_to_Change",203,6,6,0.712
+"Kosovo","Conservation",203,6,6,0.611
+"Namibia","Penal_Code_Violence",909,3,3,0.769
+"Namibia","War_Acceptance",910,3,3,0.752
+"Namibia","Corporal_Punishment",911,3,3,0.738
+"Namibia","Intimate_Violence",910,3,3,0.673
+"Namibia","Total_Violence_Scale",905,12,12,0.833
+"Namibia","Other_Face_Concern",902,6,6,0.816
+"Namibia","Self_Face_Concern",904,4,4,0.813
+"Russia","Positive_Reciprocity",309,3,3,0.785
+"Russia","Negative_Reciprocity",310,3,3,0.877
+"Russia","Penal_Code_Violence",309,3,3,0.756
+"Russia","War_Acceptance",306,3,3,0.63
+"Russia","Corporal_Punishment",306,3,3,0.861
+"Russia","Intimate_Violence",308,3,3,0.562
+"Russia","Total_Violence_Scale",304,12,12,0.798
+"Russia","Other_Face_Concern",304,6,6,0.854
+"Russia","Self_Face_Concern",305,4,4,0.745
+"Russia","Withdrawal",305,3,3,0.49
+"Russia","Retaliation",305,3,3,0.66
+"Russia","Humor",306,3,3,0.689
+"Russia","MFQ_Care",282,6,6,0.868
+"Russia","MFQ_Equality",283,6,6,0.877
+"Russia","MFQ_Proportionality",280,6,6,0.812
+"Russia","MFQ_Loyalty",278,6,6,0.849
+"Russia","MFQ_Authority",281,6,6,0.826
+"Russia","MFQ_Purity",278,6,6,0.79
+"Russia","Intrinsic_Religiosity",287,3,3,0.888
+"Russia","Subjective_Wellbeing",286,5,5,0.897
+"Russia","Conformity",296,2,2,0.598
+"Russia","Tradition",295,2,2,0.375
+"Russia","Benevolence",293,2,2,0.667
+"Russia","Universalism",293,3,3,0.506
+"Russia","Self_Direction",296,2,2,0.495
+"Russia","Stimulation",295,2,2,0.662
+"Russia","Hedonism",295,2,2,0.747
+"Russia","Achievement",293,2,2,0.812
+"Russia","Power",296,2,2,0.581
+"Russia","Security",296,2,2,0.468
+"Russia","Self_Transcendence",290,5,5,0.65
+"Russia","Self_Enhancement",293,4,4,0.833
+"Russia","Openness_to_Change",294,6,6,0.76
+"Russia","Conservation",295,6,6,0.634
+"Iran","Positive_Reciprocity",383,3,3,0.8
+"Iran","Negative_Reciprocity",383,3,3,0.765
+"Iran","Penal_Code_Violence",381,3,3,0.812
+"Iran","War_Acceptance",381,3,3,0.515
+"Iran","Corporal_Punishment",379,3,3,0.789
+"Iran","Intimate_Violence",380,3,3,0.448
+"Iran","Total_Violence_Scale",377,12,12,0.75
+"Iran","Other_Face_Concern",378,6,6,0.873
+"Iran","Self_Face_Concern",378,4,4,0.64
+"Iran","Withdrawal",379,3,3,0.501
+"Iran","Retaliation",378,3,3,0.656
+"Iran","Humor",376,3,3,0.646
+"Iran","MFQ_Care",355,6,6,0.859
+"Iran","MFQ_Equality",358,6,6,0.85
+"Iran","MFQ_Proportionality",355,6,6,0.782
+"Iran","MFQ_Loyalty",354,6,6,0.848
+"Iran","MFQ_Authority",357,6,6,0.859
+"Iran","MFQ_Purity",354,6,6,0.787
+"Iran","Intrinsic_Religiosity",359,3,3,0.874
+"Iran","Subjective_Wellbeing",356,5,5,0.902
+"Iran","Conformity",365,2,2,0.434
+"Iran","Tradition",366,2,2,0.351
+"Iran","Benevolence",368,2,2,0.526
+"Iran","Universalism",366,3,3,0.429
+"Iran","Self_Direction",367,2,2,0.44
+"Iran","Stimulation",365,2,2,0.775
+"Iran","Hedonism",366,2,2,0.726
+"Iran","Achievement",367,2,2,0.689
+"Iran","Power",369,2,2,0.397
+"Iran","Security",367,2,2,0.279
+"Iran","Self_Transcendence",366,5,5,0.591
+"Iran","Self_Enhancement",367,4,4,0.686
+"Iran","Openness_to_Change",363,6,6,0.712
+"Iran","Conservation",362,6,6,0.645

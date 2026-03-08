@@ -1,0 +1,549 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww13080\viewh14600\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 # =============================================================================\
+# Collaborator Survey - R Analysis\
+# =============================================================================\
+\
+# --- Install and load required packages ---\
+if (!require("haven")) install.packages("haven")\
+if (!require("dplyr")) install.packages("dplyr")\
+if (!require("psych")) install.packages("psych")\
+if (!require("tidyr")) install.packages("tidyr")\
+\
+library(haven)\
+library(dplyr)\
+library(tidyr)\
+library(psych)\
+\
+# --- Load dataset ---\
+dat <- read.csv("MAIN_DHF_Collaborator_Survey.csv") #adjust path whenever necessary\
+\
+# --- Total N for reference ---\
+total_N <- nrow(dat)\
+cat("Total sample size:", total_N, "\\n")\
+\
+# Helper function: descriptives (Mean, SD, Min, Max, N)\
+desc_stats <- function(data, var) \{\
+  x <- data[[var]]\
+  x <- x[!is.na(x)]\
+  data.frame(\
+    Variable = var,\
+    N = length(x),\
+    Mean = round(mean(x), 2),\
+    SD = round(sd(x), 2),\
+    Min = min(x),\
+    Max = max(x)\
+  )\
+\}\
+\
+# Helper: frequency table with percentages\
+freq_with_pct <- function(data, var) \{\
+  x <- data[[var]]\
+  tbl <- table(x, useNA = "ifany")\
+  pct <- round(prop.table(tbl) * 100, 1)\
+  result <- data.frame(\
+    Value = names(tbl),\
+    N = as.integer(tbl),\
+    Pct = as.numeric(pct)\
+  )\
+  cat("\\n---", var, "---\\n")\
+  print(result, row.names = FALSE)\
+  invisible(result)\
+\}\
+\
+# =============================================================================\
+# 1. FREQUENCIES: Q3.2 \
+#(If you have any feedback on the conceptualization of these cultural logics and/or their facets, please leave it here)\
+# =============================================================================\
+cat("\\n========== Frequencies: Q3.2 ==========\\n")\
+freq_with_pct(dat, "Q3.2")\
+\
+# =============================================================================\
+# 2. FREQUENCIES: Q5.2 through Q40.2 (with percentages)\
+# =============================================================================\
+cat("\\n========== Frequencies: Q5.2 to Q40.2 ==========\\n")\
+freq_vars <- paste0("Q", 5:40, ".2")\
+for (v in freq_vars) \{\
+  if (v %in% names(dat)) \{\
+    freq_with_pct(dat, v)\
+  \}\
+\}\
+\
+# =============================================================================\
+# 3. FILTERING CORRECT GUESSES & ITEM QUALITY ASSESSMENT\
+#    For each item, filter to those who correctly matched item to construct,\
+#    then get descriptives of the quality rating (.3 variable)\
+# =============================================================================\
+\
+# Define the construct mapping:\
+# Dignity-Self:  Q5-Q10,   correct answer = 1\
+# Dignity-Other: Q11-Q16,  correct answer = 2\
+# Honor-Self:    Q17-Q22,  correct answer = 3\
+# Honor-Other:   Q23-Q29,  correct answer = 4\
+# Face-Self:     Q30-Q35,  correct answer = 5\
+# Face-Other:    Q36-Q40,  correct answer = 6\
+\
+construct_map <- list(\
+  "Dignity-Self"  = list(items = 5:10,  correct = 1),\
+  "Dignity-Other" = list(items = 11:16, correct = 2),\
+  "Honor-Self"    = list(items = 17:22, correct = 3),\
+  "Honor-Other"   = list(items = 23:29, correct = 4),\
+  "Face-Self"     = list(items = 30:35, correct = 5),\
+  "Face-Other"    = list(items = 36:40, correct = 6)\
+)\
+\
+cat("\\n========== Item Quality Among Correct Guessers (All Respondents) ==========\\n")\
+results_correct <- data.frame()\
+\
+for (construct in names(construct_map)) \{\
+  items   <- construct_map[[construct]]$items\
+  correct <- construct_map[[construct]]$correct\
+  \
+  cat("\\n---", construct, "---\\n")\
+  for (i in items) \{\
+    filter_var  <- paste0("Q", i, ".2")\
+    quality_var <- paste0("Q", i, ".3")\
+    \
+    if (filter_var %in% names(dat) & quality_var %in% names(dat)) \{\
+      # N who answered the classification question (non-missing on .2)\
+      n_responded <- sum(!is.na(dat[[filter_var]]))\
+      # N who guessed correctly\
+      n_correct <- sum(dat[[filter_var]] == correct, na.rm = TRUE)\
+      pct_correct <- round(n_correct / n_responded * 100, 1)\
+      \
+      filtered <- dat[dat[[filter_var]] == correct & !is.na(dat[[filter_var]]), ]\
+      if (nrow(filtered) > 0) \{\
+        res <- desc_stats(filtered, quality_var)\
+        res$Construct <- construct\
+        res$N_correct <- n_correct\
+        res$Pct_correct <- pct_correct\
+        results_correct <- rbind(results_correct, res)\
+        cat(paste0(quality_var,\
+                   ": Correct guessers = ", n_correct, "/", n_responded,\
+                   " (", pct_correct, "%)",\
+                   " | Quality M=", res$Mean, ", SD=", res$SD,\
+                   " (N with rating=", res$N, ")\\n"))\
+      \}\
+    \}\
+  \}\
+\}\
+\
+# =============================================================================\
+# 4. TRANSLATION DIFFICULTY ASSESSMENT (All sample)\
+# =============================================================================\
+cat("\\n========== Translation Difficulty (Q5.4 to Q40.4) - All Sample ==========\\n")\
+trans_vars <- paste0("Q", 5:40, ".4")\
+results_translation <- data.frame()\
+\
+for (v in trans_vars) \{\
+  if (v %in% names(dat)) \{\
+    res <- desc_stats(dat, v)\
+    results_translation <- rbind(results_translation, res)\
+  \}\
+\}\
+print(results_translation)\
+\
+# =============================================================================\
+# 5. SUGGESTIONS & REPLACEMENTS\
+# =============================================================================\
+cat("\\n========== Suggestions & Replacements ==========\\n")\
+suggest_vars <- c("Q41.3", "Q41.4", "Q42.2", "Q42.3", "Q43.2", "Q43.3",\
+                  "Q44.2", "Q44.3", "Q45.2", "Q45.3", "Q46.2", "Q46.3")\
+for (v in suggest_vars) \{\
+  if (v %in% names(dat)) \{\
+    freq_with_pct(dat, v)\
+  \}\
+\}\
+\
+# =============================================================================\
+# 6. SAMPLE DESCRIPTION (with percentages)\
+# =============================================================================\
+cat("\\n========== Sample Description ==========\\n")\
+for (v in c("Q2.1", "Q2.2", "Q2.2_2_TEXT")) \{\
+  if (v %in% names(dat)) \{\
+    freq_with_pct(dat, v)\
+  \}\
+\}\
+\
+# =============================================================================\
+# 7. FAMILIARITY WITH CONSTRUCTS\
+# =============================================================================\
+cat("\\n========== Familiarity with Constructs ==========\\n")\
+fam_vars <- c("Q2.3_1", "Q2.3_2", "Q2.3_3")\
+results_fam <- data.frame()\
+for (v in fam_vars) \{\
+  if (v %in% names(dat)) \{\
+    results_fam <- rbind(results_fam, desc_stats(dat, v))\
+  \}\
+\}\
+print(results_fam)\
+\
+# =============================================================================\
+# 8. ANALYSES FILTERED BY EXPERTISE (some or considerable: > 3)\
+# =============================================================================\
+\
+# --- 8a. Dignity items among those with Dignity expertise (Q2.3_3 > 3) ---\
+cat("\\n========== Dignity Items - Experts Only (Q2.3_3 > 3) ==========\\n")\
+dat_dig_expert <- dat %>% filter(Q2.3_3 > 3)\
+cat("N experts (Dignity):", nrow(dat_dig_expert), "\\n")\
+\
+# Frequencies Q5.2-Q16.2\
+for (v in paste0("Q", 5:16, ".2")) \{\
+  if (v %in% names(dat_dig_expert)) \{\
+    freq_with_pct(dat_dig_expert, v)\
+  \}\
+\}\
+\
+# Descriptives Q5.3, Q5.4 through Q16.3, Q16.4\
+dig_desc_vars <- as.vector(outer(paste0("Q", 5:16), c(".3", ".4"), paste0))\
+results_dig_expert <- data.frame()\
+for (v in dig_desc_vars) \{\
+  if (v %in% names(dat_dig_expert)) \{\
+    results_dig_expert <- rbind(results_dig_expert, desc_stats(dat_dig_expert, v))\
+  \}\
+\}\
+print(results_dig_expert)\
+\
+# --- 8b. Honor items among those with Honor expertise (Q2.3_1 > 3) ---\
+cat("\\n========== Honor Items - Experts Only (Q2.3_1 > 3) ==========\\n")\
+dat_hon_expert <- dat %>% filter(Q2.3_1 > 3)\
+cat("N experts (Honor):", nrow(dat_hon_expert), "\\n")\
+\
+# Frequencies Q17.2-Q29.2\
+for (v in paste0("Q", 17:29, ".2")) \{\
+  if (v %in% names(dat_hon_expert)) \{\
+    freq_with_pct(dat_hon_expert, v)\
+  \}\
+\}\
+\
+# Descriptives Q17.3, Q17.4 through Q29.3, Q29.4\
+hon_desc_vars <- as.vector(outer(paste0("Q", 17:29), c(".3", ".4"), paste0))\
+results_hon_expert <- data.frame()\
+for (v in hon_desc_vars) \{\
+  if (v %in% names(dat_hon_expert)) \{\
+    results_hon_expert <- rbind(results_hon_expert, desc_stats(dat_hon_expert, v))\
+  \}\
+\}\
+print(results_hon_expert)\
+\
+# --- 8c. Face items among those with Face expertise (Q2.3_2 > 3) ---\
+cat("\\n========== Face Items - Experts Only (Q2.3_2 > 3) ==========\\n")\
+dat_face_expert <- dat %>% filter(Q2.3_2 > 3)\
+cat("N experts (Face):", nrow(dat_face_expert), "\\n")\
+\
+# Frequencies Q30.2-Q40.2\
+for (v in paste0("Q", 30:40, ".2")) \{\
+  if (v %in% names(dat_face_expert)) \{\
+    freq_with_pct(dat_face_expert, v)\
+  \}\
+\}\
+\
+# Descriptives Q30.3, Q30.4 through Q40.3, Q40.4\
+face_desc_vars <- as.vector(outer(paste0("Q", 30:40), c(".3", ".4"), paste0))\
+results_face_expert <- data.frame()\
+for (v in face_desc_vars) \{\
+  if (v %in% names(dat_face_expert)) \{\
+    results_face_expert <- rbind(results_face_expert, desc_stats(dat_face_expert, v))\
+  \}\
+\}\
+print(results_face_expert)\
+\
+# =============================================================================\
+# 9. EXPERT + CORRECT GUESS COMBINED FILTER\
+#    Quality ratings among experts who also correctly identified the construct\
+# =============================================================================\
+\
+cat("\\n========== Item Quality Among Experts with Correct Guesses ==========\\n")\
+\
+# --- Dignity Expert + Correct (Q2.3_3 > 3) ---\
+# Dignity-Self (Q5-Q10): correct = 1\
+cat("\\n--- Dignity-Self Expert + Correct (Q2.3_3 > 3) ---\\n")\
+for (i in 5:10) \{\
+  filter_var  <- paste0("Q", i, ".2")\
+  quality_var <- paste0("Q", i, ".3")\
+  \
+  if (filter_var %in% names(dat) & quality_var %in% names(dat)) \{\
+    dat_expert <- dat %>% filter(Q2.3_3 > 3)\
+    n_expert_responded <- sum(!is.na(dat_expert[[filter_var]]))\
+    n_expert_correct   <- sum(dat_expert[[filter_var]] == 1, na.rm = TRUE)\
+    pct_expert_correct <- round(n_expert_correct / n_expert_responded * 100, 1)\
+    \
+    filtered <- dat %>% filter(Q2.3_3 > 3 & .data[[filter_var]] == 1)\
+    if (nrow(filtered) > 0) \{\
+      res <- desc_stats(filtered, quality_var)\
+      cat(paste0(quality_var,\
+                 ": Expert correct = ", n_expert_correct, "/", n_expert_responded,\
+                 " (", pct_expert_correct, "%)",\
+                 " | Quality M=", res$Mean, ", SD=", res$SD,\
+                 " (N with rating=", res$N, ")\\n"))\
+    \} else \{\
+      cat(paste0(quality_var, ": No cases meet filter criteria\\n"))\
+    \}\
+  \}\
+\}\
+\
+# Dignity-Other (Q11-Q16): correct = 2\
+cat("\\n--- Dignity-Other Expert + Correct (Q2.3_3 > 3) ---\\n")\
+for (i in 11:16) \{\
+  filter_var  <- paste0("Q", i, ".2")\
+  quality_var <- paste0("Q", i, ".3")\
+  \
+  if (filter_var %in% names(dat) & quality_var %in% names(dat)) \{\
+    dat_expert <- dat %>% filter(Q2.3_3 > 3)\
+    n_expert_responded <- sum(!is.na(dat_expert[[filter_var]]))\
+    n_expert_correct   <- sum(dat_expert[[filter_var]] == 2, na.rm = TRUE)\
+    pct_expert_correct <- round(n_expert_correct / n_expert_responded * 100, 1)\
+    \
+    filtered <- dat %>% filter(Q2.3_3 > 3 & .data[[filter_var]] == 2)\
+    if (nrow(filtered) > 0) \{\
+      res <- desc_stats(filtered, quality_var)\
+      cat(paste0(quality_var,\
+                 ": Expert correct = ", n_expert_correct, "/", n_expert_responded,\
+                 " (", pct_expert_correct, "%)",\
+                 " | Quality M=", res$Mean, ", SD=", res$SD,\
+                 " (N with rating=", res$N, ")\\n"))\
+    \} else \{\
+      cat(paste0(quality_var, ": No cases meet filter criteria\\n"))\
+    \}\
+  \}\
+\}\
+\
+# --- Honor Expert + Correct (Q2.3_1 > 3) ---\
+# Honor-Self (Q17-Q22): correct = 3\
+cat("\\n--- Honor-Self Expert + Correct (Q2.3_1 > 3) ---\\n")\
+for (i in 17:22) \{\
+  filter_var  <- paste0("Q", i, ".2")\
+  quality_var <- paste0("Q", i, ".3")\
+  \
+  if (filter_var %in% names(dat) & quality_var %in% names(dat)) \{\
+    dat_expert <- dat %>% filter(Q2.3_1 > 3)\
+    n_expert_responded <- sum(!is.na(dat_expert[[filter_var]]))\
+    n_expert_correct   <- sum(dat_expert[[filter_var]] == 3, na.rm = TRUE)\
+    pct_expert_correct <- round(n_expert_correct / n_expert_responded * 100, 1)\
+    \
+    filtered <- dat %>% filter(Q2.3_1 > 3 & .data[[filter_var]] == 3)\
+    if (nrow(filtered) > 0) \{\
+      res <- desc_stats(filtered, quality_var)\
+      cat(paste0(quality_var,\
+                 ": Expert correct = ", n_expert_correct, "/", n_expert_responded,\
+                 " (", pct_expert_correct, "%)",\
+                 " | Quality M=", res$Mean, ", SD=", res$SD,\
+                 " (N with rating=", res$N, ")\\n"))\
+    \} else \{\
+      cat(paste0(quality_var, ": No cases meet filter criteria\\n"))\
+    \}\
+  \}\
+\}\
+\
+# Honor-Other (Q23-Q29): correct = 4\
+cat("\\n--- Honor-Other Expert + Correct (Q2.3_1 > 3) ---\\n")\
+for (i in 23:29) \{\
+  filter_var  <- paste0("Q", i, ".2")\
+  quality_var <- paste0("Q", i, ".3")\
+  \
+  if (filter_var %in% names(dat) & quality_var %in% names(dat)) \{\
+    dat_expert <- dat %>% filter(Q2.3_1 > 3)\
+    n_expert_responded <- sum(!is.na(dat_expert[[filter_var]]))\
+    n_expert_correct   <- sum(dat_expert[[filter_var]] == 4, na.rm = TRUE)\
+    pct_expert_correct <- round(n_expert_correct / n_expert_responded * 100, 1)\
+    \
+    filtered <- dat %>% filter(Q2.3_1 > 3 & .data[[filter_var]] == 4)\
+    if (nrow(filtered) > 0) \{\
+      res <- desc_stats(filtered, quality_var)\
+      cat(paste0(quality_var,\
+                 ": Expert correct = ", n_expert_correct, "/", n_expert_responded,\
+                 " (", pct_expert_correct, "%)",\
+                 " | Quality M=", res$Mean, ", SD=", res$SD,\
+                 " (N with rating=", res$N, ")\\n"))\
+    \} else \{\
+      cat(paste0(quality_var, ": No cases meet filter criteria\\n"))\
+    \}\
+  \}\
+\}\
+\
+# --- Face Expert + Correct (Q2.3_2 > 3) ---\
+# Face-Self (Q30-Q35): correct = 5\
+cat("\\n--- Face-Self Expert + Correct (Q2.3_2 > 3) ---\\n")\
+for (i in 30:35) \{\
+  filter_var  <- paste0("Q", i, ".2")\
+  quality_var <- paste0("Q", i, ".3")\
+  \
+  if (filter_var %in% names(dat) & quality_var %in% names(dat)) \{\
+    dat_expert <- dat %>% filter(Q2.3_2 > 3)\
+    n_expert_responded <- sum(!is.na(dat_expert[[filter_var]]))\
+    n_expert_correct   <- sum(dat_expert[[filter_var]] == 5, na.rm = TRUE)\
+    pct_expert_correct <- round(n_expert_correct / n_expert_responded * 100, 1)\
+    \
+    filtered <- dat %>% filter(Q2.3_2 > 3 & .data[[filter_var]] == 5)\
+    if (nrow(filtered) > 0) \{\
+      res <- desc_stats(filtered, quality_var)\
+      cat(paste0(quality_var,\
+                 ": Expert correct = ", n_expert_correct, "/", n_expert_responded,\
+                 " (", pct_expert_correct, "%)",\
+                 " | Quality M=", res$Mean, ", SD=", res$SD,\
+                 " (N with rating=", res$N, ")\\n"))\
+    \} else \{\
+      cat(paste0(quality_var, ": No cases meet filter criteria\\n"))\
+    \}\
+  \}\
+\}\
+\
+# Face-Other (Q36-Q40): correct = 6\
+cat("\\n--- Face-Other Expert + Correct (Q2.3_2 > 3) ---\\n")\
+for (i in 36:40) \{\
+  filter_var  <- paste0("Q", i, ".2")\
+  quality_var <- paste0("Q", i, ".3")\
+  \
+  if (filter_var %in% names(dat) & quality_var %in% names(dat)) \{\
+    dat_expert <- dat %>% filter(Q2.3_2 > 3)\
+    n_expert_responded <- sum(!is.na(dat_expert[[filter_var]]))\
+    n_expert_correct   <- sum(dat_expert[[filter_var]] == 6, na.rm = TRUE)\
+    pct_expert_correct <- round(n_expert_correct / n_expert_responded * 100, 1)\
+    \
+    filtered <- dat %>% filter(Q2.3_2 > 3 & .data[[filter_var]] == 6)\
+    if (nrow(filtered) > 0) \{\
+      res <- desc_stats(filtered, quality_var)\
+      cat(paste0(quality_var,\
+                 ": Expert correct = ", n_expert_correct, "/", n_expert_responded,\
+                 " (", pct_expert_correct, "%)",\
+                 " | Quality M=", res$Mean, ", SD=", res$SD,\
+                 " (N with rating=", res$N, ")\\n"))\
+    \} else \{\
+      cat(paste0(quality_var, ": No cases meet filter criteria\\n"))\
+    \}\
+  \}\
+\}\
+\
+\
+# =============================================================================\
+# 10. SUMMARY TABLES BY CONSTRUCT GROUP\
+# =============================================================================\
+\
+cat("\\n\\n")\
+cat("###################################################################\\n")\
+cat("#           SUMMARY TABLES BY CONSTRUCT GROUP                     #\\n")\
+cat("###################################################################\\n")\
+\
+# Expertise variable mapping\
+expertise_var_map <- list(\
+  "Dignity-Self"  = "Q2.3_3",\
+  "Dignity-Other" = "Q2.3_3",\
+  "Honor-Self"    = "Q2.3_1",\
+  "Honor-Other"   = "Q2.3_1",\
+  "Face-Self"     = "Q2.3_2",\
+  "Face-Other"    = "Q2.3_2"\
+)\
+\
+build_summary_table <- function(dat, construct_name, items, correct_val, expertise_var) \{\
+  \
+  rows <- list()\
+  \
+  for (i in items) \{\
+    class_var   <- paste0("Q", i, ".2")\
+    quality_var <- paste0("Q", i, ".3")\
+    trans_var   <- paste0("Q", i, ".4")\
+    \
+    if (!all(c(class_var, quality_var) %in% names(dat))) next\
+    \
+    # --- All respondents: % guessed correctly ---\
+    n_responded_all <- sum(!is.na(dat[[class_var]]))\
+    n_correct_all   <- sum(dat[[class_var]] == correct_val, na.rm = TRUE)\
+    pct_correct_all <- round(n_correct_all / n_responded_all * 100, 1)\
+    \
+    # --- Experts: % guessed correctly ---\
+    dat_expert <- dat[!is.na(dat[[expertise_var]]) & dat[[expertise_var]] > 3, ]\
+    n_expert_responded <- sum(!is.na(dat_expert[[class_var]]))\
+    n_expert_correct   <- sum(dat_expert[[class_var]] == correct_val, na.rm = TRUE)\
+    pct_expert_correct <- ifelse(n_expert_responded > 0,\
+                                 round(n_expert_correct / n_expert_responded * 100, 1),\
+                                 NA)\
+    \
+    # --- Quality assessment (among ALL correct guessers) ---\
+    dat_correct_all <- dat[dat[[class_var]] == correct_val & !is.na(dat[[class_var]]), ]\
+    quality_vals <- dat_correct_all[[quality_var]]\
+    quality_vals <- quality_vals[!is.na(quality_vals)]\
+    quality_N  <- length(quality_vals)\
+    quality_M  <- ifelse(quality_N > 0, round(mean(quality_vals), 2), NA)\
+    quality_SD <- ifelse(quality_N > 1, round(sd(quality_vals), 2), NA)\
+    \
+    # --- Translation difficulty (all sample) ---\
+    if (trans_var %in% names(dat)) \{\
+      trans_vals <- dat[[trans_var]]\
+      trans_vals <- trans_vals[!is.na(trans_vals)]\
+      trans_N  <- length(trans_vals)\
+      trans_M  <- ifelse(trans_N > 0, round(mean(trans_vals), 2), NA)\
+      trans_SD <- ifelse(trans_N > 1, round(sd(trans_vals), 2), NA)\
+    \} else \{\
+      trans_N <- trans_M <- trans_SD <- NA\
+    \}\
+    \
+    rows[[length(rows) + 1]] <- data.frame(\
+      Item = paste0("Q", i),\
+      Pct_Correct_All = pct_correct_all,\
+      N_Correct_All = n_correct_all,\
+      N_Responded_All = n_responded_all,\
+      Pct_Correct_Expert = pct_expert_correct,\
+      N_Correct_Expert = n_expert_correct,\
+      N_Expert_Responded = n_expert_responded,\
+      Quality_M = quality_M,\
+      Quality_SD = quality_SD,\
+      Quality_N = quality_N,\
+      Translation_M = trans_M,\
+      Translation_SD = trans_SD,\
+      Translation_N = trans_N\
+    )\
+  \}\
+  \
+  tbl <- do.call(rbind, rows)\
+  return(tbl)\
+\}\
+\
+# Print formatted summary table\
+print_summary_table <- function(tbl, construct_name) \{\
+  cat("\\n==========", construct_name, "==========\\n\\n")\
+  \
+  # Create a display version\
+  display <- data.frame(\
+    Item = tbl$Item,\
+    `Correct_All_%_(N)` = paste0(tbl$Pct_Correct_All, "% (", tbl$N_Correct_All, "/", tbl$N_Responded_All, ")"),\
+    `Correct_Expert_%_(N)` = paste0(tbl$Pct_Correct_Expert, "% (", tbl$N_Correct_Expert, "/", tbl$N_Expert_Responded, ")"),\
+    `Quality_M(SD)` = paste0(tbl$Quality_M, " (", tbl$Quality_SD, ")"),\
+    Quality_N = tbl$Quality_N,\
+    `Translation_M(SD)` = paste0(tbl$Translation_M, " (", tbl$Translation_SD, ")"),\
+    Translation_N = tbl$Translation_N,\
+    check.names = FALSE\
+  )\
+  \
+  print(display, row.names = FALSE, right = FALSE)\
+\}\
+\
+# Build and print all summary tables\
+summary_tables <- list()\
+\
+for (construct in names(construct_map)) \{\
+  items       <- construct_map[[construct]]$items\
+  correct_val <- construct_map[[construct]]$correct\
+  exp_var     <- expertise_var_map[[construct]]\
+  \
+  tbl <- build_summary_table(dat, construct, items, correct_val, exp_var)\
+  summary_tables[[construct]] <- tbl\
+  print_summary_table(tbl, construct)\
+\}\
+\
+# Also save combined summary as a single data frame for export\
+all_summary <- do.call(rbind, lapply(names(summary_tables), function(nm) \{\
+  tbl <- summary_tables[[nm]]\
+  tbl$Construct <- nm\
+  tbl\
+\}))\
+rownames(all_summary) <- NULL\
+\
+cat("\\n========== Combined Summary Table ==========\\n")\
+print(all_summary)\
+\
+cat("\\n========== Analysis Complete ==========\\n")}

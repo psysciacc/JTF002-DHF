@@ -8,7 +8,7 @@ library(tidyr)
 library(stringr)
 library(lavaan)
 
-dt <- read_csv("DHF_PSA_Pilot_May 10, 2023_12.10.csv")
+dt_pilot <- read_csv("DHF_PSA_Pilot_May 10, 2023_12.10.csv")
 
 
 #######################################################
@@ -16,10 +16,10 @@ dt <- read_csv("DHF_PSA_Pilot_May 10, 2023_12.10.csv")
 #######################################################
 
 ###socio-demographics###
-dt[,c(9,11:14)] <- lapply(dt[,c(9,11:14)], as.factor)
+dt_pilot[,c(9,11:14)] <- lapply(dt[,c(9,11:14)], as.factor)
 dt[,c(10)] <- lapply(dt[,c(10)], as.numeric)
 
-table(dt$Gender) #Nman=149, Nwoman=146, Nnb=5, Nna=1
+table(dt_pilot$Gender) #Nman=149, Nwoman=146, Nnb=5, Nna=1
 describe(dt$Age) #18-80, M=38.7, SD=13.9
 table(dt$Education) #55% have a university degree (Bachelor's or higher)
 table(dt$`US state`) #146 from New York, 147 from Texas
@@ -31,7 +31,7 @@ table(dt$Migration) #76% grew up in the USA, 24% were first or second generation
 ###DHF###
 table(dt$DHF_endorsement_3)
 
-dt <- dt %>%
+dt_pilot <- dt_pilot %>%
   mutate_at(vars(15:74),~dplyr::recode(., "Strongly disagree"=1, 
                                        "Disagree"=2,"Somewhat disagree"=3,
                                        "Somewhat agree"=4,"Agree"=5,
@@ -41,7 +41,7 @@ describe(dt[,c(15:74)])
 ###Reciprocity###
 table(dt$Reciprocity_1)
 
-dt <- dt %>%
+dt_pilot <- dt_pilot %>%
   mutate_at(vars(75:80),~dplyr::recode(., "Does not apply to me at all\n1\n"=1, 
                                        "2"=2,"3"=3,"4"=4,"5"=5,"6"=6,
                                        "Applies to me perfectly\n7\n"=7))
@@ -58,7 +58,7 @@ describe(dt$NegRec)
 ###Self-construal###
 table(dt$`Self-construal_1`)
 
-dt <- dt %>%
+dt_pilot <- dt_pilot %>%
   mutate_at(vars(81:104),~dplyr::recode(., "Doesn’t describe me at all\n1\n"=1, 
                                        "1½"=2,"Describes me a little\n2\n"=3,
                                        "2½"=4,"Describes me moderately\n3\n"=5,

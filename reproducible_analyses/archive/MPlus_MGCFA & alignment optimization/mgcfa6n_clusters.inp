@@ -1,0 +1,49 @@
+TITLE: MGCFA_6factors
+DATA: FILE = "dt.mplus.dat";
+VARIABLE: 
+
+NAMES = dhfe1 dhfe2 dhfe3 dhfe4 dhfe5
+     dhfe6 dhfe7 dhfe8 dhfe9 dhfe10 dhfe11
+     dhfe12 dhfe13 dhfe14 dhfe15 dhfe16
+     dhfe17 dhfe18 dhfe19 dhfe20 dhfe21
+     dhfe22 dhfe23 dhfe24 dhfe25 dhfe26
+     dhfe27 dhfe28 dhfe29 dhfe30 dhfn1 dhfn2
+     dhfn3 dhfn4 dhfn5 dhfn6 dhfn7 dhfn8 dhfn9
+     dhfn10 dhfn11 dhfn12 dhfn13 dhfn14 dhfn15
+     dhfn16 dhfn17 dhfn18 dhfn19 dhfn20 dhfn21
+     dhfn22 dhfn23 dhfn24 dhfn25 dhfn26 dhfn27
+     dhfn28 dhfn29 dhfn30 country_res_full cluster; 
+
+MISSING =.;
+     
+USEVARIABLES ARE dhfn1 dhfn2
+     dhfn3 dhfn4 dhfn5 dhfn6 dhfn7 dhfn8 dhfn9
+     dhfn10 dhfn11 dhfn12 dhfn13 dhfn14 dhfn15
+     dhfn16 dhfn17 dhfn18 dhfn19 dhfn20 dhfn21
+     dhfn22 dhfn23 dhfn24 dhfn25 dhfn26 dhfn27
+     dhfn28 dhfn29 dhfn30 cluster;
+
+
+GROUPING is cluster (1=Latin_America 2=Eastern_Europe 3=Anglo-Saxon 4=Germanic
+5=SE_Asia 6=Africa 7=Confucian 8=Latin_Europe 9=Middle_East);
+
+ANALYSIS:
+    estimator =  ML;
+    model= configural;
+
+MODEL:
+  D_self BY dhfn1* dhfn2 dhfn3 dhfn4 dhfn5;
+  D_self@1;
+  D_other BY dhfn6* dhfn7 dhfn8 dhfn9 dhfn10;
+  D_other@1;
+  H_self BY dhfn11* dhfn12 dhfn13 dhfn14 dhfn15;
+  H_self@1;
+  H_other BY dhfn16* dhfn17 dhfn18 dhfn19 dhfn20;
+  H_other@1;
+  F_self BY dhfn21* dhfn22 dhfn23 dhfn24 dhfn25;
+  F_self@1;
+  F_other BY dhfn26* dhfn27 dhfn28 dhfn29 dhfn30;
+  F_other@1;
+
+OUTPUT:
+STDYX;

@@ -1,0 +1,45 @@
+TITLE: DHF_Alignment
+DATA: FILE = "dt.mplus.dat";
+VARIABLE: 
+NAMES = dhfe1 dhfe2 dhfe3 dhfe4 dhfe5
+     dhfe6 dhfe7 dhfe8 dhfe9 dhfe10 dhfe11
+     dhfe12 dhfe13 dhfe14 dhfe15 dhfe16
+     dhfe17 dhfe18 dhfe19 dhfe20 dhfe21
+     dhfe22 dhfe23 dhfe24 dhfe25 dhfe26
+     dhfe27 dhfe28 dhfe29 dhfe30 dhf_norm_1 dhf_norm_2
+     dhf_norm_3 dhf_norm_4 dhf_norm_5 dhf_norm_6 dhf_norm_7 dhf_norm_8 dhf_norm_9
+     dhf_norm_10 dhf_norm_11 dhf_norm_12 dhf_norm_13 dhf_norm_14 dhf_norm_15
+     dhf_norm_16 dhf_norm_17 dhf_norm_18 dhf_norm_19 dhf_norm_20 dhf_norm_21
+     dhf_norm_22 dhf_norm_23 dhf_norm_24 dhf_norm_25 dhf_norm_26 dhf_norm_27
+     dhf_norm_28 dhf_norm_29 dhf_norm_30 country_res_full cluster; 
+
+MISSING =.;
+     
+USEVARIABLES ARE dhfe1 dhfe2 dhfe3 dhfe4 dhfe5
+     dhfe6 dhfe7 dhfe8 dhfe9 dhfe10 dhfe11
+     dhfe12 dhfe13 dhfe14 dhfe15 dhfe16
+     dhfe17 dhfe18 dhfe19 dhfe20 dhfe21
+     dhfe22 dhfe23 dhfe24 dhfe25 dhfe26
+     dhfe27 dhfe28 dhfe29 dhfe30 cluster;
+
+
+GROUPING is cluster (1=Latin_America 2=Eastern_Europe 3=Anglo-Saxon 4=Germanic
+5=SE_Asia 6=Africa 7=Confucian 8=Latin_Europe 9=Middle_East);
+
+ANALYSIS: 
+  ESTIMATOR = ml; 
+  ALIGNMENT = FIXED; 
+  STARTS = 20;
+
+
+  MODEL:
+  D_self BY dhfe1 dhfe2 dhfe3 dhfe4 dhfe5;
+  D_other BY dhfe6 dhfe7 dhfe8 dhfe9 dhfe10;
+  H_self BY dhfe11 dhfe12 dhfe13 dhfe14 dhfe15;
+  H_other BY dhfe16 dhfe17 dhfe18 dhfe19 dhfe20;
+  F_self BY dhfe21 dhfe22 dhfe23 dhfe24 dhfe25;
+  F_other BY dhfe26 dhfe27 dhfe28 dhfe29 dhfe30;
+ 
+
+  OUTPUT: 
+   align;
