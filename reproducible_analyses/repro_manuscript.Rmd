@@ -48,6 +48,8 @@ largest_group <- function(vec) {
   p <- pct(max(tab, na.rm = TRUE))
   paste0(top, " (", p, "%)")
 }
+
+RUN_MODEL <- TRUE # change me to rerun models
 ```
 
 ## Session Info
@@ -2102,7 +2104,7 @@ summary(lm(NegRec ~ d_selfe + d_othere + h_selfe + h_othere + f_selfe + f_othere
 
 #### Endorsement Hierarchical Individual Test Level 1 
 
-```{r individual-hierarchical-test1-updated, eval = F}
+```{r individual-hierarchical-test1-updated, eval = RUN_MODEL}
 hierarchical.model.test1 <- 
 paste0(' 
 Level: 1
@@ -2150,7 +2152,7 @@ hierarchical.individual.test1.params <- tidy(hierarchical.individual.test1.fit)
 
 #### Endorsement Hierarchical Individual Test Level 2 
 
-```{r individual-hierarchical-test2-original, eval = F}
+```{r individual-hierarchical-test2-original, eval = RUN_MODEL}
 hierarchical.model.test2 <- 
 paste0(' 
 Level: 1', 
@@ -2197,7 +2199,7 @@ hierarchical.individual.test2.params <- tidy(hierarchical.individual.test2.fit)
 
 #### Endorsement 3-factor Individual Test Level 1
 
-```{r individual-threefactor-test1, eval = F}
+```{r individual-threefactor-test1, eval = RUN_MODEL}
 threefactor.model.test1 <- 
 paste0(' 
 Level: 1
@@ -2237,7 +2239,7 @@ threefactor.individual.test1.params <- tidy(threefactor.individual.test1.fit)
 
 #### Endorsement 3-Factor Individual Test Level 2
 
-```{r individual-threefactor-test2, eval = F}
+```{r individual-threefactor-test2, eval = RUN_MODEL}
 threefactor.model.test2 <- 
 paste0(' 
 Level: 1', 
@@ -2277,7 +2279,7 @@ threefactor.individual.test2.params <- tidy(threefactor.individual.test2.fit)
 
 #### Endorsement 6-factor Individual Test Level 1
 
-```{r individual-sixfactor-test1, eval = F}
+```{r individual-sixfactor-test1, eval = RUN_MODEL}
 sixfactor.model.test1 <- 
 paste0(' 
 Level: 1
@@ -2320,7 +2322,7 @@ sixfactor.individual.test1.params <- tidy(sixfactor.individual.test1.fit)
 
 #### Endorsement 6-Factor Individual Test Level 2
 
-```{r individual-sixfactor-test2, eval = F}
+```{r individual-sixfactor-test2, eval = RUN_MODEL}
 sixfactor.model.test2 <- 
 paste0(' 
 Level: 1', 
@@ -2363,7 +2365,7 @@ sixfactor.individual.test2.params <- tidy(sixfactor.individual.test2.fit)
 
 #### Endorsement Hierarchical Individual Test Combined 
 
-```{r individual-hierarchical-testc-updated, eval = F}
+```{r individual-hierarchical-testc-updated, eval = RUN_MODEL}
 hierarchical.model.testc <- 
 paste0(' 
 Level: 1
@@ -2423,7 +2425,7 @@ hierarchical.model.testc.params <- tidy(hierarchical.model.testc.fit)
 
 #### Endorsement 6-Factor Individual Test Combined
 
-```{r individual-sixfactor-testc, eval = F}
+```{r individual-sixfactor-testc, eval = RUN_MODEL}
 sixfactor.model.testc <- 
 paste0(' 
 Level: 1
@@ -2472,7 +2474,7 @@ sixfactor.individual.testc.params <- tidy(sixfactor.individual.testc.fit)
 
 #### Endorsement 3-Factor Individual Test Combined
 
-```{r individual-threefactor-testc, eval = F}
+```{r individual-threefactor-testc, eval = RUN_MODEL}
 threefactor.model.testc <- 
 paste0(' 
 Level: 1
@@ -2516,7 +2518,7 @@ threefactor.individual.testc.params <- tidy(threefactor.individual.testc.fit)
 
 #### Endorsement 6+3-Factor Individual Test Combined
 
-```{r individual-six3factor-testc, eval = F}
+```{r individual-six3factor-testc, eval = RUN_MODEL}
 six3factor.model.testc <- 
 paste0(' 
 Level: 1
@@ -2561,7 +2563,7 @@ six3factor.individual.testc.params <- tidy(six3factor.individual.testc.fit)
 
 #### Endorsement 6+3-Factor Individual Test Combined Remove 13
 
-```{r individual-six3factor-testc-no13, eval = F}
+```{r individual-six3factor-testc-no13, eval = RUN_MODEL}
 six3factor.model.testc.no13 <- 
 paste0(' 
 Level: 1
@@ -2606,7 +2608,7 @@ six3factor.individual.testc.no13.params <- tidy(six3factor.model.testc.no13.fit)
 
 #### Endorsement 6+3-Factor Individual Test Combined Remove 13 20
 
-```{r individual-six3factor-testc-no20, eval = F}
+```{r individual-six3factor-testc-no20, eval = RUN_MODEL}
 six3factor.model.testc.no20 <- 
 paste0(' 
 Level: 1
@@ -2673,7 +2675,7 @@ six3factor.individual.testc.no20.fitindices
 
 #### Norms Hierarchical Test Level 1
 
-```{r norms-hierarchical-test1, eval = F}
+```{r norms-hierarchical-test1, eval = RUN_MODEL}
 hierarchical.model.test1 <- 
 paste0(' 
 Level: 1
@@ -2721,7 +2723,7 @@ hierarchical.norms.test1.params <- tidy(hierarchical.norms.test1.fit)
 
 #### Norms Hierarchical Test Level 2
 
-```{r norms-hierarchical-test2-original, eval = F}
+```{r norms-hierarchical-test2-original, eval = RUN_MODEL}
 hierarchical.model.test2 <- 
 paste0(' 
 Level: 1', 
@@ -2771,7 +2773,7 @@ hierarchical.norms.test2.params <- tidy(hierarchical.norms.test2.fit)
 
 #### Norms 3-factor Test Level 1
 
-```{r norms-threefactor-test1, eval = F}
+```{r norms-threefactor-test1, eval = RUN_MODEL}
 threefactor.model.test1 <- 
 paste0(' 
 Level: 1
@@ -2811,7 +2813,7 @@ threefactor.norms.test1.params <- tidy(threefactor.norms.test1.fit)
 
 #### Norms 3-Factor Test Level 2
 
-```{r norms-threefactor-test2, eval = F}
+```{r norms-threefactor-test2, eval = RUN_MODEL}
 threefactor.model.test2 <- 
 paste0(' 
 Level: 1', 
@@ -2851,7 +2853,7 @@ threefactor.norms.test2.params <- tidy(threefactor.norms.test2.fit)
 
 #### Norms 6-factor Test Level 1
 
-```{r norms-sixfactor-test1, eval = F}
+```{r norms-sixfactor-test1, eval = RUN_MODEL}
 sixfactor.model.test1 <- 
 paste0(' 
 Level: 1
@@ -2894,7 +2896,7 @@ sixfactor.norms.test1.params <- tidy(sixfactor.norms.test1.fit)
 
 #### Norms 6-Factor Test Level 2
 
-```{r norms-sixfactor-test2, eval = F}
+```{r norms-sixfactor-test2, eval = RUN_MODEL}
 sixfactor.model.test2 <- 
 paste0(' 
 Level: 1', 
@@ -2937,7 +2939,7 @@ sixfactor.norms.test2.params <- tidy(sixfactor.norms.test2.fit)
 
 #### Norms Hierarchical Test Combined
 
-```{r norms-hierarchical-testc, eval = F}
+```{r norms-hierarchical-testc, eval = RUN_MODEL}
 hierarchical.model.testc <- 
 paste0(' 
 Level: 1
@@ -2999,7 +3001,7 @@ hierarchical.model.testc.params <- tidy(hierarchical.model.testc.fit)
 
 #### Norms 6-Factor Test Combined
 
-```{r norms-sixfactor-testc, eval = F}
+```{r norms-sixfactor-testc, eval = RUN_MODEL}
 sixfactor.model.testc <- 
 paste0(' 
 Level: 1
@@ -3048,7 +3050,7 @@ sixfactor.norms.testc.params <- tidy(sixfactor.norms.testc.fit)
 
 #### Norms 3-Factor Test Combined
 
-```{r norms-threefactor-testc, eval = F}
+```{r norms-threefactor-testc, eval = RUN_MODEL}
 threefactor.model.testc <- 
 paste0(' 
 Level: 1
@@ -3092,7 +3094,7 @@ threefactor.norms.testc.params <- tidy(threefactor.norms.testc.fit)
 
 #### Norms 6+3-Factor Test Combined
 
-```{r norms-six3factor-testc, eval = F}
+```{r norms-six3factor-testc, eval = RUN_MODEL}
 six3factor.model.testc <- 
 paste0(' 
 Level: 1
@@ -3137,7 +3139,7 @@ six3factor.norms.testc.params <- tidy(six3factor.norms.testc.fit)
 
 #### Norms 6+3-Factor Test Combined Modified Remove 13
 
-```{r norms-six3factor-testc-no13, eval = F}
+```{r norms-six3factor-testc-no13, eval = RUN_MODEL}
 six3factor.model.no13.testc <- 
 paste0(' 
 Level: 1
@@ -3182,7 +3184,7 @@ six3factor.norms.testc.no13.params <- tidy(six3factor.norms.testc.no13.fit)
 
 #### Norms 6+3-Factor Test Combined Modified Remove 13 + 20
 
-```{r norms-six3factor-testc-no20, eval = F}
+```{r norms-six3factor-testc-no20, eval = RUN_MODEL}
 six3factor.model.testc.no20 <- 
 paste0(' 
 Level: 1
@@ -3356,7 +3358,7 @@ endorse.model.configural.params <- tidy(endorse.model.configural.fit)
 
 #### MGCFA Endorsement Alignment
 
-```{r mgcfa-endorse-align, eval = F}
+```{r mgcfa-endorse-align, eval = RUN_MODEL}
 endorse.items <- paste0("dhf_endors_", 1:30)
 
 align.endorse.prep <- sirt::invariance_alignment_cfa_config(
@@ -3390,7 +3392,7 @@ summary(endorse.res)
 
 #### MGCFA Norms
 
-```{r mgcfa-norms, eval = F}
+```{r mgcfa-norms, eval = RUN_MODEL}
 norms.model.configural <- '
 D_self =~ dhf_norm_1 + dhf_norm_2 + dhf_norm_3 + dhf_norm_4 + dhf_norm_5
 D_other =~ dhf_norm_6 + dhf_norm_7 + dhf_norm_8 + dhf_norm_9 + dhf_norm_10
@@ -3426,7 +3428,7 @@ norms.model.configural.params <- tidy(norms.model.configural.fit)
 
 #### MGCFA Norms Alignment
 
-```{r mgcfa-norms-align, eval = F}
+```{r mgcfa-norms-align, eval = RUN_MODEL}
 norm.items <- paste0("dhf_norm_", 1:30)
 
 align.norm.prep <- sirt::invariance_alignment_cfa_config(

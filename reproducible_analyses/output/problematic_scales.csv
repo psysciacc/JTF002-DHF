@@ -208,17 +208,17 @@
 "Indonesia","Conformity",274,2,2,0.532
 "Indonesia","Humor",274,3,3,0.577
 "Indonesia","Positive_Reciprocity",277,3,3,0.586
-"Iran","Security",363,2,2,0.285
-"Iran","Tradition",362,2,2,0.354
-"Iran","Power",365,2,2,0.391
-"Iran","Universalism",362,3,3,0.425
-"Iran","Conformity",361,2,2,0.436
-"Iran","Self_Direction",363,2,2,0.45
-"Iran","Intimate_Violence",376,3,3,0.452
-"Iran","Withdrawal",375,3,3,0.502
-"Iran","War_Acceptance",377,3,3,0.517
-"Iran","Benevolence",364,2,2,0.523
-"Iran","Self_Transcendence",362,5,5,0.588
+"Iran","Security",367,2,2,0.279
+"Iran","Tradition",366,2,2,0.351
+"Iran","Power",369,2,2,0.397
+"Iran","Universalism",366,3,3,0.429
+"Iran","Conformity",365,2,2,0.434
+"Iran","Self_Direction",367,2,2,0.44
+"Iran","Intimate_Violence",380,3,3,0.448
+"Iran","Withdrawal",379,3,3,0.501
+"Iran","War_Acceptance",381,3,3,0.515
+"Iran","Benevolence",368,2,2,0.526
+"Iran","Self_Transcendence",366,5,5,0.591
 "Ireland","Intimate_Violence",73,3,3,-0.156
 "Ireland","Tradition",73,2,2,0.322
 "Ireland","Hedonism",73,2,2,0.441
@@ -365,14 +365,14 @@
 "North Macedonia","Positive_Reciprocity",312,3,3,0.524
 "North Macedonia","Power",309,2,2,0.541
 "North Macedonia","Universalism",309,3,3,0.556
-"Overall","Tradition",23194,2,2,0.357
-"Overall","Self_Direction",23195,2,2,0.477
-"Overall","Security",23192,2,2,0.511
-"Overall","Power",23196,2,2,0.528
-"Overall","Universalism",23180,3,3,0.576
-"Overall","Conformity",23190,2,2,0.588
-"Overall","Intimate_Violence",23348,3,3,0.594
-"Overall","Withdrawal",23232,3,3,0.595
+"Overall","Tradition",23211,2,2,0.356
+"Overall","Self_Direction",23213,2,2,0.477
+"Overall","Security",23210,2,2,0.511
+"Overall","Power",23214,2,2,0.529
+"Overall","Universalism",23198,3,3,0.576
+"Overall","Conformity",23208,2,2,0.588
+"Overall","Intimate_Violence",23378,3,3,0.594
+"Overall","Withdrawal",23260,3,3,0.595
 "Pakistan","Tradition",435,2,2,0.421
 "Pakistan","Power",436,2,2,0.439
 "Pakistan","Withdrawal",435,3,3,0.442
@@ -417,13 +417,14 @@
 "Romania","Withdrawal",472,3,3,0.52
 "Romania","Universalism",466,3,3,0.524
 "Romania","Conservation",466,6,6,0.596
-"Rwanda","Tradition",282,2,2,0.388
-"Rwanda","Security",282,2,2,0.462
-"Rwanda","Withdrawal",281,3,3,0.481
-"Rwanda","Self_Direction",282,2,2,0.502
-"Rwanda","Universalism",279,3,3,0.517
-"Rwanda","Intimate_Violence",282,3,3,0.533
-"Rwanda","Power",282,2,2,0.562
+"Russia","Tradition",295,2,2,0.375
+"Russia","Security",296,2,2,0.468
+"Russia","Withdrawal",305,3,3,0.49
+"Russia","Self_Direction",296,2,2,0.495
+"Russia","Universalism",293,3,3,0.506
+"Russia","Intimate_Violence",308,3,3,0.562
+"Russia","Power",296,2,2,0.581
+"Russia","Conformity",296,2,2,0.598
 "Saudi Arabia","Tradition",147,2,2,0.3
 "Saudi Arabia","Self_Direction",147,2,2,0.377
 "Saudi Arabia","Hedonism",147,2,2,0.442
