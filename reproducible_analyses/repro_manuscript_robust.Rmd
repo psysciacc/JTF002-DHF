@@ -49,7 +49,7 @@ largest_group <- function(vec) {
   paste0(top, " (", p, "%)")
 }
 
-RUN_MODEL <- TRUE # change me to rerun models
+RUN_MODEL <- FALSE # change me to rerun models
 ```
 
 ## Session Info
@@ -454,6 +454,7 @@ vars_needed <- c(
   "insult1_3", "insult2_3", "Humor"
   )
 
+# include these variables so the bottom half runs - may not need due to exploratory analyses
 country_vars_needed <- c("wb_pop_density_1961", "ms_pathogen_9items", 
                          "icb_crisis_participations", 
                          "icb_avg_violence_level",

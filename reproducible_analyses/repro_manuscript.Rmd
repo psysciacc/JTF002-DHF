@@ -2,7 +2,13 @@
 title: "Reproducible Analyses"
 author: "Erin M. Buchanan"
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    smooth_scroll: false
+    toc_depth: 4
 ---
 
 ```{r setup, include=FALSE}
@@ -49,7 +55,7 @@ largest_group <- function(vec) {
   paste0(top, " (", p, "%)")
 }
 
-RUN_MODEL <- TRUE # change me to rerun models
+RUN_MODEL <- FALSE # change me to rerun models
 ```
 
 ## Session Info
@@ -1112,7 +1118,7 @@ print("\n4. EXPORTING RESULTS")
 print(paste(rep("-", 25), collapse = ""))
 
 # Export descriptive statistics
-write.csv(all_descriptives, "scale_indices_descriptives.csv", row.names = FALSE)
+write.csv(all_descriptives, "output/scale_indices_descriptives.csv", row.names = FALSE)
 
 # Export dataset with new indices (optional - only first 1000 rows if dataset is very large)
 if(nrow(dt4) > 5000) {
