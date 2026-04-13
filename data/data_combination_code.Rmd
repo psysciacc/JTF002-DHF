@@ -1695,6 +1695,9 @@ country_metadata2 <- read_csv("codebooks/additional_country_variables_merged.csv
 
 dhf_all <- dhf_all %>% 
   left_join(country_metadata2)
+
+# View(dhf_all %>% select(country_res_full,W_2000:RuleOfLaw_2024) %>% filter(is.na(W_2000)))
+# ani if you want to check the missing data 
 ```
 
 ## Recoding comprehension questions
