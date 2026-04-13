@@ -1,69 +1,69 @@
 "Group","Scale","N","Missing","Mean","SD","Min","Max"
-"Argentina","Composite_Religiosity",131,8,-0.324,0.769,-1.12,1.636
-"Armenia","Composite_Religiosity",322,14,0.265,0.724,-1.12,1.636
-"Australia","Composite_Religiosity",896,9,-0.481,0.762,-1.12,1.636
-"Austria","Composite_Religiosity",230,2,-0.528,0.651,-1.12,1.636
-"Bangladesh","Composite_Religiosity",286,4,0.876,0.569,-1.12,1.636
-"Bosnia-Herzegovina","Composite_Religiosity",370,29,0.651,0.786,-1.12,1.636
-"Brazil","Composite_Religiosity",294,10,0.363,0.785,-1.12,1.636
+"Argentina","Composite_Religiosity",131,8,-0.324,0.769,-1.12,1.635
+"Armenia","Composite_Religiosity",322,14,0.265,0.724,-1.12,1.635
+"Australia","Composite_Religiosity",896,9,-0.481,0.762,-1.12,1.635
+"Austria","Composite_Religiosity",230,2,-0.528,0.651,-1.12,1.635
+"Bangladesh","Composite_Religiosity",286,4,0.876,0.569,-1.12,1.635
+"Bosnia-Herzegovina","Composite_Religiosity",370,29,0.651,0.786,-1.12,1.635
+"Brazil","Composite_Religiosity",294,10,0.363,0.785,-1.12,1.635
 "Bulgaria","Composite_Religiosity",282,5,-0.312,0.636,-1.12,1.266
-"Cameroon","Composite_Religiosity",152,6,1.011,0.547,-0.608,1.636
-"Canada","Composite_Religiosity",695,6,-0.125,0.811,-1.12,1.636
-"Chile","Composite_Religiosity",340,23,-0.342,0.754,-1.12,1.636
-"China","Composite_Religiosity",359,5,-0.709,0.418,-1.12,1.155
-"Croatia","Composite_Religiosity",657,14,0.173,0.827,-1.12,1.636
+"Cameroon","Composite_Religiosity",152,6,1.011,0.547,-0.609,1.635
+"Canada","Composite_Religiosity",695,6,-0.125,0.811,-1.12,1.635
+"Chile","Composite_Religiosity",340,23,-0.342,0.754,-1.12,1.635
+"China","Composite_Religiosity",359,5,-0.71,0.418,-1.12,1.155
+"Croatia","Composite_Religiosity",657,14,0.173,0.827,-1.12,1.635
 "Czech Republic","Composite_Religiosity",381,10,-0.497,0.717,-1.12,1.524
-"Ethiopia","Composite_Religiosity",295,4,1.076,0.492,-1.12,1.636
-"France","Composite_Religiosity",424,11,-0.268,0.876,-1.12,1.636
-"Georgia","Composite_Religiosity",274,12,0.069,0.724,-1.12,1.636
-"Germany","Composite_Religiosity",691,8,-0.551,0.642,-1.12,1.636
-"Ghana","Composite_Religiosity",62,0,0.884,0.549,-0.491,1.636
+"Ethiopia","Composite_Religiosity",295,4,1.076,0.492,-1.12,1.635
+"France","Composite_Religiosity",424,11,-0.268,0.876,-1.12,1.635
+"Georgia","Composite_Religiosity",274,12,0.069,0.724,-1.12,1.635
+"Germany","Composite_Religiosity",691,8,-0.551,0.642,-1.12,1.635
+"Ghana","Composite_Religiosity",62,0,0.884,0.549,-0.491,1.635
 "Greece","Composite_Religiosity",427,15,-0.067,0.723,-1.12,1.524
-"Hong Kong","Composite_Religiosity",90,1,-0.41,0.757,-1.12,1.636
-"Hungary","Composite_Religiosity",416,2,-0.497,0.73,-1.12,1.636
-"India","Composite_Religiosity",351,37,0.139,0.7,-1.12,1.636
-"Indonesia","Composite_Religiosity",271,6,1.019,0.422,-0.468,1.636
-"Iran","Composite_Religiosity",357,22,-0.002,0.79,-1.12,1.685
+"Hong Kong","Composite_Religiosity",90,1,-0.41,0.757,-1.12,1.635
+"Hungary","Composite_Religiosity",416,2,-0.497,0.73,-1.12,1.635
+"India","Composite_Religiosity",351,37,0.139,0.7,-1.12,1.635
+"Indonesia","Composite_Religiosity",271,6,1.019,0.422,-0.468,1.635
+"Iran","Composite_Religiosity",361,22,0,0.788,-1.12,1.685
 "Ireland","Composite_Religiosity",72,1,-0.507,0.668,-1.12,1.265
-"Israel","Composite_Religiosity",442,2,0.045,0.871,-1.12,1.636
-"Italy","Composite_Religiosity",559,7,-0.478,0.721,-1.12,1.636
+"Israel","Composite_Religiosity",442,2,0.045,0.871,-1.12,1.635
+"Italy","Composite_Religiosity",559,7,-0.478,0.721,-1.12,1.635
 "Japan","Composite_Religiosity",423,1,-0.742,0.376,-1.12,1.155
 "Kazakhstan","Composite_Religiosity",87,6,-0.379,0.661,-1.12,1.524
-"Kenya","Composite_Religiosity",223,1048,1.003,0.495,-1.12,1.636
-"Kosovo","Composite_Religiosity",204,3,0.482,0.693,-1.12,1.636
-"Kuwait","Composite_Religiosity",172,8,0.663,0.785,-1.12,1.636
-"Lebanon","Composite_Religiosity",83,4,0.173,0.895,-1.12,1.636
-"Malaysia","Composite_Religiosity",301,10,0.048,0.728,-1.12,1.636
-"Mexico","Composite_Religiosity",133,7,-0.124,0.703,-1.12,1.636
-"Morocco","Composite_Religiosity",170,5,0.769,0.544,-1.12,1.636
+"Kenya","Composite_Religiosity",223,1048,1.003,0.495,-1.12,1.635
+"Kosovo","Composite_Religiosity",204,3,0.482,0.693,-1.12,1.635
+"Kuwait","Composite_Religiosity",172,8,0.663,0.785,-1.12,1.635
+"Lebanon","Composite_Religiosity",83,4,0.173,0.895,-1.12,1.635
+"Malaysia","Composite_Religiosity",301,10,0.047,0.728,-1.12,1.635
+"Mexico","Composite_Religiosity",133,7,-0.124,0.703,-1.12,1.635
+"Morocco","Composite_Religiosity",170,5,0.769,0.544,-1.12,1.635
 "Namibia","Composite_Religiosity",0,973,NA,NA,NA,NA
-"New Zealand","Composite_Religiosity",221,8,-0.71,0.609,-1.12,1.413
-"Nigeria","Composite_Religiosity",467,20,0.941,0.565,-1.12,1.636
-"North Macedonia","Composite_Religiosity",304,8,0.118,0.742,-1.12,1.636
-"Overall","Composite_Religiosity",22969,3510,0,0.859,-1.189,1.685
-"Pakistan","Composite_Religiosity",432,5,0.871,0.491,-1.12,1.636
-"Philippines","Composite_Religiosity",842,18,0.384,0.63,-1.12,1.636
-"Poland","Composite_Religiosity",649,10,-0.35,0.733,-1.12,1.636
-"Portugal","Composite_Religiosity",326,5,-0.562,0.656,-1.12,1.636
-"Romania","Composite_Religiosity",457,21,-0.022,0.82,-1.12,1.636
-"Rwanda","Composite_Religiosity",281,1,-0.241,0.669,-1.12,1.507
-"Saudi Arabia","Composite_Religiosity",141,11,0.901,0.475,-1.12,1.636
+"New Zealand","Composite_Religiosity",221,8,-0.711,0.609,-1.12,1.413
+"Nigeria","Composite_Religiosity",467,20,0.941,0.565,-1.12,1.635
+"North Macedonia","Composite_Religiosity",304,8,0.118,0.742,-1.12,1.635
+"Overall","Composite_Religiosity",22980,3531,0,0.859,-1.19,1.685
+"Pakistan","Composite_Religiosity",432,5,0.871,0.491,-1.12,1.635
+"Philippines","Composite_Religiosity",842,18,0.384,0.63,-1.12,1.635
+"Poland","Composite_Religiosity",649,10,-0.35,0.733,-1.12,1.635
+"Portugal","Composite_Religiosity",326,5,-0.562,0.656,-1.12,1.635
+"Romania","Composite_Religiosity",457,21,-0.022,0.82,-1.12,1.635
+"Russia","Composite_Religiosity",288,22,-0.228,0.672,-1.12,1.507
+"Saudi Arabia","Composite_Religiosity",141,11,0.901,0.475,-1.12,1.635
 "Serbia","Composite_Religiosity",372,9,-0.2,0.739,-1.12,1.507
-"Singapore","Composite_Religiosity",323,4,-0.033,0.813,-1.12,1.636
-"Slovakia","Composite_Religiosity",269,5,-0.069,0.873,-1.12,1.636
-"South Africa","Composite_Religiosity",113,907,0.721,0.712,-1.12,1.636
-"Spain","Composite_Religiosity",416,10,-0.047,0.917,-1.12,1.636
+"Singapore","Composite_Religiosity",323,4,-0.034,0.813,-1.12,1.635
+"Slovakia","Composite_Religiosity",269,5,-0.07,0.873,-1.12,1.635
+"South Africa","Composite_Religiosity",113,907,0.721,0.712,-1.12,1.635
+"Spain","Composite_Religiosity",416,10,-0.047,0.917,-1.12,1.635
 "Switzerland","Composite_Religiosity",91,0,-0.719,0.571,-1.12,1.413
 "Taiwan","Composite_Religiosity",260,6,-0.432,0.607,-1.12,1.524
-"Thailand","Composite_Religiosity",301,7,-0.117,0.667,-1.12,1.636
-"The Netherlands","Composite_Religiosity",134,2,-0.717,0.668,-1.12,1.636
-"Turkey","Composite_Religiosity",1853,44,0.324,0.747,-1.12,1.636
-"Ukraine","Composite_Religiosity",426,6,-0.478,0.63,-1.12,1.636
-"United Arab Emirates","Composite_Religiosity",59,3,0.924,0.616,-0.866,1.636
-"United Kingdom","Composite_Religiosity",506,8,-0.423,0.83,-1.12,1.636
-"United States","Composite_Religiosity",1542,35,-0.013,0.803,-1.12,1.636
-"Uzbekistan","Composite_Religiosity",98,10,0.476,0.607,-1.12,1.636
-"Vietnam","Composite_Religiosity",164,9,-0.532,0.564,-1.189,1.247
+"Thailand","Composite_Religiosity",301,7,-0.118,0.667,-1.12,1.635
+"The Netherlands","Composite_Religiosity",134,2,-0.717,0.668,-1.12,1.635
+"Turkey","Composite_Religiosity",1853,44,0.324,0.747,-1.12,1.635
+"Ukraine","Composite_Religiosity",426,6,-0.478,0.63,-1.12,1.635
+"United Arab Emirates","Composite_Religiosity",59,3,0.924,0.616,-0.866,1.635
+"United Kingdom","Composite_Religiosity",506,8,-0.423,0.83,-1.12,1.635
+"United States","Composite_Religiosity",1542,35,-0.013,0.803,-1.12,1.635
+"Uzbekistan","Composite_Religiosity",98,10,0.476,0.607,-1.12,1.635
+"Vietnam","Composite_Religiosity",164,9,-0.532,0.564,-1.19,1.247
 "Argentina","Conservation",134,5,3.991,0.796,1.833,5.5
 "Armenia","Conservation",332,4,3.738,0.783,1.667,6
 "Australia","Conservation",900,5,3.936,0.847,1,6
@@ -88,7 +88,7 @@
 "Hungary","Conservation",418,0,4.079,0.804,2,6
 "India","Conservation",364,24,4.17,0.771,2,6
 "Indonesia","Conservation",274,3,4.617,0.722,2,6
-"Iran","Conservation",364,15,4.04,0.808,1.667,6
+"Iran","Conservation",368,15,4.041,0.804,1.667,6
 "Ireland","Conservation",73,0,3.986,0.798,2.167,5.667
 "Israel","Conservation",443,1,4.012,0.779,1.833,6
 "Italy","Conservation",562,4,3.766,0.848,1.333,6
@@ -105,13 +105,13 @@
 "New Zealand","Conservation",222,7,3.619,0.814,1.5,6
 "Nigeria","Conservation",473,14,4.844,0.882,2.167,6
 "North Macedonia","Conservation",309,3,3.978,0.816,1.833,5.833
-"Overall","Conservation",23206,3273,4.108,0.878,1,6
+"Overall","Conservation",23224,3287,4.108,0.878,1,6
 "Pakistan","Conservation",436,1,4.463,0.828,1.5,6
 "Philippines","Conservation",850,10,4.649,0.766,1,6
 "Poland","Conservation",652,7,3.599,0.825,1.333,6
 "Portugal","Conservation",328,3,3.758,0.801,1.5,5.833
 "Romania","Conservation",466,12,3.851,0.778,1.167,6
-"Rwanda","Conservation",282,0,3.762,0.815,1.667,6
+"Russia","Conservation",296,14,3.776,0.812,1.667,6
 "Saudi Arabia","Conservation",147,5,4.426,0.806,1.5,6
 "Serbia","Conservation",375,6,3.694,0.887,1.5,6
 "Singapore","Conservation",325,2,4.202,0.795,1,6
@@ -153,7 +153,7 @@
 "Hungary","Corporal_Punishment",418,0,1.427,0.683,1,4.333
 "India","Corporal_Punishment",388,0,2,0.937,1,4.667
 "Indonesia","Corporal_Punishment",277,0,1.834,0.851,1,5
-"Iran","Corporal_Punishment",377,2,1.28,0.562,1,4.333
+"Iran","Corporal_Punishment",381,2,1.283,0.564,1,4.333
 "Ireland","Corporal_Punishment",73,0,1.507,0.873,1,5
 "Israel","Corporal_Punishment",444,0,1.368,0.661,1,5
 "Italy","Corporal_Punishment",566,0,1.669,0.857,1,4.333
@@ -170,13 +170,13 @@
 "New Zealand","Corporal_Punishment",229,0,1.426,0.695,1,4.333
 "Nigeria","Corporal_Punishment",487,0,3.331,1.188,1,5
 "North Macedonia","Corporal_Punishment",312,0,1.521,0.722,1,5
-"Overall","Corporal_Punishment",23538,2941,1.765,0.953,1,5
+"Overall","Corporal_Punishment",23568,2943,1.765,0.953,1,5
 "Pakistan","Corporal_Punishment",437,0,2.226,1.017,1,5
 "Philippines","Corporal_Punishment",860,0,2.059,0.939,1,5
 "Poland","Corporal_Punishment",659,0,1.424,0.692,1,4.333
 "Portugal","Corporal_Punishment",331,0,2.003,0.995,1,4.667
 "Romania","Corporal_Punishment",478,0,1.409,0.745,1,5
-"Rwanda","Corporal_Punishment",282,0,1.677,0.859,1,5
+"Russia","Corporal_Punishment",308,2,1.665,0.863,1,5
 "Saudi Arabia","Corporal_Punishment",151,1,1.766,0.813,1,5
 "Serbia","Corporal_Punishment",381,0,1.721,0.897,1,5
 "Singapore","Corporal_Punishment",327,0,2.265,0.974,1,5
@@ -218,7 +218,7 @@
 "Hungary","Humor",418,0,3.752,1.827,1,7
 "India","Humor",372,16,4.687,1.94,1,7
 "Indonesia","Humor",274,3,2.839,1.627,1,7
-"Iran","Humor",376,3,3.059,1.749,1,7
+"Iran","Humor",380,3,3.063,1.757,1,7
 "Ireland","Humor",73,0,4.452,2.036,1,7
 "Israel","Humor",443,1,4.033,1.843,1,7
 "Italy","Humor",564,2,3.785,1.933,1,7
@@ -235,13 +235,13 @@
 "New Zealand","Humor",223,6,4.704,1.794,1,7
 "Nigeria","Humor",476,11,4.566,2.148,1,7
 "North Macedonia","Humor",309,3,3.934,2.006,1,7
-"Overall","Humor",23346,3133,3.833,2.004,1,7
+"Overall","Humor",23374,3137,3.833,2.004,1,7
 "Pakistan","Humor",436,1,4.13,1.992,1,7
 "Philippines","Humor",850,10,4.785,1.992,1,7
 "Poland","Humor",653,6,3.85,1.819,1,7
 "Portugal","Humor",331,0,4.349,1.894,1,7
 "Romania","Humor",473,5,4.414,1.987,1,7
-"Rwanda","Humor",282,0,4.924,1.735,1,7
+"Russia","Humor",306,4,4.871,1.785,1,7
 "Saudi Arabia","Humor",149,3,2.51,1.849,1,7
 "Serbia","Humor",379,2,3.962,1.947,1,7
 "Singapore","Humor",326,1,4.216,1.901,1,7
@@ -283,7 +283,7 @@
 "Hungary","Intimate_Violence",418,0,1.272,0.397,1,3
 "India","Intimate_Violence",388,0,1.405,0.615,1,5
 "Indonesia","Intimate_Violence",277,0,1.845,0.765,1,4
-"Iran","Intimate_Violence",379,0,1.521,0.614,1,4
+"Iran","Intimate_Violence",383,0,1.522,0.612,1,4
 "Ireland","Intimate_Violence",73,0,1.132,0.355,1,2.333
 "Israel","Intimate_Violence",444,0,1.152,0.423,1,4
 "Italy","Intimate_Violence",566,0,1.216,0.532,1,4.667
@@ -300,13 +300,13 @@
 "New Zealand","Intimate_Violence",229,0,1.122,0.362,1,4.333
 "Nigeria","Intimate_Violence",487,0,2.157,1.082,1,5
 "North Macedonia","Intimate_Violence",312,0,1.237,0.502,1,5
-"Overall","Intimate_Violence",23397,3082,1.418,0.701,1,5
+"Overall","Intimate_Violence",23427,3084,1.418,0.701,1,5
 "Pakistan","Intimate_Violence",437,0,1.811,0.843,1,5
 "Philippines","Intimate_Violence",860,0,1.437,0.693,1,5
 "Poland","Intimate_Violence",659,0,1.263,0.47,1,4.333
 "Portugal","Intimate_Violence",331,0,1.129,0.389,1,4
 "Romania","Intimate_Violence",478,0,1.192,0.497,1,5
-"Rwanda","Intimate_Violence",282,0,1.635,0.718,1,5
+"Russia","Intimate_Violence",308,2,1.64,0.736,1,5
 "Saudi Arabia","Intimate_Violence",151,1,1.629,0.762,1,5
 "Serbia","Intimate_Violence",381,0,1.151,0.363,1,3
 "Singapore","Intimate_Violence",327,0,1.529,0.729,1,4.667
@@ -348,7 +348,7 @@
 "Hungary","Intrinsic_Religiosity",416,2,2.102,1.244,1,5
 "India","Intrinsic_Religiosity",351,37,3.024,1.181,1,5
 "Indonesia","Intrinsic_Religiosity",271,6,4.549,0.673,1.667,5
-"Iran","Intrinsic_Religiosity",357,22,3.043,1.337,1,5
+"Iran","Intrinsic_Religiosity",361,22,3.045,1.333,1,5
 "Ireland","Intrinsic_Religiosity",72,1,1.944,1.191,1,5
 "Israel","Intrinsic_Religiosity",442,2,2.866,1.452,1,5
 "Italy","Intrinsic_Religiosity",559,7,2.111,1.212,1,5
@@ -365,13 +365,13 @@
 "New Zealand","Intrinsic_Religiosity",221,8,1.715,1.068,1,5
 "Nigeria","Intrinsic_Religiosity",467,20,4.075,0.946,1,5
 "North Macedonia","Intrinsic_Religiosity",304,8,3.203,1.317,1,5
-"Overall","Intrinsic_Religiosity",22969,3510,2.895,1.422,1,5
+"Overall","Intrinsic_Religiosity",22980,3531,2.896,1.421,1,5
 "Pakistan","Intrinsic_Religiosity",432,5,4.221,0.799,1,5
 "Philippines","Intrinsic_Religiosity",842,18,3.494,1.058,1,5
 "Poland","Intrinsic_Religiosity",649,10,2.211,1.212,1,5
 "Portugal","Intrinsic_Religiosity",326,5,1.984,1.145,1,5
 "Romania","Intrinsic_Religiosity",457,21,2.912,1.396,1,5
-"Rwanda","Intrinsic_Religiosity",281,1,2.743,1.257,1,5
+"Russia","Intrinsic_Religiosity",288,22,2.765,1.256,1,5
 "Saudi Arabia","Intrinsic_Religiosity",141,11,4.298,0.848,1,5
 "Serbia","Intrinsic_Religiosity",372,9,2.734,1.345,1,5
 "Singapore","Intrinsic_Religiosity",323,4,2.843,1.321,1,5
@@ -413,7 +413,7 @@
 "Hungary","MFQ_Authority",417,1,3.086,0.74,1,5
 "India","MFQ_Authority",354,34,3.51,0.886,1.167,5
 "Indonesia","MFQ_Authority",271,6,3.921,0.676,1.667,5
-"Iran","MFQ_Authority",358,21,2.935,0.967,1,5
+"Iran","MFQ_Authority",362,21,2.937,0.965,1,5
 "Ireland","MFQ_Authority",72,1,3.141,0.96,1.167,5
 "Israel","MFQ_Authority",443,1,3.406,0.714,1.333,5
 "Italy","MFQ_Authority",560,6,2.923,0.946,1,5
@@ -430,13 +430,13 @@
 "New Zealand","MFQ_Authority",222,7,2.646,0.8,1.167,5
 "Nigeria","MFQ_Authority",469,18,4.199,0.726,1,5
 "North Macedonia","MFQ_Authority",306,6,3.492,0.847,1,5
-"Overall","MFQ_Authority",23014,3465,3.281,0.921,1,5
+"Overall","MFQ_Authority",23025,3486,3.281,0.921,1,5
 "Pakistan","MFQ_Authority",434,3,3.907,0.713,1,5
 "Philippines","MFQ_Authority",845,15,3.81,0.714,1.5,5
 "Poland","MFQ_Authority",650,9,2.778,0.846,1,5
 "Portugal","MFQ_Authority",327,4,2.962,0.929,1.167,5
 "Romania","MFQ_Authority",456,22,2.946,0.838,1,5
-"Rwanda","MFQ_Authority",280,2,3.125,0.811,1,5
+"Russia","MFQ_Authority",287,23,3.131,0.812,1,5
 "Saudi Arabia","MFQ_Authority",142,10,4.094,0.732,2.333,5
 "Serbia","MFQ_Authority",372,9,2.884,1.02,1,5
 "Singapore","MFQ_Authority",323,4,3.361,0.788,1,5
@@ -478,7 +478,7 @@
 "Hungary","MFQ_Care",417,1,3.736,0.719,1.5,5
 "India","MFQ_Care",354,34,4.007,0.735,1,5
 "Indonesia","MFQ_Care",271,6,3.887,0.722,1.333,5
-"Iran","MFQ_Care",357,22,3.958,0.738,1,5
+"Iran","MFQ_Care",361,22,3.961,0.735,1,5
 "Ireland","MFQ_Care",72,1,4.044,0.641,2.5,5
 "Israel","MFQ_Care",443,1,3.853,0.681,1.5,5
 "Italy","MFQ_Care",560,6,3.886,0.782,1.167,5
@@ -495,13 +495,13 @@
 "New Zealand","MFQ_Care",222,7,4.132,0.707,1,5
 "Nigeria","MFQ_Care",469,18,4.22,0.747,1.667,5
 "North Macedonia","MFQ_Care",306,6,4.211,0.653,2,5
-"Overall","MFQ_Care",23012,3467,3.924,0.778,1,5
+"Overall","MFQ_Care",23024,3487,3.924,0.778,1,5
 "Pakistan","MFQ_Care",434,3,4.137,0.679,1.833,5
 "Philippines","MFQ_Care",845,15,4.045,0.681,1.167,5
 "Poland","MFQ_Care",650,9,3.72,0.798,1,5
 "Portugal","MFQ_Care",327,4,3.872,0.83,1.167,5
 "Romania","MFQ_Care",456,22,3.975,0.753,1,5
-"Rwanda","MFQ_Care",280,2,3.524,0.748,1.167,5
+"Russia","MFQ_Care",288,22,3.523,0.74,1.167,5
 "Saudi Arabia","MFQ_Care",142,10,3.943,0.774,1.833,5
 "Serbia","MFQ_Care",372,9,4.059,0.731,1,5
 "Singapore","MFQ_Care",323,4,3.77,0.799,1,5
@@ -543,7 +543,7 @@
 "Hungary","MFQ_Equality",417,1,3.054,0.866,1,5
 "India","MFQ_Equality",354,34,2.806,0.887,1,5
 "Indonesia","MFQ_Equality",271,6,2.859,0.833,1,5
-"Iran","MFQ_Equality",357,22,2.95,0.947,1,5
+"Iran","MFQ_Equality",361,22,2.952,0.948,1,5
 "Ireland","MFQ_Equality",72,1,3.132,0.78,1.667,5
 "Israel","MFQ_Equality",443,1,2.486,0.849,1,5
 "Italy","MFQ_Equality",560,6,3.078,0.957,1,5
@@ -560,13 +560,13 @@
 "New Zealand","MFQ_Equality",222,7,3.12,0.891,1.167,5
 "Nigeria","MFQ_Equality",469,18,3.221,1.083,1,5
 "North Macedonia","MFQ_Equality",306,6,3.373,0.83,1,5
-"Overall","MFQ_Equality",23012,3467,2.92,0.954,1,5
+"Overall","MFQ_Equality",23024,3487,2.92,0.954,1,5
 "Pakistan","MFQ_Equality",434,3,3.194,0.894,1,5
 "Philippines","MFQ_Equality",845,15,3.204,0.845,1,5
 "Poland","MFQ_Equality",650,9,2.424,0.974,1,5
 "Portugal","MFQ_Equality",327,4,2.826,1.071,1,5
 "Romania","MFQ_Equality",456,22,2.564,0.866,1,5
-"Rwanda","MFQ_Equality",280,2,2.86,0.892,1,5
+"Russia","MFQ_Equality",288,22,2.867,0.895,1,5
 "Saudi Arabia","MFQ_Equality",142,10,2.793,0.901,1.167,5
 "Serbia","MFQ_Equality",372,9,2.909,0.943,1,5
 "Singapore","MFQ_Equality",323,4,2.824,0.914,1,5
@@ -608,7 +608,7 @@
 "Hungary","MFQ_Loyalty",417,1,2.85,0.781,1.167,5
 "India","MFQ_Loyalty",354,34,3.642,0.86,1.167,5
 "Indonesia","MFQ_Loyalty",271,6,3.523,0.781,1.167,5
-"Iran","MFQ_Loyalty",357,22,3.41,0.941,1.167,5
+"Iran","MFQ_Loyalty",361,22,3.416,0.941,1.167,5
 "Ireland","MFQ_Loyalty",72,1,3.097,0.914,1.333,5
 "Israel","MFQ_Loyalty",443,1,3.769,0.697,1.5,5
 "Italy","MFQ_Loyalty",560,6,2.85,0.883,1,5
@@ -625,13 +625,13 @@
 "New Zealand","MFQ_Loyalty",222,7,2.634,0.735,1,5
 "Nigeria","MFQ_Loyalty",469,18,4.098,0.795,1,5
 "North Macedonia","MFQ_Loyalty",306,6,3.575,0.8,1.167,5
-"Overall","MFQ_Loyalty",23012,3467,3.315,0.952,1,5
+"Overall","MFQ_Loyalty",23024,3487,3.315,0.952,1,5
 "Pakistan","MFQ_Loyalty",434,3,3.875,0.749,1.5,5
 "Philippines","MFQ_Loyalty",845,15,3.618,0.788,1.5,5
 "Poland","MFQ_Loyalty",650,9,2.77,0.836,1,5
 "Portugal","MFQ_Loyalty",327,4,2.964,0.843,1,5
 "Romania","MFQ_Loyalty",456,22,3.203,0.764,1.333,5
-"Rwanda","MFQ_Loyalty",280,2,3.25,0.845,1.167,5
+"Russia","MFQ_Loyalty",288,22,3.244,0.839,1.167,5
 "Saudi Arabia","MFQ_Loyalty",142,10,4.296,0.722,2.167,5
 "Serbia","MFQ_Loyalty",372,9,2.982,0.945,1,5
 "Singapore","MFQ_Loyalty",323,4,3.204,0.847,1,5
@@ -673,7 +673,7 @@
 "Hungary","MFQ_Proportionality",417,1,3.856,0.672,1.333,5
 "India","MFQ_Proportionality",354,34,3.76,0.727,1.167,5
 "Indonesia","MFQ_Proportionality",271,6,3.953,0.714,1.333,5
-"Iran","MFQ_Proportionality",357,22,4.066,0.65,1.5,5
+"Iran","MFQ_Proportionality",361,22,4.071,0.649,1.5,5
 "Ireland","MFQ_Proportionality",72,1,3.604,0.704,1.5,5
 "Israel","MFQ_Proportionality",443,1,3.837,0.618,1.667,5
 "Italy","MFQ_Proportionality",560,6,3.61,0.744,1.333,5
@@ -690,13 +690,13 @@
 "New Zealand","MFQ_Proportionality",222,7,3.435,0.806,1.167,5
 "Nigeria","MFQ_Proportionality",469,18,4.137,0.734,1.5,5
 "North Macedonia","MFQ_Proportionality",306,6,4.085,0.662,2,5
-"Overall","MFQ_Proportionality",23013,3466,3.862,0.716,1,5
+"Overall","MFQ_Proportionality",23025,3486,3.862,0.716,1,5
 "Pakistan","MFQ_Proportionality",434,3,3.839,0.692,1.167,5
 "Philippines","MFQ_Proportionality",845,15,3.97,0.683,1.333,5
 "Poland","MFQ_Proportionality",650,9,3.838,0.67,1.667,5
 "Portugal","MFQ_Proportionality",327,4,3.904,0.71,1.167,5
 "Romania","MFQ_Proportionality",456,22,3.962,0.624,1.5,5
-"Rwanda","MFQ_Proportionality",280,2,3.804,0.668,2,5
+"Russia","MFQ_Proportionality",288,22,3.803,0.662,2,5
 "Saudi Arabia","MFQ_Proportionality",142,10,4.04,0.757,2,5
 "Serbia","MFQ_Proportionality",372,9,3.93,0.692,1.333,5
 "Singapore","MFQ_Proportionality",323,4,3.781,0.728,1,5
@@ -738,7 +738,7 @@
 "Hungary","MFQ_Purity",417,1,2.465,0.852,1,5
 "India","MFQ_Purity",354,34,2.941,0.913,1,5
 "Indonesia","MFQ_Purity",271,6,3.573,0.718,1.5,5
-"Iran","MFQ_Purity",357,22,3.037,0.974,1,5
+"Iran","MFQ_Purity",361,22,3.04,0.973,1,5
 "Ireland","MFQ_Purity",72,1,2.16,0.91,1,4.667
 "Israel","MFQ_Purity",443,1,2.562,0.773,1,5
 "Italy","MFQ_Purity",560,6,2.262,0.785,1,5
@@ -755,13 +755,13 @@
 "New Zealand","MFQ_Purity",222,7,1.991,0.73,1,4.667
 "Nigeria","MFQ_Purity",469,18,3.852,0.789,1.167,5
 "North Macedonia","MFQ_Purity",306,6,3.104,0.84,1.167,5
-"Overall","MFQ_Purity",23011,3468,2.798,0.985,1,5
+"Overall","MFQ_Purity",23022,3489,2.798,0.985,1,5
 "Pakistan","MFQ_Purity",434,3,3.603,0.735,1,5
 "Philippines","MFQ_Purity",845,15,3.18,0.886,1,5
 "Poland","MFQ_Purity",650,9,2.213,0.819,1,5
 "Portugal","MFQ_Purity",327,4,2.153,0.77,1,4.833
 "Romania","MFQ_Purity",456,22,2.52,0.836,1,5
-"Rwanda","MFQ_Purity",280,2,2.632,0.856,1,5
+"Russia","MFQ_Purity",287,23,2.647,0.853,1,5
 "Saudi Arabia","MFQ_Purity",142,10,4.031,0.686,2.167,5
 "Serbia","MFQ_Purity",372,9,2.443,0.876,1,5
 "Singapore","MFQ_Purity",323,4,2.821,0.904,1,5
@@ -803,7 +803,7 @@
 "Hungary","Negative_Reciprocity",418,0,2.782,1.234,1,6
 "India","Negative_Reciprocity",388,0,3.028,1.403,1,6
 "Indonesia","Negative_Reciprocity",277,0,3.017,1.484,1,6
-"Iran","Negative_Reciprocity",379,0,2.995,1.314,1,6
+"Iran","Negative_Reciprocity",383,0,3.008,1.319,1,6
 "Ireland","Negative_Reciprocity",73,0,2.763,1.293,1,6
 "Israel","Negative_Reciprocity",444,0,2.426,1.107,1,6
 "Italy","Negative_Reciprocity",566,0,2.971,1.379,1,6
@@ -820,13 +820,13 @@
 "New Zealand","Negative_Reciprocity",229,0,3.013,1.245,1,6
 "Nigeria","Negative_Reciprocity",487,0,2.752,1.745,1,6
 "North Macedonia","Negative_Reciprocity",312,0,2.531,1.313,1,6
-"Overall","Negative_Reciprocity",23562,2917,2.917,1.419,1,6
+"Overall","Negative_Reciprocity",23594,2917,2.918,1.419,1,6
 "Pakistan","Negative_Reciprocity",436,1,2.695,1.438,1,6
 "Philippines","Negative_Reciprocity",860,0,3.147,1.533,1,6
 "Poland","Negative_Reciprocity",659,0,3.095,1.356,1,6
 "Portugal","Negative_Reciprocity",331,0,2.911,1.302,1,6
 "Romania","Negative_Reciprocity",478,0,2.656,1.398,1,6
-"Rwanda","Negative_Reciprocity",282,0,3.349,1.485,1,6
+"Russia","Negative_Reciprocity",310,0,3.343,1.477,1,6
 "Saudi Arabia","Negative_Reciprocity",152,0,2.662,1.45,1,6
 "Serbia","Negative_Reciprocity",381,0,2.754,1.254,1,6
 "Singapore","Negative_Reciprocity",327,0,3.306,1.403,1,6
@@ -868,7 +868,7 @@
 "Hungary","Openness_to_Change",418,0,4.469,0.739,2.167,6
 "India","Openness_to_Change",364,24,4.551,0.796,2.167,6
 "Indonesia","Openness_to_Change",274,3,4.593,0.759,2.167,6
-"Iran","Openness_to_Change",364,15,4.23,0.859,1.5,6
+"Iran","Openness_to_Change",368,15,4.233,0.857,1.5,6
 "Ireland","Openness_to_Change",73,0,4.007,0.785,2.333,5.833
 "Israel","Openness_to_Change",443,1,4.192,0.829,2,6
 "Italy","Openness_to_Change",562,4,3.875,0.833,1.5,6
@@ -885,13 +885,13 @@
 "New Zealand","Openness_to_Change",222,7,4.306,0.825,2,6
 "Nigeria","Openness_to_Change",473,14,4.785,0.963,1.5,6
 "North Macedonia","Openness_to_Change",309,3,4.401,0.943,1,6
-"Overall","Openness_to_Change",23205,3274,4.39,0.874,1,6
+"Overall","Openness_to_Change",23223,3288,4.39,0.873,1,6
 "Pakistan","Openness_to_Change",436,1,4.483,0.916,1.5,6
 "Philippines","Openness_to_Change",850,10,4.785,0.796,1,6
 "Poland","Openness_to_Change",652,7,4.037,0.875,1.5,6
 "Portugal","Openness_to_Change",328,3,4.337,0.814,2,6
 "Romania","Openness_to_Change",466,12,4.257,0.85,1.5,6
-"Rwanda","Openness_to_Change",282,0,4.258,0.909,1.833,6
+"Russia","Openness_to_Change",296,14,4.26,0.902,1.833,6
 "Saudi Arabia","Openness_to_Change",147,5,4.412,0.901,1.833,6
 "Serbia","Openness_to_Change",375,6,4.189,0.841,2,6
 "Singapore","Openness_to_Change",325,2,4.193,0.814,1,6
@@ -933,7 +933,7 @@
 "Hungary","Other_Face_Concern",417,1,3.156,0.963,1,5
 "India","Other_Face_Concern",375,13,3.573,0.87,1,5
 "Indonesia","Other_Face_Concern",274,3,4.194,0.577,1.667,5
-"Iran","Other_Face_Concern",377,2,3.639,0.903,1,5
+"Iran","Other_Face_Concern",381,2,3.64,0.902,1,5
 "Ireland","Other_Face_Concern",73,0,3.128,0.939,1,5
 "Israel","Other_Face_Concern",443,1,3.427,0.89,1,5
 "Italy","Other_Face_Concern",565,1,3.019,0.824,1,5
@@ -950,13 +950,13 @@
 "New Zealand","Other_Face_Concern",226,3,3.103,0.976,1,5
 "Nigeria","Other_Face_Concern",479,8,3.739,0.951,1,5
 "North Macedonia","Other_Face_Concern",310,2,3.511,0.893,1,5
-"Overall","Other_Face_Concern",26068,411,3.594,1.041,1,7
+"Overall","Other_Face_Concern",26098,413,3.593,1.041,1,7
 "Pakistan","Other_Face_Concern",437,0,3.767,0.798,1,5
 "Philippines","Other_Face_Concern",855,5,3.816,0.756,1,5
 "Poland","Other_Face_Concern",656,3,3.307,0.837,1,5
 "Portugal","Other_Face_Concern",331,0,3.377,0.888,1,5
 "Romania","Other_Face_Concern",475,3,3.228,0.784,1,5
-"Rwanda","Other_Face_Concern",282,0,3.046,0.946,1,5
+"Russia","Other_Face_Concern",308,2,3.056,0.943,1,5
 "Saudi Arabia","Other_Face_Concern",149,3,3.954,0.786,1.5,5
 "Serbia","Other_Face_Concern",380,1,3.172,0.874,1,5
 "Singapore","Other_Face_Concern",326,1,3.317,0.879,1,5
@@ -998,7 +998,7 @@
 "Hungary","Penal_Code_Violence",418,0,2.406,1.107,1,5
 "India","Penal_Code_Violence",388,0,3.209,0.989,1,5
 "Indonesia","Penal_Code_Violence",277,0,3.462,0.954,1,5
-"Iran","Penal_Code_Violence",378,1,2.601,1.132,1,5
+"Iran","Penal_Code_Violence",382,1,2.598,1.128,1,5
 "Ireland","Penal_Code_Violence",73,0,2.196,1.125,1,5
 "Israel","Penal_Code_Violence",444,0,2.813,1.097,1,5
 "Italy","Penal_Code_Violence",566,0,1.941,1.101,1,5
@@ -1015,13 +1015,13 @@
 "New Zealand","Penal_Code_Violence",229,0,1.964,0.931,1,5
 "Nigeria","Penal_Code_Violence",487,0,3.066,1.086,1,5
 "North Macedonia","Penal_Code_Violence",312,0,2.99,1.147,1,5
-"Overall","Penal_Code_Violence",23539,2940,2.635,1.181,1,5
+"Overall","Penal_Code_Violence",23571,2940,2.636,1.181,1,5
 "Pakistan","Penal_Code_Violence",437,0,3.528,0.918,1,5
 "Philippines","Penal_Code_Violence",860,0,2.871,0.982,1,5
 "Poland","Penal_Code_Violence",659,0,2.177,1.074,1,5
 "Portugal","Penal_Code_Violence",331,0,2.154,1.197,1,5
 "Romania","Penal_Code_Violence",478,0,2.243,1.144,1,5
-"Rwanda","Penal_Code_Violence",282,0,3.202,1,1,5
+"Russia","Penal_Code_Violence",310,0,3.21,1.006,1,5
 "Saudi Arabia","Penal_Code_Violence",151,1,3.453,1.025,1,5
 "Serbia","Penal_Code_Violence",381,0,2.666,1.263,1,5
 "Singapore","Penal_Code_Violence",327,0,3.246,1.021,1,5
@@ -1063,7 +1063,7 @@
 "Hungary","Positive_Reciprocity",418,0,5.464,0.721,1.333,6
 "India","Positive_Reciprocity",388,0,5.513,0.684,1,6
 "Indonesia","Positive_Reciprocity",277,0,5.574,0.664,2,6
-"Iran","Positive_Reciprocity",379,0,5.525,0.716,1,6
+"Iran","Positive_Reciprocity",383,0,5.527,0.715,1,6
 "Ireland","Positive_Reciprocity",73,0,5.712,0.394,4.667,6
 "Israel","Positive_Reciprocity",444,0,5.304,0.734,2,6
 "Italy","Positive_Reciprocity",566,0,5.494,0.745,1,6
@@ -1080,13 +1080,13 @@
 "New Zealand","Positive_Reciprocity",229,0,5.571,0.666,1.333,6
 "Nigeria","Positive_Reciprocity",487,0,5.511,0.969,1,6
 "North Macedonia","Positive_Reciprocity",312,0,5.474,0.658,2,6
-"Overall","Positive_Reciprocity",23562,2917,5.515,0.716,1,6
+"Overall","Positive_Reciprocity",23594,2917,5.515,0.716,1,6
 "Pakistan","Positive_Reciprocity",436,1,5.489,0.747,1,6
 "Philippines","Positive_Reciprocity",860,0,5.512,0.719,1,6
 "Poland","Positive_Reciprocity",659,0,5.551,0.601,2,6
 "Portugal","Positive_Reciprocity",331,0,5.629,0.53,3.667,6
 "Romania","Positive_Reciprocity",478,0,5.576,0.669,1,6
-"Rwanda","Positive_Reciprocity",282,0,5.434,0.842,1,6
+"Russia","Positive_Reciprocity",310,0,5.444,0.832,1,6
 "Saudi Arabia","Positive_Reciprocity",152,0,5.566,0.806,1,6
 "Serbia","Positive_Reciprocity",381,0,5.758,0.497,2.667,6
 "Singapore","Positive_Reciprocity",327,0,5.39,0.735,1,6
@@ -1128,7 +1128,7 @@
 "Hungary","Retaliation",418,0,5.77,1.276,1,7
 "India","Retaliation",372,16,5.526,1.628,1,7
 "Indonesia","Retaliation",274,3,4.774,1.72,1,7
-"Iran","Retaliation",376,3,4.928,1.717,1,7
+"Iran","Retaliation",380,3,4.932,1.713,1,7
 "Ireland","Retaliation",73,0,5.171,1.623,1,7
 "Israel","Retaliation",443,1,4.374,1.899,1,7
 "Italy","Retaliation",565,1,4.459,1.822,1,7
@@ -1145,13 +1145,13 @@
 "New Zealand","Retaliation",223,6,5.439,1.46,1,7
 "Nigeria","Retaliation",476,11,5.179,1.998,1,7
 "North Macedonia","Retaliation",310,2,5.413,1.721,1,7
-"Overall","Retaliation",23348,3131,5.239,1.726,1,7
+"Overall","Retaliation",23376,3135,5.24,1.725,1,7
 "Pakistan","Retaliation",436,1,5.43,1.62,1,7
 "Philippines","Retaliation",850,10,5.249,1.777,1,7
 "Poland","Retaliation",653,6,5.743,1.2,1,7
 "Portugal","Retaliation",331,0,5.133,1.732,1,7
 "Romania","Retaliation",472,6,5.076,1.791,1,7
-"Rwanda","Retaliation",282,0,5.326,1.605,1,7
+"Russia","Retaliation",306,4,5.358,1.587,1,7
 "Saudi Arabia","Retaliation",149,3,5.872,1.572,1,7
 "Serbia","Retaliation",379,2,5.38,1.596,1,7
 "Singapore","Retaliation",326,1,5.225,1.578,1,7
@@ -1193,7 +1193,7 @@
 "Hungary","Self_Enhancement",418,0,4.017,0.994,1,6
 "India","Self_Enhancement",364,24,4.365,0.957,1.5,6
 "Indonesia","Self_Enhancement",274,3,4.108,0.99,1.25,6
-"Iran","Self_Enhancement",365,14,4.358,0.913,1,6
+"Iran","Self_Enhancement",369,14,4.367,0.914,1,6
 "Ireland","Self_Enhancement",73,0,3.442,1.024,1,5.25
 "Israel","Self_Enhancement",443,1,4.459,0.899,1.25,6
 "Italy","Self_Enhancement",562,4,3.391,1.025,1,6
@@ -1210,13 +1210,13 @@
 "New Zealand","Self_Enhancement",222,7,3.851,0.934,1,6
 "Nigeria","Self_Enhancement",473,14,4.818,0.954,1.5,6
 "North Macedonia","Self_Enhancement",309,3,3.764,0.992,1,6
-"Overall","Self_Enhancement",23206,3273,4.038,1.047,1,6
+"Overall","Self_Enhancement",23224,3287,4.038,1.047,1,6
 "Pakistan","Self_Enhancement",436,1,4.312,1.019,1,6
 "Philippines","Self_Enhancement",850,10,4.541,0.96,1,6
 "Poland","Self_Enhancement",652,7,3.688,1.031,1.25,6
 "Portugal","Self_Enhancement",328,3,3.665,0.994,1,6
 "Romania","Self_Enhancement",466,12,3.888,0.978,1,6
-"Rwanda","Self_Enhancement",282,0,4.135,1.162,1.5,6
+"Russia","Self_Enhancement",296,14,4.125,1.161,1.5,6
 "Saudi Arabia","Self_Enhancement",147,5,4.514,1.023,1,6
 "Serbia","Self_Enhancement",375,6,3.811,0.984,1,6
 "Singapore","Self_Enhancement",325,2,4.08,1.019,1,6
@@ -1258,7 +1258,7 @@
 "Hungary","Self_Face_Concern",417,1,2.897,0.965,1,5
 "India","Self_Face_Concern",375,13,3.438,0.938,1,5
 "Indonesia","Self_Face_Concern",274,3,4.193,0.683,1.5,5
-"Iran","Self_Face_Concern",377,2,3.801,0.73,1,5
+"Iran","Self_Face_Concern",381,2,3.796,0.736,1,5
 "Ireland","Self_Face_Concern",73,0,3.075,0.893,1,5
 "Israel","Self_Face_Concern",443,1,3.394,0.836,1.25,5
 "Italy","Self_Face_Concern",565,1,2.835,0.962,1,5
@@ -1275,13 +1275,13 @@
 "New Zealand","Self_Face_Concern",226,3,3.106,0.977,1,5
 "Nigeria","Self_Face_Concern",479,8,4.007,0.987,1,5
 "North Macedonia","Self_Face_Concern",310,2,3.589,0.905,1,5
-"Overall","Self_Face_Concern",26068,411,3.486,1.143,1,7
+"Overall","Self_Face_Concern",26098,413,3.486,1.143,1,7
 "Pakistan","Self_Face_Concern",437,0,3.714,0.859,1,5
 "Philippines","Self_Face_Concern",855,5,3.615,0.867,1,5
 "Poland","Self_Face_Concern",656,3,3.309,0.93,1,5
 "Portugal","Self_Face_Concern",331,0,3.195,0.929,1,5
 "Romania","Self_Face_Concern",475,3,2.952,1.015,1,5
-"Rwanda","Self_Face_Concern",282,0,3.02,0.929,1,5
+"Russia","Self_Face_Concern",308,2,3.034,0.938,1,5
 "Saudi Arabia","Self_Face_Concern",149,3,4.151,0.77,1.75,5
 "Serbia","Self_Face_Concern",380,1,3.353,0.962,1,5
 "Singapore","Self_Face_Concern",326,1,3.298,0.944,1,5
@@ -1323,7 +1323,7 @@
 "Hungary","Self_Transcendence",418,0,4.814,0.681,2.8,6
 "India","Self_Transcendence",364,24,4.963,0.71,2.4,6
 "Indonesia","Self_Transcendence",274,3,4.845,0.734,1.8,6
-"Iran","Self_Transcendence",365,14,4.686,0.718,2,6
+"Iran","Self_Transcendence",369,14,4.691,0.718,2,6
 "Ireland","Self_Transcendence",73,0,4.929,0.61,3.2,6
 "Israel","Self_Transcendence",443,1,4.732,0.731,2,6
 "Italy","Self_Transcendence",562,4,4.786,0.795,2.4,6
@@ -1340,13 +1340,13 @@
 "New Zealand","Self_Transcendence",222,7,5.038,0.709,1.8,6
 "Nigeria","Self_Transcendence",473,14,5.007,0.881,1,6
 "North Macedonia","Self_Transcendence",309,3,5.162,0.752,1.8,6
-"Overall","Self_Transcendence",23203,3276,4.876,0.773,1,6
+"Overall","Self_Transcendence",23221,3290,4.876,0.773,1,6
 "Pakistan","Self_Transcendence",436,1,4.941,0.803,1.4,6
 "Philippines","Self_Transcendence",850,10,5.13,0.67,1,6
 "Poland","Self_Transcendence",652,7,4.807,0.716,2.4,6
 "Portugal","Self_Transcendence",328,3,5.006,0.685,2,6
 "Romania","Self_Transcendence",466,12,5.008,0.672,2.4,6
-"Rwanda","Self_Transcendence",282,0,4.347,0.831,2.2,6
+"Russia","Self_Transcendence",296,14,4.362,0.826,2.2,6
 "Saudi Arabia","Self_Transcendence",147,5,4.622,0.866,2.4,6
 "Serbia","Self_Transcendence",375,6,5.004,0.693,2,6
 "Singapore","Self_Transcendence",325,2,4.598,0.77,1,6
@@ -1388,7 +1388,7 @@
 "Hungary","Subjective_Wellbeing",415,3,4.82,1.212,1.2,7
 "India","Subjective_Wellbeing",350,38,3.987,1.338,1,7
 "Indonesia","Subjective_Wellbeing",271,6,4.322,1.144,1.6,6.8
-"Iran","Subjective_Wellbeing",355,24,3.875,1.4,1,7
+"Iran","Subjective_Wellbeing",359,24,3.862,1.398,1,7
 "Ireland","Subjective_Wellbeing",72,1,4.25,1.441,1,6.8
 "Israel","Subjective_Wellbeing",443,1,5.287,1.011,1,7
 "Italy","Subjective_Wellbeing",558,8,4.053,1.211,1,7
@@ -1405,13 +1405,13 @@
 "New Zealand","Subjective_Wellbeing",221,8,4.205,1.276,1,7
 "Nigeria","Subjective_Wellbeing",467,20,4.012,1.433,1,7
 "North Macedonia","Subjective_Wellbeing",303,9,4.865,1.207,1,7
-"Overall","Subjective_Wellbeing",22939,3540,4.401,1.321,1,7
+"Overall","Subjective_Wellbeing",22949,3562,4.401,1.321,1,7
 "Pakistan","Subjective_Wellbeing",432,5,4.174,1.263,1,7
 "Philippines","Subjective_Wellbeing",840,20,4.068,1.315,1,7
 "Poland","Subjective_Wellbeing",647,12,4.251,1.3,1,7
 "Portugal","Subjective_Wellbeing",326,5,4.263,1.391,1,7
 "Romania","Subjective_Wellbeing",454,24,4.834,1.242,1,7
-"Rwanda","Subjective_Wellbeing",281,1,4.095,1.408,1,7
+"Russia","Subjective_Wellbeing",287,23,4.101,1.4,1,7
 "Saudi Arabia","Subjective_Wellbeing",141,11,4.444,1.364,1.6,7
 "Serbia","Subjective_Wellbeing",370,11,4.664,1.193,1.8,7
 "Singapore","Subjective_Wellbeing",322,5,4.283,1.268,1,7
@@ -1453,7 +1453,7 @@
 "Hungary","Total_Violence",418,0,1.799,0.519,1,3.417
 "India","Total_Violence",388,0,2.285,0.596,1,4.333
 "Indonesia","Total_Violence",277,0,2.505,0.575,1.167,4.167
-"Iran","Total_Violence",379,0,2.029,0.529,1,3.909
+"Iran","Total_Violence",383,0,2.03,0.528,1,3.909
 "Ireland","Total_Violence",73,0,1.689,0.597,1,3.75
 "Israel","Total_Violence",444,0,2.198,0.527,1,4.583
 "Italy","Total_Violence",566,0,1.683,0.625,1,3.917
@@ -1470,13 +1470,13 @@
 "New Zealand","Total_Violence",229,0,1.584,0.499,1,4.083
 "Nigeria","Total_Violence",487,0,2.82,0.816,1,5
 "North Macedonia","Total_Violence",312,0,1.996,0.543,1,4.417
-"Overall","Total_Violence",23542,2937,2.05,0.687,1,5
+"Overall","Total_Violence",23574,2937,2.05,0.687,1,5
 "Pakistan","Total_Violence",437,0,2.639,0.654,1,5
 "Philippines","Total_Violence",860,0,2.116,0.653,1,5
 "Poland","Total_Violence",659,0,1.767,0.536,1,3.917
 "Portugal","Total_Violence",331,0,1.866,0.619,1,3.917
 "Romania","Total_Violence",478,0,1.697,0.576,1,5
-"Rwanda","Total_Violence",282,0,2.283,0.633,1,4.909
+"Russia","Total_Violence",310,0,2.286,0.633,1,4.909
 "Saudi Arabia","Total_Violence",151,1,2.418,0.56,1.083,5
 "Serbia","Total_Violence",381,0,1.893,0.616,1,4.167
 "Singapore","Total_Violence",327,0,2.361,0.684,1,4.5
@@ -1518,7 +1518,7 @@
 "Hungary","War_Acceptance",418,0,2.089,0.777,1,4.667
 "India","War_Acceptance",388,0,2.527,0.94,1,5
 "Indonesia","War_Acceptance",277,0,2.881,0.843,1,5
-"Iran","War_Acceptance",378,1,2.718,0.768,1,5
+"Iran","War_Acceptance",382,1,2.719,0.768,1,5
 "Ireland","War_Acceptance",73,0,1.922,0.934,1,5
 "Israel","War_Acceptance",444,0,3.456,0.829,1,5
 "Italy","War_Acceptance",566,0,1.907,0.909,1,5
@@ -1535,13 +1535,13 @@
 "New Zealand","War_Acceptance",229,0,1.822,0.787,1,4
 "Nigeria","War_Acceptance",486,1,2.727,1.09,1,5
 "North Macedonia","War_Acceptance",312,0,2.234,0.9,1,5
-"Overall","War_Acceptance",23538,2941,2.376,0.966,1,5
+"Overall","War_Acceptance",23569,2942,2.377,0.966,1,5
 "Pakistan","War_Acceptance",436,1,2.994,0.97,1,5
 "Philippines","War_Acceptance",860,0,2.1,0.925,1,5
 "Poland","War_Acceptance",659,0,2.204,0.777,1,5
 "Portugal","War_Acceptance",331,0,2.179,0.885,1,5
 "Romania","War_Acceptance",478,0,1.945,0.854,1,5
-"Rwanda","War_Acceptance",282,0,2.619,0.932,1,5
+"Russia","War_Acceptance",309,1,2.619,0.913,1,5
 "Saudi Arabia","War_Acceptance",151,1,2.79,0.884,1,5
 "Serbia","War_Acceptance",381,0,2.034,0.869,1,5
 "Singapore","War_Acceptance",327,0,2.403,0.97,1,5
@@ -1583,7 +1583,7 @@
 "Hungary","Withdrawal",418,0,1.874,1.149,1,7
 "India","Withdrawal",371,17,2.058,1.54,1,7
 "Indonesia","Withdrawal",274,3,2.078,1.441,1,7
-"Iran","Withdrawal",376,3,1.818,1.252,1,7
+"Iran","Withdrawal",380,3,1.816,1.25,1,7
 "Ireland","Withdrawal",73,0,2.548,1.659,1,7
 "Israel","Withdrawal",443,1,2.108,1.404,1,7
 "Italy","Withdrawal",565,1,2.327,1.533,1,7
@@ -1600,13 +1600,13 @@
 "New Zealand","Withdrawal",223,6,2.305,1.384,1,7
 "Nigeria","Withdrawal",476,11,2.929,2.058,1,7
 "North Macedonia","Withdrawal",310,2,1.682,1.285,1,7
-"Overall","Withdrawal",23343,3136,2.071,1.464,1,7
+"Overall","Withdrawal",23371,3140,2.072,1.465,1,7
 "Pakistan","Withdrawal",436,1,2.256,1.717,1,7
 "Philippines","Withdrawal",849,11,2.133,1.526,1,7
 "Poland","Withdrawal",653,6,1.887,1.31,1,7
 "Portugal","Withdrawal",331,0,2.053,1.314,1,6.5
 "Romania","Withdrawal",472,6,2.074,1.538,1,7
-"Rwanda","Withdrawal",282,0,1.92,1.295,1,7
+"Russia","Withdrawal",306,4,1.971,1.371,1,7
 "Saudi Arabia","Withdrawal",149,3,2.013,1.74,1,7
 "Serbia","Withdrawal",379,2,1.756,1.15,1,7
 "Singapore","Withdrawal",326,1,2.014,1.214,1,7
