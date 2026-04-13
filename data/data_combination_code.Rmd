@@ -1515,6 +1515,28 @@ Link to metadata sheet: https://docs.google.com/spreadsheets/d/1cpskXpk-32EkzF4a
 
 * Link to table which spells out country names
 
+* country res - this was at the bottom, needed to be up here to be in the correct chain of events 
+
+```{r}
+# this code fixes the issue with Palestine not matching the numbers in qualtrics
+dhf_all <- dhf_all %>%
+  mutate(country_res = as.numeric(country_res),
+         country_res = case_when(datasource == "Gorilla" & country_res < 137 ~ country_res, 
+                         datasource == "Gorilla" & (country_res > 137 & country_res < 201) ~ country_res-1,
+                         datasource == "Gorilla" & country_res == 201 ~ -999,
+                         datasource == "Gorilla" & country_res == 137 ~ 200,
+                                       TRUE ~ country_res))
+
+dhf_all %>%
+  filter(datasource != "Qualtrics") %>%
+  count(country_res, datasource) %>%
+  pivot_wider(names_from = datasource, values_from = n) %>%
+  mutate(country_res = as.numeric(country_res)) %>%
+  arrange(country_res)
+```
+
+* import the country names
+
 ```{r message = FALSE}
 country_names <- read_csv2("codebooks/Qualtrics/qualtrics_URL_country.csv", show_col_types = FALSE) %>%
     mutate(Code = replace_na(Code, "NM")) %>%
@@ -1648,6 +1670,9 @@ nrow(dhf_all)
 ```{r}
 # examine for missing data 
 table(dhf_all$country_res_full, useNA = "ifany")
+
+dhf_all %>% 
+  filter(country_res_full == "Rwanda")
 ```
 
 ## add country metadata 
@@ -2078,25 +2103,6 @@ dhf_all %>%
 dhf_all %>%
   count(gender, datasource) %>%
   pivot_wider(names_from = datasource, values_from = n)
-```
-
-* country res
-
-```{r}
-dhf_all <- dhf_all %>%
-  mutate(country_res = as.numeric(country_res),
-         country_res = case_when(datasource == "Gorilla" & country_res < 137 ~ country_res, 
-                         datasource == "Gorilla" & (country_res > 137 & country_res < 201) ~ country_res-1,
-                         datasource == "Gorilla" & country_res == 201 ~ -999,
-                         datasource == "Gorilla" & country_res == 137 ~ 200,
-                                       TRUE ~ country_res))
-
-dhf_all %>%
-  filter(datasource != "Qualtrics") %>%
-  count(country_res, datasource) %>%
-  pivot_wider(names_from = datasource, values_from = n) %>%
-  mutate(country_res = as.numeric(country_res)) %>%
-  arrange(country_res)
 ```
 
 * parent
