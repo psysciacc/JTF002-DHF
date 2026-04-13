@@ -1,0 +1,2304 @@
+---
+title: "Reproducible Analyses"
+author: "Erin M. Buchanan"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+- Using manuscript + supplement from https://drive.google.com/drive/u/0/folders/1_lBKpwcRFFIUcJZq8XENDovHmMNC8m5I
+
+- Using analyses from https://drive.google.com/drive/u/0/folders/1V00hNRQofmBxloVls-Vxy1t30henrzGw
+
+- Using pre-registration from https://docs.google.com/document/d/1nCfUY9tJLBk41vE_BU56S10rrBoRdVaMwDFo1DMZy8M/edit?tab=t.0#heading=h.fwbi14d4b65g
+
+## Libraries
+
+```{r}
+library(rio)
+library(dplyr)
+library(psych)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(lavaan)
+library(broom)
+library(sirt)
+library(sf)
+library(rnaturalearth)
+library(viridis)
+library(patchwork)
+library(beepr)
+library(readr)
+library(misty)
+library(ggplot2)
+library(lme4)
+library(parameters)
+library(performance)
+library(apaTables)
+
+pct <- function(x) round(100 * x, 1)
+
+largest_group <- function(vec) {
+  tab <- prop.table(table(vec))
+  top <- names(which.max(tab))
+  p <- pct(max(tab, na.rm = TRUE))
+  paste0(top, " (", p, "%)")
+}
+
+RUN_MODEL <- TRUE # change me to rerun models
+```
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
+
+## Robustness Analysis Notes
+
+* This analysis includes only participants with complete data for analyses *after* the model building. 
+* Recoding sections were included to ensure the same structure for analyses. 
+
+# Data
+
+```{r import-data}
+# load data
+dt <- import("../data/processed_data/dhf_data_final.csv.zip")
+```
+
+## Sample Summary
+
+```{r clean-variable-names}
+#L: variable names changed to match the new data
+factorized_var_numbers<-
+  c(which(names(dt)=="gender"),
+    which(names(dt)=="Migration"),
+    which(names(dt)=="location_childhood"),
+    which(names(dt)=="location_current"),
+    which(names(dt)=="ethnicity"),
+    which(names(dt)=="religion"),
+    which(names(dt)=="education"),
+    which(names(dt)=="student"),
+    which(names(dt)=="income"),
+    which(names(dt)=="Country"),
+    which(names(dt)=="country_res_full"),
+    which(names(dt)=="Sample"),
+    which(names(dt)=="datasource"))
+
+numeric_var_numbers<-
+  c(which(names(dt)=="Age"))
+
+# refactor gender, age, education, state, race, migration 
+dt[,factorized_var_numbers] <- lapply(dt[,factorized_var_numbers], as.factor)
+dt[,numeric_var_numbers] <- as.numeric(dt[,numeric_var_numbers])
+```
+
+```{r reciprocity-scoring}
+# recode variables to numeric
+dt <- dt %>%
+  mutate_at(vars(Reciprocity_1:Reciprocity_6), ~dplyr::case_when(
+    . == "Does not apply to me at all\r\n1\r\n" ~ 1,
+    . == "1" ~ 1,
+    . == "2" ~ 2,
+    . == "3" ~ 3,
+    . == "4" ~ 4,
+    . == "5" ~ 5,
+    . == "6" ~ 6,
+    . == "7" ~ 6,
+    . == "Applies to me perfectly\r\n7\r\n" ~ 7,
+    TRUE ~ NA_integer_
+  ))
+
+# examine data
+Recprocity_first_num <- which(names(dt)=="Reciprocity_1")
+Recprocity_last_num <- which(names(dt)=="Reciprocity_6")
+
+# calculate positive and negative reciprocity  
+dt$Positive_Reciprocity <- rowMeans(dt[c("Reciprocity_1","Reciprocity_2","Reciprocity_3")], na.rm=TRUE)
+dt$Negative_Reciprocity <- rowMeans(dt[c("Reciprocity_4","Reciprocity_5","Reciprocity_6")], na.rm=TRUE)
+```
+
+* exclude participants who are too young 
+
+```{r demographic-clean}
+# exclude participants who are <18
+dt1 <- subset(dt, Age >=18|is.na(Age))
+```
+
+* remove people who were not bord and raised in the country 
+
+```{r migration-data}
+# NAs are cases where question was not shown, so include
+dt2 <- subset(dt1, Migration==1|Migration==3|is.na(Migration)) #n=35901 
+```
+
+* remove due to attention checks
+
+```{r attention-checks}
+# exclude participants who failed 2 or 3 attention checks, except for ALLS countries where attention checks were not shown
+dt2$attention1 <- ifelse(dt2$attention_1==2|dt2$datasource == "ALLS", 1, 0)
+dt2$attention2 <- ifelse(dt2$attention_2==5|dt2$datasource == "ALLS", 1, 0)
+dt2$attention3 <- ifelse(dt2$attention_3==3|dt2$datasource == "ALLS", 1, 0)
+dt2$attention <- rowSums(dt2[c("attention1", "attention2", "attention3")], na.rm=T)
+dt3 <- subset(dt2, attention>=2) 
+```
+
+* remove due to too small sample 
+
+```{r country-exclude}
+# exclude countries with <50 participants and where country is missing
+# table(dt3$country_res_full, useNA = "ifany")
+dt3$country_res_full <- as.factor(dt3$country_res_full)
+
+dt4 <- dt3 %>%
+  group_by(country_res_full) %>%
+  filter(!is.na(country_res_full) & n() >= 50) %>%
+  ungroup() %>%
+  mutate(country_res_full = droplevels(country_res_full))
+
+#all -99 and -999 in the dataset are now assigned as missing 
+dt4[dt4 == -99] <- NA
+dt4[dt4 == -999] <- NA
+```
+
+## Create Indices
+
+```{r create-indices}
+# Ensure Schwartz values are merged (if not already done in the reliability check stage)
+print("Ensuring Schwartz values are merged...")
+for(i in 1:21) {
+  col_name <- paste0("values_", i)
+  col_n <- paste0("values_n_", i)
+  col_m <- paste0("values_m_", i)  
+  col_f <- paste0("values_f_", i)
+  
+  if(all(c(col_n, col_m, col_f) %in% names(dt4))) {
+    dt4 <- dt4 %>%
+      mutate(!!col_name := coalesce(!!sym(col_n), !!sym(col_m), !!sym(col_f)))
+  }
+}
+
+print("CREATING SCALE INDICES")
+print(paste(rep("=", 50), collapse = ""))
+
+# Function to calculate mean with at least 50% valid responses
+calculate_scale_mean <- function(data, vars, min_valid_prop = 0.5) {
+  # Check which variables exist
+  available_vars <- vars[vars %in% names(data)]
+  
+  if(length(available_vars) == 0) {
+    return(rep(NA, nrow(data)))
+  }
+  
+  # Calculate means requiring at least 50% valid responses
+  scale_data <- data[, available_vars, drop = FALSE]
+  n_items <- ncol(scale_data)
+  min_valid <- ceiling(n_items * min_valid_prop)
+  
+  # Calculate row means with minimum valid responses
+  row_means <- rowMeans(scale_data, na.rm = TRUE)
+  valid_count <- rowSums(!is.na(scale_data))
+  
+  # Set to NA if insufficient valid responses
+  row_means[valid_count < min_valid] <- NA
+  
+  return(row_means)
+}
+
+# Create all scale indices
+print("1. Creating reciprocity indices...")
+
+# 1. RECIPROCITY
+dt4 <- dt4 %>%
+  mutate(
+    Positive_Reciprocity = calculate_scale_mean(., c("Reciprocity_1", "Reciprocity_2", "Reciprocity_3")),
+    Negative_Reciprocity = calculate_scale_mean(., c("Reciprocity_4", "Reciprocity_5", "Reciprocity_6"))
+  )
+
+print("2. Creating violence attitude indices...")
+
+# 2. VIOLENCE ATTITUDES
+dt4 <- dt4 %>%
+  mutate(
+    Penal_Code_Violence = calculate_scale_mean(., c("violence_1", "violence_2", "violence_3")),
+    War_Acceptance = calculate_scale_mean(., c("violence_4", "violence_5", "violence_6")),
+    Corporal_Punishment = calculate_scale_mean(., c("violence_7", "violence_8", "violence_9")),
+    Intimate_Violence = calculate_scale_mean(., c("violence_10", "violence_11", "violence_12")),
+    Total_Violence = calculate_scale_mean(., paste0("violence_", 1:12))
+  )
+
+print("3. Creating face concern indices...")
+
+# 3. FACE CONCERNS
+dt4 <- dt4 %>%
+  mutate(
+    Other_Face_Concern = calculate_scale_mean(., c("conflict_face_2", "conflict_face_3", "conflict_face_4", 
+                                                   "conflict_face_5", "conflict_face_6", "conflict_face_7")),
+    Self_Face_Concern = calculate_scale_mean(., c("conflict_face_8", "conflict_face_9", "conflict_face_10", "conflict_face_11"))
+  )
+
+print("4. Creating reactions to insult indices (excluding 3rd scenario)...")
+
+# 4. REACTIONS TO PROVOCATION (excluding 3rd scenario items due to problematic alpha)
+dt4 <- dt4 %>%
+  mutate(
+    Withdrawal = calculate_scale_mean(., c("insult1_1", "insult2_1")),
+    Retaliation = calculate_scale_mean(., c("insult1_2", "insult2_2")),
+    Humor = calculate_scale_mean(., c("insult1_3", "insult2_3"))
+  )
+
+print("5. Creating Schwartz higher-order values indices...")
+
+# 5. SCHWARTZ HIGHER-ORDER VALUES
+dt4 <- dt4 %>%
+  mutate(
+    Self_Transcendence = calculate_scale_mean(., paste0("values_", c(3, 8, 19, 12, 18))),
+    Self_Enhancement = calculate_scale_mean(., paste0("values_", c(4, 13, 2, 17))),
+    Openness_to_Change = calculate_scale_mean(., paste0("values_", c(1, 11, 6, 15, 10, 21))),
+    Conservation = calculate_scale_mean(., paste0("values_", c(5, 14, 7, 16, 9, 20)))
+  )
+
+print("6. Creating moral foundations indices...")
+
+# 6. MORAL FOUNDATIONS
+dt4 <- dt4 %>%
+  mutate(
+    MFQ_Care = calculate_scale_mean(., paste0("MFQ_", c(1, 7, 13, 19, 25, 31))),
+    MFQ_Equality = calculate_scale_mean(., paste0("MFQ_", c(2, 8, 14, 20, 26, 32))),
+    MFQ_Proportionality = calculate_scale_mean(., paste0("MFQ_", c(3, 9, 15, 21, 27, 33))),
+    MFQ_Loyalty = calculate_scale_mean(., paste0("MFQ_", c(4, 10, 16, 22, 28, 34))),
+    MFQ_Authority = calculate_scale_mean(., paste0("MFQ_", c(5, 11, 17, 23, 29, 35))),
+    MFQ_Purity = calculate_scale_mean(., paste0("MFQ_", c(6, 12, 18, 24, 30, 36)))
+  )
+
+print("7. Creating religiosity indices...")
+
+# 7. INTRINSIC RELIGIOSITY (raw scores)
+dt4 <- dt4 %>%
+  mutate(
+    Intrinsic_Religiosity = calculate_scale_mean(., c("relig_intrinsic_1", "relig_intrinsic_2", "relig_intrinsic_3"))
+  )
+
+# 8. COMPOSITE RELIGIOSITY (standardized scores)
+print("8. Creating composite religiosity index (standardized scores)...")
+
+# Check if religiosity variables exist
+religiosity_vars <- c("relig_attendance", "relig_private", "relig_intrinsic_1", "relig_intrinsic_2", "relig_intrinsic_3")
+available_relig_vars <- religiosity_vars[religiosity_vars %in% names(dt4)]
+
+if(length(available_relig_vars) > 0) {
+  # Standardize each religiosity variable
+  dt4_standardized <- dt4
+  for(var in available_relig_vars) {
+    dt4_standardized[[paste0(var, "_z")]] <- scale(dt4[[var]])[,1]
+  }
+  
+  # Calculate composite score from standardized variables
+  standardized_vars <- paste0(available_relig_vars, "_z")
+  dt4$Composite_Religiosity <- calculate_scale_mean(dt4_standardized, standardized_vars)
+  
+  cat("Composite religiosity created using:", paste(available_relig_vars, collapse = ", "), "\n")
+} else {
+  dt4$Composite_Religiosity <- NA
+  cat("Warning: Religiosity variables not found. Composite religiosity set to NA.\n")
+}
+
+print("9. Creating subjective well-being index...")
+
+# 9. SUBJECTIVE WELL-BEING
+dt4 <- dt4 %>%
+  mutate(
+    Subjective_Wellbeing = calculate_scale_mean(., c("swbls_1", "swbls_2", "swbls_3", "swbls_4", "swbls_5"))
+  )
+
+# List all created indices
+created_indices <- c(
+  "Positive_Reciprocity", "Negative_Reciprocity",
+  "Penal_Code_Violence", "War_Acceptance", "Corporal_Punishment", "Intimate_Violence", "Total_Violence",
+  "Other_Face_Concern", "Self_Face_Concern",
+  "Withdrawal", "Retaliation", "Humor",
+  "Self_Transcendence", "Self_Enhancement", "Openness_to_Change", "Conservation",
+  "MFQ_Care", "MFQ_Equality", "MFQ_Proportionality", "MFQ_Loyalty", "MFQ_Authority", "MFQ_Purity",
+  "Intrinsic_Religiosity", "Composite_Religiosity", "Subjective_Wellbeing"
+)
+
+print("\nCreated indices:")
+print(created_indices)
+```
+
+## Include Clustering Variable for Later
+
+```{r optim-clustering}
+dt4$cluster <- recode_factor(dt4$country_res_full, 
+                             "Argentina" = "Latin America",
+                             "Brazil" = "Latin America",
+                             "Chile" = "Latin America",
+                             "Mexico" = "Latin America",
+                             "Armenia" = "Eastern Europe",
+                             "Bosnia-Herzegovina" = "Eastern Europe",
+                             "Bulgaria" = "Eastern Europe",
+                             "Croatia" = "Eastern Europe",
+                             "Czech Republic" = "Eastern Europe",
+                             "Georgia" = "Eastern Europe",
+                             "Greece" = "Eastern Europe",
+                             "Hungary" = "Eastern Europe",
+                             "Kosovo" = "Eastern Europe",
+                             "North Macedonia" = "Eastern Europe",
+                             "Poland" = "Eastern Europe",
+                             "Russia" = "Eastern Europe",
+                             "Serbia" = "Eastern Europe",
+                             "Slovakia" = "Eastern Europe",
+                             "Kazakhstan" = "Eastern Europe",
+                             "Ukraine" = "Eastern Europe",
+                             "Australia" = "Anglo-Saxon",
+                             "Canada" = "Anglo-Saxon",
+                             "New Zealand" = "Anglo-Saxon",
+                             "Ireland" = "Anglo-Saxon",
+                             "United Kingdom" = "Anglo-Saxon",
+                             "United States" = "Anglo-Saxon",
+                             "Austria" = "Germanic",
+                             "Germany" = "Germanic",
+                             "Switzerland" = "Germanic",
+                             "The Netherlands" = "Germanic",
+                             "Bangladesh" = "South-East Asia",
+                             "India" = "South-East Asia",
+                             "Indonesia" = "South-East Asia",
+                             "Iran" = "South-East Asia",
+                             "Malaysia" = "South-East Asia",
+                             "Pakistan" = "South-East Asia",
+                             "Philippines" = "South-East Asia",
+                             "Thailand" = "South-East Asia",
+                             "Cameroon" = "Africa",
+                             "Ethiopia" = "Africa",
+                             "Kenya" = "Africa",
+                             "Namibia" = "Africa",
+                             "Nigeria" = "Africa",
+                             "South Africa" = "Africa",
+                             "Ghana" = "Africa",
+                             "China" = "Confucian",
+                             "Japan" = "Confucian",
+                             "Singapore" = "Confucian",
+                             "Hong Kong" = "Confucian",
+                             "Taiwan" = "Confucian",
+                             "Vietnam" = "Confucian",
+                             "France" = "Latin Europe",
+                             "Israel" = "Latin Europe",
+                             "Italy" = "Latin Europe",
+                             "Portugal" = "Latin Europe",
+                             "Romania" = "Latin Europe",
+                             "Spain" = "Latin Europe",
+                             "Kuwait" = "Middle East",
+                             "Morocco" = "Middle East",
+                             "Saudi Arabia" = "Middle East",
+                             "Lebanon" = "Middle East",
+                             "Turkey" = "Middle East",
+                             "Uzbekistan" = "Middle East",
+                             "United Arab Emirates" = "Middle East")
+
+dt4[dt4 == -99] <- NA
+```
+
+## Missing Data
+
+* for this robustness test run only on people who have these variables 
+
+```{r missing-data-calc}
+# variables they need 
+vars_needed <- c(
+  # dictator
+  "Dictator.comp1.1_dich", "Dictator.comp2.1_dich", "Dictator.comp1.2_dich", 
+  "Dictator.comp2.2_dich", "Dictator_decision", 
+  # ultimatum
+  "Ultimatum.comp.1.1_dich", "Ultimatum.comp.2.1_dich", "Ultimatum.comp.1.2_dich", 
+  "Ultimatum.comp.2.2_dich", "Ultimatum.Receiver_1", "Ultimatum.Receiver_2", 
+  "Ultimatum.Receiver_3", "Ultimatum.Receiver_4", "Ultimatum.Receiver_5", 
+  "Ultimatum.Receiver_6", "Ultimatum.Receiver_7", "Ultimatum.Receiver_8", 
+  "Ultimatum.Receiver_9", "Ultimatum.Receiver_10", "Ultimatum.Receiver_11", 
+  "Ultimatum.Proposer_1", "Ultimatum.Proposer_2", 
+  "Ultimatum.Proposer_3", "Ultimatum.Proposer_4", "Ultimatum.Proposer_5", 
+  "Ultimatum.Proposer_6", "Ultimatum.Proposer_7", "Ultimatum.Proposer_8", 
+  "Ultimatum.Proposer_9", "Ultimatum.Proposer_10", "Ultimatum.Proposer_11",
+  # dhf scores
+  "dhf_endors_1", "dhf_endors_2", "dhf_endors_3", "dhf_endors_4", "dhf_endors_5", 
+  "dhf_endors_6", "dhf_endors_7", "dhf_endors_8", "dhf_endors_9", "dhf_endors_10", 
+  "dhf_endors_11", "dhf_endors_12", "dhf_endors_13", "dhf_endors_14", "dhf_endors_15", 
+  "dhf_endors_16", "dhf_endors_17", "dhf_endors_18", "dhf_endors_19", "dhf_endors_20", 
+  "dhf_endors_21", "dhf_endors_22", "dhf_endors_23", "dhf_endors_24", "dhf_endors_25", 
+  "dhf_endors_26", "dhf_endors_27", "dhf_endors_28", "dhf_endors_29", "dhf_endors_30", 
+  "dhf_norm_1", "dhf_norm_2", "dhf_norm_3", "dhf_norm_4", "dhf_norm_5", 
+  "dhf_norm_6", "dhf_norm_7", "dhf_norm_8", "dhf_norm_9", "dhf_norm_10", 
+  "dhf_norm_11", "dhf_norm_12", "dhf_norm_13", "dhf_norm_14", "dhf_norm_15", 
+  "dhf_norm_16", "dhf_norm_17", "dhf_norm_18", "dhf_norm_19", "dhf_norm_20", 
+  "dhf_norm_21", "dhf_norm_22", "dhf_norm_23", "dhf_norm_24", "dhf_norm_25", 
+  "dhf_norm_26", "dhf_norm_27", "dhf_norm_28", "dhf_norm_29", "dhf_norm_30", 
+  # other face
+  "conflict_face_2", "conflict_face_3", "conflict_face_4", "conflict_face_5", 
+  "conflict_face_6", "conflict_face_7", "conflict_face_8", "conflict_face_9", 
+  "conflict_face_10", "Other_Face_Concern", "Self_Face_Concern",
+  # other cultural variables
+  "Openness_to_Change", "Conservation", "Self_Transcendence", "Self_Enhancement",
+  # reciprocity
+  "Reciprocity_1","Reciprocity_2","Reciprocity_3", "Positive_Reciprocity", 
+  "Reciprocity_4","Reciprocity_5","Reciprocity_6", "Negative_Reciprocity",
+  # violence
+  "violence_1", "violence_2", "violence_3", "violence_4", "violence_5", 
+  "violence_6", "violence_7", "violence_8", "violence_9", "violence_10", 
+  "violence_11", "violence_12", "Total_Violence",
+  # withdrawal, retaliation, humor
+  "insult1_1", "insult2_1", "Withdrawal", 
+  "insult1_2", "insult2_2", "Retaliation",
+  "insult1_3", "insult2_3", "Humor"
+  )
+
+country_vars_needed <- c("wb_pop_density_1961", "ms_pathogen_9items", 
+                         "icb_crisis_participations", 
+                         "icb_avg_violence_level",
+                         "wb_gdp_pcap_usd_1960", "fiw_F_2013", 
+                         "fiw_C_2013", "fiw_Total_2013", 
+                         "wb_gdp_pcap_usd_most_recent", "gii_value_2021", 
+                         "wb_gini_2020", "fiw_Total_2023", "hdi_value_2021", 
+                         "tl_tightness", "mk_individualism_collectivism", 
+                         "mk_flexibility_monumentalism", "rm_relational_mobility",
+                         "country_res_full", "ResponseId", "cluster")
+
+dt4 <- dt4 %>% 
+  filter(if_all(all_of(vars_needed), ~ !is.na(.))) %>% 
+  select(all_of(c(vars_needed, country_vars_needed)))
+
+nrow(dt4)
+```
+
+## Prosocial Behavior 
+
+### Dictator Game
+
+```{r}
+# dictator game
+dt4$dictator_cpass <- ifelse((dt4$Dictator.comp1.1_dich=="Correct"|dt4$Dictator.comp2.1_dich=="Correct")&(dt4$Dictator.comp1.2_dich=="Correct"|dt4$Dictator.comp2.2_dich=="Correct"),1,0)
+table(dt4$dictator_cpass, useNA = "ifany")
+dt5 <- subset(dt4, dictator_cpass==1) 
+# use dt5 for all tests that involve the Dictator Game 
+
+# dictator = universal prosociality for our experiment
+dt5$prosocial <- as.numeric(dt5$Dictator_decision)
+# examine the data 
+describe(dt5$prosocial) #Mean=4.77, SD=1.75, median=5
+```
+
+### Ultimatum Game
+
+```{r}
+# ultimatum game
+dt4$ultimatum_cpass <- ifelse((dt4$Ultimatum.comp.1.1_dich=="Correct"|dt4$Ultimatum.comp.2.1_dich=="Correct")&(dt4$Ultimatum.comp.1.2_dich=="Correct"|dt4$Ultimatum.comp.2.2_dich=="Correct"),1,0)
+dt6 <- subset(dt4, ultimatum_cpass==1) #N=20626
+
+##use dt6 for all tests that involve the Ultimatum Game##
+
+# ultimatum_receiver = negative reciprocity
+# select those rows 
+receiver <- dt6 %>% 
+  select(ResponseId, `Ultimatum.Receiver_1`:`Ultimatum.Receiver_11`)
+
+# convert to long format for scoring
+receiver_long <- receiver %>%
+  pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
+
+# score the ultimatum receiver game - adapted for the coding (1=accept, 2=reject)
+receiver_long$change <- ifelse(receiver_long$decision == 1 & 
+                                 (((receiver_long$decision != dplyr::lag(receiver_long$decision))==TRUE)|
+                                    (receiver_long$proposed=="Ultimatum.Receiver_1")),1,0)
+
+receiver_long$proposed <- str_remove(receiver_long$proposed, "Ultimatum.Receiver_")
+receiver_long$UG_negrec <- ifelse(receiver_long$change==1, receiver_long$proposed, 0)
+
+neg_rec_df <- subset(receiver_long, receiver_long$UG_negrec!=0)
+neg_rec_df$dupl <- ifelse(duplicated(neg_rec_df$ResponseId)==TRUE, 1, 0)
+neg_rec_df <- subset(neg_rec_df, neg_rec_df$dupl==0)
+neg_rec_df <- neg_rec_df %>% 
+  select(ResponseId, UG_negrec)
+
+# Merge with dt6
+dt6 <- merge(dt6, neg_rec_df, by="ResponseId")
+dt6$UG_negrec <- as.numeric(dt6$UG_negrec)
+
+# examine data
+# 100*table(dt6$`Ultimatum.Receiver_1`) %>% prop.table() 
+100*table(dt6$`Ultimatum.Receiver_2`) %>% prop.table() 
+# 100*table(dt6$`Ultimatum.Receiver_3`) %>% prop.table() 
+# 100*table(dt6$`Ultimatum.Receiver_4`) %>% prop.table() 
+# 100*table(dt6$`Ultimatum.Receiver_5`) %>% prop.table() 
+
+# ultimatum_proposer = positive reciprocity
+proposer <- dt6 %>% 
+  select(ResponseId, `Ultimatum.Proposer_1`:`Ultimatum.Proposer_11`)
+
+# pivot longer to score the data 
+proposer_long <- proposer %>%
+  pivot_longer(!ResponseId, names_to = "proposed", values_to = "decision")
+
+proposer_long$proposed <- str_remove(proposer_long$proposed, "Ultimatum.Proposer_")
+proposer_long[, c("proposed", "decision")] <- lapply(proposer_long[, c("proposed", "decision")], as.numeric)
+proposer_long$proposed <- proposer_long$proposed - 1
+
+# cor.test(proposer_long$proposed, proposer_long$decision) 
+# r between proposal to and from = .605***  
+describe(proposer_long$decision) 
+# m=4.89 (4.89/11*100=44.5%)
+
+proposer_long$pr <- ifelse(proposer_long$decision >= proposer_long$proposed, 1, 0)
+pos_rec_df <- aggregate(proposer_long$pr, by=list(proposer_long$ResponseId), FUN=sum)
+pos_rec_df$UG_posrec <- (pos_rec_df$x/11)*100
+pos_rec_df$ResponseId <- pos_rec_df$Group.1
+pos_rec_df <- pos_rec_df %>% 
+  select(ResponseId, UG_posrec)
+
+# create merged dataset
+dt6 <- merge(dt6, pos_rec_df, by="ResponseId")
+```
+
+### Correlations between Reciprocity
+
+```{r}
+# examine correlations (adapted variable names)
+cor.test(dt6$Positive_Reciprocity, dt6$UG_posrec) 
+cor.test(dt6$Positive_Reciprocity, dt6$UG_negrec) 
+
+cor.test(dt6$Negative_Reciprocity, dt6$UG_negrec) 
+cor.test(dt6$Negative_Reciprocity, dt6$UG_posrec)
+```
+
+## Main Study
+
+### Main study: DHF scores across the world 
+
+```{r calculate-means-endorse}
+# calculate participant means for DHF endorsement
+dt4 <- dt4  %>% 
+  mutate(
+    D_self_end = rowMeans(select(.,dhf_endors_1:dhf_endors_5), na.rm=T),
+    D_other_end = rowMeans(select(.,dhf_endors_6:dhf_endors_10),na.rm=T),
+    H_self_end = rowMeans(select(.,dhf_endors_11:dhf_endors_15),na.rm=T),
+    H_other_end = rowMeans(select(.,dhf_endors_16:dhf_endors_20),na.rm=T),
+    F_self_end = rowMeans(select(.,dhf_endors_21:dhf_endors_25),na.rm=T),
+    F_other_end = rowMeans(select(.,dhf_endors_26:dhf_endors_30),na.rm=T),
+    D_end = rowMeans(select(.,dhf_endors_1:dhf_endors_10),na.rm=T),
+    H_end = rowMeans(select(.,dhf_endors_11:dhf_endors_20),na.rm=T),
+    F_end = rowMeans(select(.,dhf_endors_21:dhf_endors_30),na.rm=T)
+  )
+# endorsement corrected for response style (within-participant centering)
+dt4 <- dt4  %>% 
+  mutate(dhf_endors_mean = rowMeans(select(.,dhf_endors_1:dhf_endors_30), na.rm=T))
+
+dt4 <- dt4  %>% 
+  mutate(
+    D_self_endc = D_self_end - dhf_endors_mean,
+    D_other_endc = D_other_end - dhf_endors_mean,
+    H_self_endc = H_self_end - dhf_endors_mean,
+    H_other_endc = H_other_end - dhf_endors_mean,
+    F_self_endc = F_self_end - dhf_endors_mean,
+    F_other_endc = F_other_end - dhf_endors_mean,
+    D_endc = D_end - dhf_endors_mean,
+    H_endc = H_end - dhf_endors_mean,
+    F_endc = F_end - dhf_endors_mean,
+  )
+
+# calculate country means for endorsement
+country_endors <- dt4 %>%
+  group_by(country_res_full) %>%
+  summarize(
+    across(
+      c(D_self_end, D_other_end, H_self_end, H_other_end, F_self_end, F_other_end, D_end, H_end, F_end, D_self_endc, D_other_endc, H_self_endc, H_other_endc, F_self_endc, F_other_endc, D_endc, H_endc, F_endc),
+      ~mean(., na.rm = TRUE),
+      .names = "{.col}_mean_country"
+    )
+  )
+
+dt4 <- dt4 %>%
+  left_join(country_endors, by = "country_res_full")
+```
+
+```{r calculate-means-norms}
+# calculate participant means for DHF norms 
+dt4 <- dt4  %>% 
+  mutate(
+    D_self_norm = rowMeans(select(.,dhf_norm_1:dhf_norm_5), na.rm=T),
+    D_other_norm = rowMeans(select(.,dhf_norm_6:dhf_norm_10),na.rm=T),
+    H_self_norm = rowMeans(select(.,dhf_norm_11:dhf_norm_15),na.rm=T),
+    H_other_norm = rowMeans(select(.,dhf_norm_16:dhf_norm_20),na.rm=T),
+    F_self_norm = rowMeans(select(.,dhf_norm_21:dhf_norm_25),na.rm=T),
+    F_other_norm = rowMeans(select(.,dhf_norm_26:dhf_norm_30),na.rm=T),
+    D_norm = rowMeans(select(.,dhf_norm_1:dhf_norm_10),na.rm=T),
+    H_norm = rowMeans(select(.,dhf_norm_11:dhf_norm_20),na.rm=T),
+    F_norm = rowMeans(select(.,dhf_norm_21:dhf_norm_30),na.rm=T)
+  )
+
+# endorsement corrected for response style (within-participant centering)
+dt4 <- dt4  %>% 
+  mutate(dhf_norm_mean = rowMeans(select(.,dhf_norm_1:dhf_norm_30), na.rm=T))
+
+dt4 <- dt4  %>% 
+  mutate(
+    D_self_normc = D_self_norm - dhf_norm_mean,
+    D_other_normc = D_other_norm - dhf_norm_mean,
+    H_self_normc = H_self_norm - dhf_norm_mean,
+    H_other_normc = H_other_norm - dhf_norm_mean,
+    F_self_normc = F_self_norm - dhf_norm_mean,
+    F_other_normc = F_other_norm - dhf_norm_mean,
+    D_normc = D_norm - dhf_norm_mean,
+    H_normc = H_norm - dhf_norm_mean,
+    F_normc = F_norm - dhf_norm_mean,
+  )
+
+# calculate country means for endorsement
+country_norm <- dt4 %>%
+  group_by(country_res_full) %>%
+  summarize(
+    across(
+      c(D_self_norm, D_other_norm, H_self_norm, H_other_norm, F_self_norm, F_other_norm, D_norm, H_norm, F_norm, D_self_normc, D_other_normc, H_self_normc, H_other_normc, F_self_normc, F_other_normc, D_normc, H_normc, F_normc),
+      ~mean(., na.rm = TRUE),
+      .names = "{.col}_mean_country"
+    )
+  )
+
+dt4 <- dt4 %>%
+  left_join(country_norm, by = "country_res_full")
+```
+
+DHF endorsement and norms scores (centered) across world regions 
+
+```{r print-means-dhf}
+dt4 %>% 
+  select(
+    D_self_end, D_other_end, H_self_end, H_other_end, F_self_end, F_other_end, D_end, H_end, F_end, 
+    D_self_endc:F_endc, D_self_normc:F_normc, cluster) %>% 
+  group_by(cluster) %>% 
+  summarize(
+    across(
+      c(D_self_end, D_other_end, H_self_end, H_other_end, F_self_end, F_other_end, D_end, H_end, F_end, D_self_endc, D_other_endc, H_self_endc, H_other_endc, F_self_endc, F_other_endc, D_endc, H_endc, F_endc),
+      ~mean(., na.rm = TRUE),
+      .names = "{.col}_mean_region"
+    ),
+    across(
+      c(D_self_end, D_other_end, H_self_end, H_other_end, F_self_end, F_other_end, D_end, H_end, F_end, D_self_endc, D_other_endc, H_self_endc, H_other_endc, F_self_endc, F_other_endc, D_endc, H_endc, F_endc),
+      ~sd(., na.rm = TRUE),
+      .names = "{.col}_sd_region"
+    )
+  )
+```
+
+DHF endorsement and norms scores (centered) across countries
+
+```{r print-means-dhf-country}
+country_endors
+
+country_norm
+```
+
+#### Visualizations
+
+Cleveland dot plot of Honor/Face/Dignity norms by country (non-centered)
+
+```{r h2-visualization-dotplot-noncentered}
+# 1) Reshape to long format (one row per country × dimension)
+df_long <- country_norm %>%
+  select(
+    country_res_full,
+    Honor   = H_norm_mean_country,
+    Face    = F_norm_mean_country,
+    Dignity = D_norm_mean_country
+  ) %>%
+  pivot_longer(Honor:Dignity, names_to = "Dimension", values_to = "Score")
+
+# 2) Choose how to order countries on the y-axis
+#    Option A: by overall mean across the 3 dimensions (lowest → highest)
+country_order <- df_long %>%
+  group_by(country_res_full) %>%
+  summarise(mean_score = mean(Score, na.rm = TRUE), .groups = "drop") %>%
+  arrange(mean_score) %>%
+  pull(country_res_full)
+
+#    (Alternative)
+#    # Option B: by Honor only
+#    country_order <- df_long %>% filter(Dimension == "Honor") %>%
+#      arrange(Score) %>% pull(country_res_full)
+#
+#    # Option C: alphabetical
+#    country_order <- sort(unique(df_long$country_res_full))
+
+# 3) Apply the order so ggplot respects it
+df_long$country_res_full <- factor(df_long$country_res_full, levels = country_order)
+
+# 4) Precompute per-country ranges (min→max across the three dimensions)
+ranges <- df_long %>%
+  group_by(country_res_full) %>%
+  summarise(
+    xmin = min(Score, na.rm = TRUE),
+    xmax = max(Score, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# 5) Plot
+p <- ggplot() +
+  # grey range bars (min→max per country)
+  geom_segment(
+    data = ranges,
+    aes(x = xmin, xend = xmax, y = country_res_full, yend = country_res_full),
+    color = "grey70",
+    linewidth = 0.4
+  ) +
+  # colored points for the three dimensions
+  geom_point(
+    data = df_long,
+    aes(x = Score, y = country_res_full, color = Dimension),
+    size = 2.5, alpha = 0.8,
+    # Use small vertical jitter if overlapping points are an issue; keep width at 0 for x
+    position = position_jitter(height = 0, width = 0)
+    # If you prefer perfectly aligned dots, use: position = position_identity()
+  ) +
+  # Color palette: Dark2 is colorblind-friendly; remove legend title
+  scale_color_brewer(palette = "Dark2", name = NULL) +
+  labs(x = "Societal mean (1-7)", y = NULL, title = NULL) +
+  # Minimal theme + enforce true white background
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.background    = element_rect(fill = "white", color = NA),
+    plot.background     = element_rect(fill = "white", color = NA),
+    panel.grid.major.y  = element_blank(),     # cleaner y axis
+    axis.text.y         = element_text(size = 10),
+    legend.position     = "top"
+  )
+
+p
+
+# 6) Save
+#    Adjust height if you have many countries (more rows → more height).
+ggsave(
+  filename = "figures_robust/DHF_Norms_dotplot_noncentered.png",
+  plot = p,
+  width = 9, height = 14, dpi = 600
+)
+
+# Vector version for journals (crisp text/lines):
+ggsave(
+  filename = "figures_robust/DHF_Norms_dotplot_noncentered.pdf",
+  plot = p,
+  width = 9, height = 14
+)
+```
+
+Cleveland dot plot of Honor/Face/Dignity norms by country (non-centered & centered)
+
+```{r h2-visualization-dotplot}
+# 1) Long data for NON-centered
+df_nc <- country_norm %>%
+  select(
+    country_res_full,
+    Honor   = H_norm_mean_country,
+    Face    = F_norm_mean_country,
+    Dignity = D_norm_mean_country
+  ) %>%
+  pivot_longer(Honor:Dignity, names_to = "Dimension", values_to = "Score") %>%
+  mutate(Centering = "Non-centered")
+
+# 2) Long data for CENTERED (same dimension names)
+df_c <- country_norm %>%
+  select(
+    country_res_full,
+    Honor   = H_normc_mean_country,
+    Face    = F_normc_mean_country,
+    Dignity = D_normc_mean_country
+  ) %>%
+  pivot_longer(Honor:Dignity, names_to = "Dimension", values_to = "Score") %>%
+  mutate(Centering = "Centered")
+
+# 3) Combine + set factor orders
+df_both <- bind_rows(df_nc, df_c) %>%
+  mutate(
+    Dimension = factor(Dimension, levels = c("Honor","Face","Dignity")),
+    Centering = factor(Centering, levels = c("Non-centered","Centered"))
+  )
+
+# 4) Fix a single country order (so both facets share the same y-axis)
+#    Here: order by the NON-centered average across the 3 dimensions (intuitive baseline)
+country_order <- df_nc %>%
+  group_by(country_res_full) %>%
+  summarise(mean_score = mean(Score, na.rm = TRUE), .groups = "drop") %>%
+  arrange(mean_score) %>%
+  pull(country_res_full)
+
+df_both$country_res_full <- factor(df_both$country_res_full, levels = country_order)
+
+# 5) (Optional) draw per-country range segments across the 3 dimensions *within each facet*
+ranges <- df_both %>%
+  group_by(Centering, country_res_full) %>%
+  summarise(
+    xmin = min(Score, na.rm = TRUE),
+    xmax = max(Score, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# 6) Plot: one panel per Centering; dots colored by Dimension
+set.seed(123)  # reproducible jitter
+
+p <- ggplot() +
+  # grey connector showing spread across the three dimensions for each country in each facet
+  geom_segment(
+    data = ranges,
+    aes(x = xmin, xend = xmax, y = country_res_full, yend = country_res_full),
+    color = "grey70", linewidth = 0.4
+  ) +
+  # three dots per country (Honor/Face/Dignity)
+  geom_point(
+    data = df_both,
+    aes(x = Score, y = country_res_full, color = Dimension),
+    size = 2.5, alpha = 0.75,
+    position = position_jitter(height = 0, width = 0)  # small vertical separation
+  ) +
+  facet_wrap(~ Centering, nrow = 1, scales = "free_x") +  # free_x lets centered vs non-centered have their own scales
+  scale_color_brewer(palette = "Dark2", name = NULL) +
+  labs(x = "Societal mean (1-7)", y = NULL, title = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.background   = element_rect(fill = "white", color = NA),
+    plot.background    = element_rect(fill = "white", color = NA),
+    panel.grid.major.y = element_blank(),
+    axis.text.y        = element_text(size = 10),
+    legend.position    = "top"
+  )
+
+p
+
+# 7) Save (increase height for many countries)
+ggsave("figures_robust/DHF_Norms_dotplot.png", p,
+       width = 18, height = 14, dpi = 600)
+ggsave("figures_robust/DHF_Norms_dotplot.pdf", p,
+       width = 18, height = 14)
+```
+
+World map of Honor/Face/Dignity norms (non-centered scores)
+
+```{r h2-visualization-worldmap-noncentered}
+# --- 1) World polygons (drop Antarctica for cleaner view) ---
+# Uses Natural Earth country names for joining. Currently in geographic (WGS84) CRS.
+# If you want Robinson, add: world <- st_transform(world, "+proj=robin") after this block.
+world <- ne_countries(scale = "medium", returnclass = "sf") |>
+  select(name, geometry) |>
+  filter(name != "Antarctica")
+
+# --- 2) Rename and recode to EXACT Natural Earth names ---
+# Harmonize your dataset's country labels to match Natural Earth.
+# Add more entries to recode() as mismatches arise.
+country_data <- country_norm |>
+  transmute(
+    name    = country_res_full,
+    Honor   = H_norm_mean_country,
+    Face    = F_norm_mean_country,
+    Dignity = D_norm_mean_country
+  ) |>
+  mutate(
+    name = dplyr::recode(
+      name,
+      "Bosnia-Herzegovina" = "Bosnia and Herzegovina",
+      "Czech Republic"     = "Czechia",
+      "The Netherlands"    = "Netherlands",
+      "United States"      = "United States of America"
+    )
+  )
+
+# --- 3) Join to polygons ---
+# Left join keeps all polygons; countries without data will map as NA (filled by na.value).
+world_join <- world |> left_join(country_data, by = "name")
+
+# (Optional) quickly see if any still unmatched
+# Use this to catch remaining naming issues and extend recode() above.
+# anti_join(country_data, st_drop_geometry(world), by = "name") |> distinct(name)
+
+# --- 4) Long form + consistent limits across facets (so colors are comparable) ---
+# Non-centered scores: keep a single limit across all three to make colors comparable row-wise.
+world_long <- world_join |>
+  select(geometry, Honor, Face, Dignity) |>
+  pivot_longer(c(Honor, Face, Dignity),
+               names_to = "Dimension", values_to = "Score") |>
+  mutate(Dimension = factor(Dimension, levels = c("Honor","Face","Dignity")))
+
+# Set limits explicitly for reproducibility; alternatively use range(world_long$Score, na.rm=TRUE).
+lims <- c(3,5.5) # range(world_long$Score, na.rm = TRUE)
+
+# --- 5) Plot: titles centered, thin white borders, compact legend ---
+# Apply the same basic theme to all six maps; legends will later be collected per row.
+common_theme <- theme(
+  plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+  legend.position = "bottom",
+  legend.title = element_text(size = 10),
+  legend.text  = element_text(size = 9)
+)
+
+# Non-centered maps (viridis option "C")
+p_honor <- ggplot(filter(world_long, Dimension == "Honor")) +
+  geom_sf(aes(fill = Score), color = "white", size = 0.1) +
+  scale_fill_viridis(name = "Societal mean (1-7)", option = "D",
+                     limits = lims, na.value = "grey92", direction = -1) +
+  labs(title = "Honor norms") +
+  theme_void() +
+  common_theme
+
+p_face <- ggplot(filter(world_long, Dimension == "Face")) +
+  geom_sf(aes(fill = Score), color = "white", size = 0.1) +
+  scale_fill_viridis(name = "Societal mean (1-7)", option = "D",
+                     limits = lims, na.value = "grey92", direction = -1) +
+  labs(title = "Face norms") +
+  theme_void() +
+  common_theme
+
+p_dignity <- ggplot(filter(world_long, Dimension == "Dignity")) +
+  geom_sf(aes(fill = Score), color = "white", size = 0.1) +
+  scale_fill_viridis(name = "Societal mean (1-7)", option = "D",
+                     limits = lims, na.value = "grey92", direction = -1) +
+  labs(title = "Dignity norms") +
+  theme_void() +
+  common_theme
+
+# ---- build plot for non-centered scores only ----
+p <- (p_honor | p_face | p_dignity) +
+  plot_layout(guides = "collect") &
+  theme(
+    legend.position  = "bottom"
+  )
+p
+
+# Export plot
+ggsave("figures_robust/DHF_Norms_worldmap_noncentered.png", p,
+       width = 18, height = 4, dpi = 600)
+ggsave("figures_robust/DHF_Norms_worldmap_noncentered.pdf", p,
+       width = 18, height = 4)
+```
+
+World map of Honor/Face/Dignity norms
+
+```{r h2-visualization-worldmap}
+# --- 1) World polygons (drop Antarctica for cleaner view) ---
+# Uses Natural Earth country names for joining. Currently in geographic (WGS84) CRS.
+# If you want Robinson, add: world <- st_transform(world, "+proj=robin") after this block.
+world <- ne_countries(scale = "medium", returnclass = "sf") |>
+  select(name, geometry) |>
+  filter(name != "Antarctica")
+
+# --- 2) Rename and recode to EXACT Natural Earth names ---
+# Harmonize your dataset's country labels to match Natural Earth.
+# Add more entries to recode() as mismatches arise.
+country_data <- country_norm |>
+  transmute(
+    name    = country_res_full,
+    Honor   = H_norm_mean_country,
+    Face    = F_norm_mean_country,
+    Dignity = D_norm_mean_country,
+    HonorC   = H_normc_mean_country,
+    FaceC    = F_normc_mean_country,
+    DignityC = D_normc_mean_country,
+  ) |>
+  mutate(
+    name = dplyr::recode(
+      name,
+      "Bosnia-Herzegovina" = "Bosnia and Herzegovina",
+      "Czech Republic"     = "Czechia",
+      "The Netherlands"    = "Netherlands",
+      "United States"      = "United States of America"
+    )
+  )
+
+# --- 3) Join to polygons ---
+# Left join keeps all polygons; countries without data will map as NA (filled by na.value).
+world_join <- world |> left_join(country_data, by = "name")
+
+# (Optional) quickly see if any still unmatched
+# Use this to catch remaining naming issues and extend recode() above.
+# anti_join(country_data, st_drop_geometry(world), by = "name") |> distinct(name)
+
+# --- 4) Long form + consistent limits across facets (so colors are comparable) ---
+# Non-centered scores: keep a single limit across all three to make colors comparable row-wise.
+world_long <- world_join |>
+  select(geometry, Honor, Face, Dignity) |>
+  pivot_longer(c(Honor, Face, Dignity),
+               names_to = "Dimension", values_to = "Score") |>
+  mutate(Dimension = factor(Dimension, levels = c("Honor","Face","Dignity")))
+
+# Set limits explicitly for reproducibility; alternatively use range(world_long$Score, na.rm=TRUE).
+lims <- c(3,5.5) # range(world_long$Score, na.rm = TRUE)
+
+# Centered scores: keep them separate (different palette/legend) and use symmetric limits if possible.
+world_long_centered <- world_join |>
+  select(geometry, HonorC, FaceC, DignityC) |>
+  pivot_longer(c(HonorC, FaceC, DignityC),
+               names_to = "Dimension", values_to = "Score") |>
+  mutate(Dimension = factor(Dimension, levels = c("HonorC","FaceC","DignityC")))
+
+# Prefer symmetric bounds around 0 for interpretability (edit as needed).
+limsc <- c(-1,1) # range(world_long_centered$Score, na.rm = TRUE)
+
+# --- 5) Plot: titles centered, thin white borders, compact legend ---
+# Apply the same basic theme to all six maps; legends will later be collected per row.
+common_theme <- theme(
+  plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+  legend.position = "bottom",
+  legend.title = element_text(size = 10),
+  legend.text  = element_text(size = 9)
+)
+
+# Non-centered maps (viridis option "C")
+p_honor <- ggplot(filter(world_long, Dimension == "Honor")) +
+  geom_sf(aes(fill = Score), color = "white", size = 0.1) +
+  scale_fill_viridis(name = "Societal mean (1-7)", option = "D",
+                     limits = lims, na.value = "grey92", direction = -1) +
+  labs(title = "Honor norms") +
+  theme_void() +
+  common_theme
+
+p_face <- ggplot(filter(world_long, Dimension == "Face")) +
+  geom_sf(aes(fill = Score), color = "white", size = 0.1) +
+  scale_fill_viridis(name = "Societal mean (1-7)", option = "D",
+                     limits = lims, na.value = "grey92", direction = -1) +
+  labs(title = "Face norms") +
+  theme_void() +
+  common_theme
+
+p_dignity <- ggplot(filter(world_long, Dimension == "Dignity")) +
+  geom_sf(aes(fill = Score), color = "white", size = 0.1) +
+  scale_fill_viridis(name = "Societal mean (1-7)", option = "D",
+                     limits = lims, na.value = "grey92", direction = -1) +
+  labs(title = "Dignity norms") +
+  theme_void() +
+  common_theme
+
+# Centered maps (viridis option "D" to visually differentiate from non-centered)
+p_honorc <- ggplot(filter(world_long_centered, Dimension == "HonorC")) +
+  geom_sf(aes(fill = Score), color = "white", size = 0.1) +
+  scale_fill_viridis(name = "Societal mean (1-7)", option = "C",
+                     limits = limsc, na.value = "grey92", direction = -1) +
+  labs(title = "Honor norms (centred)") +
+  theme_void() +
+  common_theme
+
+p_facec <- ggplot(filter(world_long_centered, Dimension == "FaceC")) +
+  geom_sf(aes(fill = Score), color = "white", size = 0.1) +
+  scale_fill_viridis(name = "Societal mean (1-7)", option = "C",
+                     limits = limsc, na.value = "grey92", direction = -1) +
+  labs(title = "Face norms (centred)") +
+  theme_void() +
+  common_theme
+
+p_dignityc <- ggplot(filter(world_long_centered, Dimension == "DignityC")) +
+  geom_sf(aes(fill = Score), color = "white", size = 0.1) +
+  scale_fill_viridis(name = "Societal mean (1-7)", option = "C",
+                     limits = limsc, na.value = "grey92", direction = -1) +
+  labs(title = "Dignity norms (centred)") +
+  theme_void() +
+  common_theme
+
+# ---- build two separate rows (each with its own collected legend) ----
+# Keep guide collection INSIDE each row so the top row (C) and bottom row (D)
+# retain different palettes and their own legends.
+row_nc <- (p_honor | p_face | p_dignity) +
+  plot_layout(guides = "collect") &
+  theme(
+    legend.position = "right",          # put legend to the side of the row
+    legend.direction = "vertical"       # vertical legend for compact height
+  )
+
+row_c <- (p_honorc | p_facec | p_dignityc) +
+  plot_layout(guides = "collect") &
+  theme(
+    legend.position = "right",
+    legend.direction = "vertical"
+  )
+
+# Final assembly: stack the two rows. Each keeps its own legend and color scale.
+final_plot <- row_nc / row_c
+final_plot
+
+# Export plot
+ggsave("figures_robust/DHF_Norms_worldmap.png", final_plot,
+       width = 18, height = 6, dpi = 600)
+ggsave("figures_robust/DHF_Norms_worldmap.pdf", final_plot,
+       width = 18, height = 6)
+```
+
+### Main study: Country-level correlates of DHF
+
+Ecological antecedents of DHF endorsement and norms
+
+```{r correl-table-country-level}
+apaTables::apa.cor.table(
+  dt4 %>% 
+    select(D_normc_mean_country, H_normc_mean_country,
+           F_normc_mean_country, D_endc_mean_country, 
+           H_endc_mean_country, F_endc_mean_country, 
+           wb_pop_density_1961, ms_pathogen_9items, 
+           icb_crisis_participations, icb_avg_violence_level,
+           wb_gdp_pcap_usd_1960, fiw_F_2013, 
+           fiw_C_2013, fiw_Total_2013
+           )
+)
+```
+ 
+DHF and current country performance
+
+```{r correl-table-country-performance}
+apaTables::apa.cor.table(
+  dt4 %>% 
+    select(D_normc_mean_country, H_normc_mean_country,
+           F_normc_mean_country, D_endc_mean_country, 
+           H_endc_mean_country, F_endc_mean_country, 
+           wb_gdp_pcap_usd_most_recent, gii_value_2021, 
+           wb_gini_2020, fiw_Total_2023, hdi_value_2021
+           )
+)
+```
+
+DHF and other cultural dimensions
+
+```{r correl-table-other-cultural}
+# believe these are mean_country centered above, but should check
+apaTables::apa.cor.table(
+  dt4 %>% 
+    select(D_normc_mean_country, H_normc_mean_country,
+           F_normc_mean_country, D_endc_mean_country, 
+           H_endc_mean_country, F_endc_mean_country, 
+           # Openness_to_Change_mean_country,
+           Openness_to_Change, 
+           # Conservation_mean_country, 
+           Conservation, 
+           # Self_Transcendence_mean_country,
+           Self_Transcendence, 
+           # Self_Enhancement_mean_country, 
+           Self_Enhancement, 
+           tl_tightness, mk_individualism_collectivism, 
+           mk_flexibility_monumentalism, rm_relational_mobility 
+           # `o-c`, `st-se` 
+           # not sure what these are need to update var names
+           )
+)
+```
+
+### Main study: Individual-level correlates of DHF
+
+#### DHF and prosociality
+
+[Tables in line with prereg H2-H3]
+
+```{r h2-model}
+# ============================================================================
+# H2 ANALYSIS USING dt5 (PROSOCIAL OUTCOME)
+# ============================================================================
+
+# reset dt5 so that we have all the variables 
+dt5 <- subset(dt4, dictator_cpass==1) 
+dt5$prosocial <- as.numeric(dt5$Dictator_decision)
+
+print("Preparing H2 analysis with misty centering")
+print(paste("Dataset has", nrow(dt5), "participants"))
+
+# Proper multilevel centering using misty package
+DF_H2 <- dt5 %>% 
+  mutate(
+    # Group-mean centering for individual-level variables (Level 1)
+    D_self_end_CWC = center(D_self_end, type = "CWC", cluster = country_res_full),
+    D_other_end_CWC = center(D_other_end, type = "CWC", cluster = country_res_full), 
+    H_self_end_CWC = center(H_self_end, type = "CWC", cluster = country_res_full),
+    H_other_end_CWC = center(H_other_end, type = "CWC", cluster = country_res_full), 
+    F_self_end_CWC = center(F_self_end, type = "CWC", cluster = country_res_full),
+    F_other_end_CWC = center(F_other_end, type = "CWC", cluster = country_res_full)
+  )
+
+# Data quality check
+print("Data quality check...")
+analysis_vars <- c("prosocial", "D_self_end_CWC", "D_other_end_CWC", 
+                   "H_self_end_CWC", "H_other_end_CWC", 
+                   "F_self_end_CWC", "F_other_end_CWC", "country_res_full")
+
+# Check which variables exist
+available_vars <- analysis_vars[analysis_vars %in% names(DF_H2)]
+print("Available analysis variables:")
+print(available_vars)
+
+# Complete cases
+complete_cases <- sum(complete.cases(DF_H2[, available_vars]))
+print(paste("Complete cases for analysis:", complete_cases, "out of", nrow(DF_H2)))
+
+# Country sample sizes
+country_sizes <- DF_H2 %>%
+  filter(!is.na(prosocial)) %>%
+  group_by(country_res_full) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+print("Sample sizes by country (top 10):")
+print(head(country_sizes, 10))
+print(paste("Number of countries:", nrow(country_sizes)))
+print(paste("Minimum country sample size:", min(country_sizes$n)))
+
+# H2 Main Analysis - six factors model 
+print("\nRunning H2 Analysis - Six DHF Facets Model...")
+
+h2.fit <- lmer(prosocial ~ D_self_end_CWC + D_other_end_CWC + 
+                 H_self_end_CWC + H_other_end_CWC + 
+                 F_self_end_CWC + F_other_end_CWC +
+                 (1|country_res_full), 
+               data = DF_H2,
+               REML = FALSE)
+
+print("H2 MODEL RESULTS:")
+h2_params <- parameters(h2.fit, standardize = "refit", ci = 0.95)
+print(h2_params)
+
+# Model performance
+print("\nModel Performance:")
+perf <- performance(h2.fit)
+print(perf)
+
+# R-squared values
+r2_vals <- r2(h2.fit)
+print(paste("Marginal R² (fixed effects):", round(r2_vals$R2_marginal, 3)))
+print(paste("Conditional R² (fixed + random):", round(r2_vals$R2_conditional, 3)))
+
+# Check column names and create standardized results table
+print("\nColumn names in h2_params:")
+print(names(h2_params))
+
+# Create standardized results table with proper column references
+print("\nStandardized Coefficients with 95% CI and p-values:")
+h2_results <- data.frame(
+  Parameter = h2_params$Parameter,
+  Std_Beta = round(h2_params$Coefficient, 4),  # Using Coefficient instead of Std_Coefficient
+  CI_Lower = round(h2_params$CI_low, 4),
+  CI_Upper = round(h2_params$CI_high, 4),
+  p_value = round(h2_params$p, 4),
+  Significance = ifelse(h2_params$p < 0.001, "***",
+                        ifelse(h2_params$p < 0.01, "**",
+                               ifelse(h2_params$p < 0.05, "*", "")))
+)
+print(h2_results)
+
+# Random effects
+rand_effects <- VarCorr(h2.fit)
+print("\nRandom Effects Variance:")
+print(rand_effects)
+```
+
+```{r h3-model}
+# ============================================================================
+# H3 ANALYSIS - MULTILEVEL PATH MODELS
+# ===========================================================================
+
+# STEP 1: Prepare prosocial data (dt5) with proper misty centering
+print("Preparing prosocial model data from dt5...")
+DF_prosocial_H3 <- dt5 %>%
+  filter(!is.na(prosocial) & !is.na(D_end) & !is.na(H_end) & !is.na(F_end) &
+           !is.na(D_norm_mean_country) & !is.na(H_norm_mean_country) & !is.na(F_norm_mean_country)) %>%
+  mutate(
+    # Individual-level variables: group-mean centering (CWC)
+    D_end_CWC = center(D_end, type = "CWC", cluster = country_res_full),
+    H_end_CWC = center(H_end, type = "CWC", cluster = country_res_full),
+    F_end_CWC = center(F_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: grand-mean centering (CGM)
+    D_norm_agg_CGM = center(D_norm_mean_country, type = "CGM"),
+    H_norm_agg_CGM = center(H_norm_mean_country, type = "CGM"),
+    F_norm_agg_CGM = center(F_norm_mean_country, type = "CGM")
+  )
+
+print(paste("Prosocial model sample size:", nrow(DF_prosocial_H3)))
+
+# STEP 2: Prepare reciprocity data (dt6) with proper misty centering
+# reset dt6 since it doesn't have these variables 
+dt6 <- subset(dt4, ultimatum_cpass==1) #N=20626
+
+# Merge with dt6
+dt6 <- merge(dt6, neg_rec_df, by="ResponseId")
+dt6$UG_negrec <- as.numeric(dt6$UG_negrec)
+dt6 <- merge(dt6, pos_rec_df, by="ResponseId")
+
+print("Preparing reciprocity model data from dt6...")
+DF_reciprocity_H3 <- dt6 %>%
+  filter(!is.na(UG_posrec) & !is.na(UG_negrec) & 
+           !is.na(D_end) & !is.na(H_end) & !is.na(F_end) &
+           !is.na(D_norm_mean_country) & !is.na(H_norm_mean_country) & !is.na(F_norm_mean_country)) %>%
+  mutate(
+    # Individual-level variables: group-mean centering (CWC)
+    D_end_CWC = center(D_end, type = "CWC", cluster = country_res_full),
+    H_end_CWC = center(H_end, type = "CWC", cluster = country_res_full),
+    F_end_CWC = center(F_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: grand-mean centering (CGM) 
+    D_norm_agg_CGM = center(D_norm_mean_country, type = "CGM"),
+    H_norm_agg_CGM = center(H_norm_mean_country, type = "CGM"),
+    F_norm_agg_CGM = center(F_norm_mean_country, type = "CGM")
+  )
+
+print(paste("Reciprocity model sample size:", nrow(DF_reciprocity_H3)))
+
+# STEP 3: H3 Model 1 - Prosocial Behavior
+print("\nRunning H3 Model 1: Prosocial Behavior...")
+
+prosocial.model <- '
+# Level 1: Individual endorsement predicting prosocial behavior
+prosocial ~ D_end_CWC + H_end_CWC + F_end_CWC
+
+# Level 2: Country-level norms predicting prosocial behavior  
+prosocial ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+prosocial.fit <- sem(
+  model = prosocial.model,
+  data = DF_prosocial_H3,
+  cluster = "country_res_full"
+)
+
+print("PROSOCIAL MODEL RESULTS:")
+print(summary(prosocial.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for prosocial model
+prosocial_std <- standardizedSolution(prosocial.fit, ci = TRUE, level = 0.95)
+prosocial_reg <- prosocial_std[prosocial_std$op == "~",]
+print("\nStandardized Coefficients with 95% CI:")
+prosocial_results <- data.frame(
+  Parameter = prosocial_reg$rhs,
+  Std_Beta = round(prosocial_reg$est.std, 4),
+  CI_Lower = round(prosocial_reg$ci.lower, 4), 
+  CI_Upper = round(prosocial_reg$ci.upper, 4),
+  p_value = round(prosocial_reg$pvalue, 4),
+  Significance = ifelse(prosocial_reg$pvalue < 0.001, "***",
+                        ifelse(prosocial_reg$pvalue < 0.01, "**",
+                               ifelse(prosocial_reg$pvalue < 0.05, "*", "")))
+)
+print(prosocial_results)
+
+# STEP 4: H3 Model 2 - Positive Reciprocity
+print("\nRunning H3 Model 2: Positive Reciprocity...")
+
+posrec.model <- '
+# Level 1: Individual endorsement predicting positive reciprocity
+UG_posrec ~ D_end_CWC + H_end_CWC + F_end_CWC
+
+# Level 2: Country-level norms predicting positive reciprocity
+UG_posrec ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+posrec.fit <- sem(
+  model = posrec.model,
+  data = DF_reciprocity_H3,
+  cluster = "country_res_full"
+)
+
+print("POSITIVE RECIPROCITY MODEL RESULTS:")
+print(summary(posrec.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for positive reciprocity model
+posrec_std <- standardizedSolution(posrec.fit, ci = TRUE, level = 0.95)
+posrec_reg <- posrec_std[posrec_std$op == "~",]
+print("\nStandardized Coefficients with 95% CI:")
+posrec_results <- data.frame(
+  Parameter = posrec_reg$rhs,
+  Std_Beta = round(posrec_reg$est.std, 4),
+  CI_Lower = round(posrec_reg$ci.lower, 4),
+  CI_Upper = round(posrec_reg$ci.upper, 4),
+  p_value = round(posrec_reg$pvalue, 4),
+  Significance = ifelse(posrec_reg$pvalue < 0.001, "***",
+                        ifelse(posrec_reg$pvalue < 0.01, "**",
+                               ifelse(posrec_reg$pvalue < 0.05, "*", "")))
+)
+print(posrec_results)
+
+# STEP 5: H3 Model 3 - Negative Reciprocity  
+print("\nRunning H3 Model 3: Negative Reciprocity...")
+
+negrec.model <- '
+# Level 1: Individual endorsement predicting negative reciprocity
+UG_negrec ~ D_end_CWC + H_end_CWC + F_end_CWC
+
+# Level 2: Country-level norms predicting negative reciprocity
+UG_negrec ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+negrec.fit <- sem(
+  model = negrec.model,
+  data = DF_reciprocity_H3,
+  cluster = "country_res_full"
+)
+
+print("NEGATIVE RECIPROCITY MODEL RESULTS:")
+print(summary(negrec.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for negative reciprocity model
+negrec_std <- standardizedSolution(negrec.fit, ci = TRUE, level = 0.95)
+negrec_reg <- negrec_std[negrec_std$op == "~",]
+print("\nStandardized Coefficients with 95% CI:")
+negrec_results <- data.frame(
+  Parameter = negrec_reg$rhs,
+  Std_Beta = round(negrec_reg$est.std, 4),
+  CI_Lower = round(negrec_reg$ci.lower, 4),
+  CI_Upper = round(negrec_reg$ci.upper, 4),
+  p_value = round(negrec_reg$pvalue, 4),
+  Significance = ifelse(negrec_reg$pvalue < 0.001, "***",
+                        ifelse(negrec_reg$pvalue < 0.01, "**",
+                               ifelse(negrec_reg$pvalue < 0.05, "*", "")))
+)
+print(negrec_results)
+
+
+# R-squared comparison
+print("\nR-SQUARED COMPARISON:")
+cat("Prosocial Behavior: R² = ", round(inspect(prosocial.fit, "r2"), 3), "\n")
+cat("Positive Reciprocity: R² = ", round(inspect(posrec.fit, "r2"), 3), "\n") 
+cat("Negative Reciprocity: R² = ", round(inspect(negrec.fit, "r2"), 3), "\n")
+
+
+print("\nH2 MODEL - Standardized Coefficients with 95% CI:")
+print(h2_results)
+print("\nPROSOCIAL MODEL - Standardized Coefficients with 95% CI:")
+print(prosocial_results)
+print("\nPOSITIVE RECIPROCITY MODEL - Standardized Coefficients with 95% CI:")
+print(posrec_results)
+
+print("\nNEGATIVE RECIPROCITY MODEL - Standardized Coefficients with 95% CI:")
+print(negrec_results)
+```
+
+```{r h3-modelm-supplementary}
+# ============================================================================
+# H3 ANALYSIS - MULTILEVEL PATH MODELS WITH 6-FACTOR INDIVIDUAL PREDICTORS
+# ============================================================================
+
+print("Preparing H3 multilevel path model analysis with 6-factor individual predictors...")
+print("Using dt5 for prosocial, dt6 for reciprocity outcomes...")
+
+# STEP 1: Prepare prosocial data (dt5) with 6-factor individual predictors + country norms
+print("Preparing prosocial model data from dt5...")
+DF_prosocial_H3_6factor <- dt5 %>%
+  filter(!is.na(prosocial) & 
+           !is.na(D_self_end) & !is.na(D_other_end) & 
+           !is.na(H_self_end) & !is.na(H_other_end) & 
+           !is.na(F_self_end) & !is.na(F_other_end) &
+           !is.na(D_norm_mean_country) & !is.na(H_norm_mean_country) & !is.na(F_norm_mean_country)) %>%
+  mutate(
+    # Individual-level variables: 6-factor model with group-mean centering (CWC)
+    D_self_end_CWC = center(D_self_end, type = "CWC", cluster = country_res_full),
+    D_other_end_CWC = center(D_other_end, type = "CWC", cluster = country_res_full),
+    H_self_end_CWC = center(H_self_end, type = "CWC", cluster = country_res_full),
+    H_other_end_CWC = center(H_other_end, type = "CWC", cluster = country_res_full),
+    F_self_end_CWC = center(F_self_end, type = "CWC", cluster = country_res_full),
+    F_other_end_CWC = center(F_other_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: grand-mean centering (CGM)
+    D_norm_agg_CGM = center(D_norm_mean_country, type = "CGM"),
+    H_norm_agg_CGM = center(H_norm_mean_country, type = "CGM"),
+    F_norm_agg_CGM = center(F_norm_mean_country, type = "CGM")
+  )
+
+print(paste("Prosocial model sample size:", nrow(DF_prosocial_H3_6factor)))
+
+# STEP 2: Prepare reciprocity data (dt6) with 6-factor individual predictors + country norms
+print("Preparing reciprocity model data from dt6...")
+DF_reciprocity_H3_6factor <- dt6 %>%
+  filter(!is.na(UG_posrec) & !is.na(UG_negrec) & 
+           !is.na(D_self_end) & !is.na(D_other_end) & 
+           !is.na(H_self_end) & !is.na(H_other_end) & 
+           !is.na(F_self_end) & !is.na(F_other_end) &
+           !is.na(D_norm_mean_country) & !is.na(H_norm_mean_country) & !is.na(F_norm_mean_country)) %>%
+  mutate(
+    # Individual-level variables: 6-factor model with group-mean centering (CWC)
+    D_self_end_CWC = center(D_self_end, type = "CWC", cluster = country_res_full),
+    D_other_end_CWC = center(D_other_end, type = "CWC", cluster = country_res_full),
+    H_self_end_CWC = center(H_self_end, type = "CWC", cluster = country_res_full),
+    H_other_end_CWC = center(H_other_end, type = "CWC", cluster = country_res_full),
+    F_self_end_CWC = center(F_self_end, type = "CWC", cluster = country_res_full),
+    F_other_end_CWC = center(F_other_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: grand-mean centering (CGM) 
+    D_norm_agg_CGM = center(D_norm_mean_country, type = "CGM"),
+    H_norm_agg_CGM = center(H_norm_mean_country, type = "CGM"),
+    F_norm_agg_CGM = center(F_norm_mean_country, type = "CGM")
+  )
+
+print(paste("Reciprocity model sample size:", nrow(DF_reciprocity_H3_6factor)))
+
+# STEP 3: H3 Model 1 - Prosocial Behavior (6-factor individual predictors)
+print("\nRunning H3 Model 1: Prosocial Behavior with 6-Factor Individual Predictors...")
+
+prosocial_6factor.model <- '
+# Level 1: 6-factor individual endorsement predicting prosocial behavior
+prosocial ~ D_self_end_CWC + D_other_end_CWC + 
+            H_self_end_CWC + H_other_end_CWC + 
+            F_self_end_CWC + F_other_end_CWC
+
+# Level 2: Country-level norms predicting prosocial behavior  
+prosocial ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+prosocial_6factor.fit <- sem(
+  model = prosocial_6factor.model,
+  data = DF_prosocial_H3_6factor,
+  cluster = "country_res_full"
+)
+
+print("PROSOCIAL MODEL RESULTS (6-Factor Individual Predictors):")
+print(summary(prosocial_6factor.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for prosocial model
+prosocial_6factor_std <- standardizedSolution(prosocial_6factor.fit, ci = TRUE, level = 0.95)
+prosocial_6factor_reg <- prosocial_6factor_std[prosocial_6factor_std$op == "~",]
+print("\nStandardized Coefficients with 95% CI:")
+prosocial_6factor_results <- data.frame(
+  Parameter = prosocial_6factor_reg$rhs,
+  Std_Beta = round(prosocial_6factor_reg$est.std, 4),
+  CI_Lower = round(prosocial_6factor_reg$ci.lower, 4), 
+  CI_Upper = round(prosocial_6factor_reg$ci.upper, 4),
+  p_value = round(prosocial_6factor_reg$pvalue, 4),
+  Significance = ifelse(prosocial_6factor_reg$pvalue < 0.001, "***",
+                        ifelse(prosocial_6factor_reg$pvalue < 0.01, "**",
+                               ifelse(prosocial_6factor_reg$pvalue < 0.05, "*", "")))
+)
+print(prosocial_6factor_results)
+
+# STEP 4: H3 Model 2 - Positive Reciprocity (6-factor individual predictors)
+print("\nRunning H3 Model 2: Positive Reciprocity with 6-Factor Individual Predictors...")
+
+posrec_6factor.model <- '
+# Level 1: 6-factor individual endorsement predicting positive reciprocity
+UG_posrec ~ D_self_end_CWC + D_other_end_CWC + 
+            H_self_end_CWC + H_other_end_CWC + 
+            F_self_end_CWC + F_other_end_CWC
+
+# Level 2: Country-level norms predicting positive reciprocity
+UG_posrec ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+posrec_6factor.fit <- sem(
+  model = posrec_6factor.model,
+  data = DF_reciprocity_H3_6factor,
+  cluster = "country_res_full"
+)
+
+print("POSITIVE RECIPROCITY MODEL RESULTS (6-Factor Individual Predictors):")
+print(summary(posrec_6factor.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for positive reciprocity model
+posrec_6factor_std <- standardizedSolution(posrec_6factor.fit, ci = TRUE, level = 0.95)
+posrec_6factor_reg <- posrec_6factor_std[posrec_6factor_std$op == "~",]
+print("\nStandardized Coefficients with 95% CI:")
+posrec_6factor_results <- data.frame(
+  Parameter = posrec_6factor_reg$rhs,
+  Std_Beta = round(posrec_6factor_reg$est.std, 4),
+  CI_Lower = round(posrec_6factor_reg$ci.lower, 4),
+  CI_Upper = round(posrec_6factor_reg$ci.upper, 4),
+  p_value = round(posrec_6factor_reg$pvalue, 4),
+  Significance = ifelse(posrec_6factor_reg$pvalue < 0.001, "***",
+                        ifelse(posrec_6factor_reg$pvalue < 0.01, "**",
+                               ifelse(posrec_6factor_reg$pvalue < 0.05, "*", "")))
+)
+print(posrec_6factor_results)
+
+# STEP 5: H3 Model 3 - Negative Reciprocity (6-factor individual predictors)
+print("\nRunning H3 Model 3: Negative Reciprocity with 6-Factor Individual Predictors...")
+
+negrec_6factor.model <- '
+# Level 1: 6-factor individual endorsement predicting negative reciprocity
+UG_negrec ~ D_self_end_CWC + D_other_end_CWC + 
+            H_self_end_CWC + H_other_end_CWC + 
+            F_self_end_CWC + F_other_end_CWC
+
+# Level 2: Country-level norms predicting negative reciprocity
+UG_negrec ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+negrec_6factor.fit <- sem(
+  model = negrec_6factor.model,
+  data = DF_reciprocity_H3_6factor,
+  cluster = "country_res_full"
+)
+
+print("NEGATIVE RECIPROCITY MODEL RESULTS (6-Factor Individual Predictors):")
+print(summary(negrec_6factor.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for negative reciprocity model
+negrec_6factor_std <- standardizedSolution(negrec_6factor.fit, ci = TRUE, level = 0.95)
+negrec_6factor_reg <- negrec_6factor_std[negrec_6factor_std$op == "~",]
+print("\nStandardized Coefficients with 95% CI:")
+negrec_6factor_results <- data.frame(
+  Parameter = negrec_6factor_reg$rhs,
+  Std_Beta = round(negrec_6factor_reg$est.std, 4),
+  CI_Lower = round(negrec_6factor_reg$ci.lower, 4),
+  CI_Upper = round(negrec_6factor_reg$ci.upper, 4),
+  p_value = round(negrec_6factor_reg$pvalue, 4),
+  Significance = ifelse(negrec_6factor_reg$pvalue < 0.001, "***",
+                        ifelse(negrec_6factor_reg$pvalue < 0.01, "**",
+                               ifelse(negrec_6factor_reg$pvalue < 0.05, "*", "")))
+)
+print(negrec_6factor_results)
+
+
+# R-squared comparison
+print("\nR-SQUARED COMPARISON:")
+cat("Prosocial Behavior (6-factor): R² = ", round(inspect(prosocial_6factor.fit, "r2"), 3), "\n")
+cat("Positive Reciprocity (6-factor): R² = ", round(inspect(posrec_6factor.fit, "r2"), 3), "\n") 
+cat("Negative Reciprocity (6-factor): R² = ", round(inspect(negrec_6factor.fit, "r2"), 3), "\n")
+
+print("\nPROSOCIAL MODEL (6-Factor) - Standardized Coefficients with 95% CI:")
+print(prosocial_6factor_results)
+
+print("\nPOSITIVE RECIPROCITY MODEL (6-Factor) - Standardized Coefficients with 95% CI:")
+print(posrec_6factor_results)
+
+print("\nNEGATIVE RECIPROCITY MODEL (6-Factor) - Standardized Coefficients with 95% CI:")
+print(negrec_6factor_results)
+```
+
+```{r h3-modelm-supplementary-self-reported}
+# ============================================================================
+# SELF-REPORTED RECIPROCITY ANALYSIS - MULTILEVEL PATH MODELS
+# Using dt4 dataset with Positive_Reciprocity and Negative_Reciprocity outcomes
+# ============================================================================
+
+# ============================================================================
+# PART A: MODELS WITH NORM-BASED COUNTRY-LEVEL PREDICTORS
+# ============================================================================
+
+
+# STEP 1A: Prepare data with norm-based country predictors (3-factor individual)
+print("Preparing data for 3-factor individual + norm-based country models...")
+DF_selfreport_norms_3factor <- dt4 %>%
+  filter(!is.na(Positive_Reciprocity) & !is.na(Negative_Reciprocity) &
+           !is.na(D_end) & !is.na(H_end) & !is.na(F_end) &
+           !is.na(D_norm_mean_country) & !is.na(H_norm_mean_country) & !is.na(F_norm_mean_country)) %>%
+  mutate(
+    # Individual-level variables: 3-factor model with group-mean centering (CWC)
+    D_end_CWC = center(D_end, type = "CWC", cluster = country_res_full),
+    H_end_CWC = center(H_end, type = "CWC", cluster = country_res_full),
+    F_end_CWC = center(F_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: norm-based grand-mean centering (CGM)
+    D_norm_agg_CGM = center(D_norm_mean_country, type = "CGM"),
+    H_norm_agg_CGM = center(H_norm_mean_country, type = "CGM"),
+    F_norm_agg_CGM = center(F_norm_mean_country, type = "CGM")
+  )
+
+print(paste("3-factor norm-based model sample size:", nrow(DF_selfreport_norms_3factor)))
+
+# STEP 2A: Prepare data with norm-based country predictors (6-factor individual)
+print("Preparing data for 6-factor individual + norm-based country models...")
+DF_selfreport_norms_6factor <- dt4 %>%
+  filter(!is.na(Positive_Reciprocity) & !is.na(Negative_Reciprocity) &
+           !is.na(D_self_end) & !is.na(D_other_end) & 
+           !is.na(H_self_end) & !is.na(H_other_end) & 
+           !is.na(F_self_end) & !is.na(F_other_end) &
+           !is.na(D_norm_mean_country) & !is.na(H_norm_mean_country) & !is.na(F_norm_mean_country)) %>%
+  mutate(
+    # Individual-level variables: 6-factor model with group-mean centering (CWC)
+    D_self_end_CWC = center(D_self_end, type = "CWC", cluster = country_res_full),
+    D_other_end_CWC = center(D_other_end, type = "CWC", cluster = country_res_full),
+    H_self_end_CWC = center(H_self_end, type = "CWC", cluster = country_res_full),
+    H_other_end_CWC = center(H_other_end, type = "CWC", cluster = country_res_full),
+    F_self_end_CWC = center(F_self_end, type = "CWC", cluster = country_res_full),
+    F_other_end_CWC = center(F_other_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: norm-based grand-mean centering (CGM)
+    D_norm_agg_CGM = center(D_norm_mean_country, type = "CGM"),
+    H_norm_agg_CGM = center(H_norm_mean_country, type = "CGM"),
+    F_norm_agg_CGM = center(F_norm_mean_country, type = "CGM")
+  )
+
+print(paste("6-factor norm-based model sample size:", nrow(DF_selfreport_norms_6factor)))
+
+# ============================================================================
+# PART B: MODELS WITH ENDORSEMENT-BASED COUNTRY-LEVEL PREDICTORS
+# ============================================================================
+
+# STEP 1B: Prepare data with endorsement-based country predictors (3-factor individual)
+print("Preparing data for 3-factor individual + endorsement-based country models...")
+DF_selfreport_endorse_3factor <- dt4 %>%
+  filter(!is.na(Positive_Reciprocity) & !is.na(Negative_Reciprocity) &
+           !is.na(D_end) & !is.na(H_end) & !is.na(F_end) &
+           !is.na(D_end_mean_country) & !is.na(H_end_mean_country) & !is.na(F_end_mean_country)) %>%
+  mutate(
+    # Individual-level variables: 3-factor model with group-mean centering (CWC)
+    D_end_CWC = center(D_end, type = "CWC", cluster = country_res_full),
+    H_end_CWC = center(H_end, type = "CWC", cluster = country_res_full),
+    F_end_CWC = center(F_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: endorsement-based grand-mean centering (CGM)
+    D_end_agg_CGM = center(D_end_mean_country, type = "CGM"),
+    H_end_agg_CGM = center(H_end_mean_country, type = "CGM"),
+    F_end_agg_CGM = center(F_end_mean_country, type = "CGM")
+  )
+
+print(paste("3-factor endorsement-based model sample size:", nrow(DF_selfreport_endorse_3factor)))
+
+# STEP 2B: Prepare data with endorsement-based country predictors (6-factor individual)
+print("Preparing data for 6-factor individual + endorsement-based country models...")
+DF_selfreport_endorse_6factor <- dt4 %>%
+  filter(!is.na(Positive_Reciprocity) & !is.na(Negative_Reciprocity) &
+           !is.na(D_self_end) & !is.na(D_other_end) & 
+           !is.na(H_self_end) & !is.na(H_other_end) & 
+           !is.na(F_self_end) & !is.na(F_other_end) &
+           !is.na(D_end_mean_country) & !is.na(H_end_mean_country) & !is.na(F_end_mean_country)) %>%
+  mutate(
+    # Individual-level variables: 6-factor model with group-mean centering (CWC)
+    D_self_end_CWC = center(D_self_end, type = "CWC", cluster = country_res_full),
+    D_other_end_CWC = center(D_other_end, type = "CWC", cluster = country_res_full),
+    H_self_end_CWC = center(H_self_end, type = "CWC", cluster = country_res_full),
+    H_other_end_CWC = center(H_other_end, type = "CWC", cluster = country_res_full),
+    F_self_end_CWC = center(F_self_end, type = "CWC", cluster = country_res_full),
+    F_other_end_CWC = center(F_other_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: endorsement-based grand-mean centering (CGM)
+    D_end_agg_CGM = center(D_end_mean_country, type = "CGM"),
+    H_end_agg_CGM = center(H_end_mean_country, type = "CGM"),
+    F_end_agg_CGM = center(F_end_mean_country, type = "CGM")
+  )
+
+print(paste("6-factor endorsement-based model sample size:", nrow(DF_selfreport_endorse_6factor)))
+
+# ============================================================================
+# MODEL 1: POSITIVE RECIPROCITY - 3-FACTOR INDIVIDUAL + NORM-BASED COUNTRY
+# ============================================================================
+
+posrec_3factor_norms.model <- '
+# Level 1: Individual endorsement predicting positive reciprocity
+Positive_Reciprocity ~ D_end_CWC + H_end_CWC + F_end_CWC
+
+# Level 2: Country-level norms predicting positive reciprocity
+Positive_Reciprocity ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+posrec_3factor_norms.fit <- sem(
+  model = posrec_3factor_norms.model,
+  data = DF_selfreport_norms_3factor,
+  cluster = "country_res_full"
+)
+
+print("POSITIVE RECIPROCITY - 3-Factor Individual + Norm-Based Country:")
+print(summary(posrec_3factor_norms.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results
+posrec_3factor_norms_std <- standardizedSolution(posrec_3factor_norms.fit, ci = TRUE, level = 0.95)
+posrec_3factor_norms_reg <- posrec_3factor_norms_std[posrec_3factor_norms_std$op == "~",]
+posrec_3factor_norms_results <- data.frame(
+  Parameter = posrec_3factor_norms_reg$rhs,
+  Std_Beta = round(posrec_3factor_norms_reg$est.std, 4),
+  CI_Lower = round(posrec_3factor_norms_reg$ci.lower, 4),
+  CI_Upper = round(posrec_3factor_norms_reg$ci.upper, 4),
+  p_value = round(posrec_3factor_norms_reg$pvalue, 4),
+  Significance = ifelse(posrec_3factor_norms_reg$pvalue < 0.001, "***",
+                        ifelse(posrec_3factor_norms_reg$pvalue < 0.01, "**",
+                               ifelse(posrec_3factor_norms_reg$pvalue < 0.05, "*", "")))
+)
+print(posrec_3factor_norms_results)
+
+# ============================================================================
+# MODEL 2: NEGATIVE RECIPROCITY - 3-FACTOR INDIVIDUAL + NORM-BASED COUNTRY
+# ============================================================================
+
+negrec_3factor_norms.model <- '
+# Level 1: Individual endorsement predicting negative reciprocity
+Negative_Reciprocity ~ D_end_CWC + H_end_CWC + F_end_CWC
+
+# Level 2: Country-level norms predicting negative reciprocity
+Negative_Reciprocity ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+negrec_3factor_norms.fit <- sem(
+  model = negrec_3factor_norms.model,
+  data = DF_selfreport_norms_3factor,
+  cluster = "country_res_full"
+)
+
+print("NEGATIVE RECIPROCITY - 3-Factor Individual + Norm-Based Country:")
+print(summary(negrec_3factor_norms.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results
+negrec_3factor_norms_std <- standardizedSolution(negrec_3factor_norms.fit, ci = TRUE, level = 0.95)
+negrec_3factor_norms_reg <- negrec_3factor_norms_std[negrec_3factor_norms_std$op == "~",]
+negrec_3factor_norms_results <- data.frame(
+  Parameter = negrec_3factor_norms_reg$rhs,
+  Std_Beta = round(negrec_3factor_norms_reg$est.std, 4),
+  CI_Lower = round(negrec_3factor_norms_reg$ci.lower, 4),
+  CI_Upper = round(negrec_3factor_norms_reg$ci.upper, 4),
+  p_value = round(negrec_3factor_norms_reg$pvalue, 4),
+  Significance = ifelse(negrec_3factor_norms_reg$pvalue < 0.001, "***",
+                        ifelse(negrec_3factor_norms_reg$pvalue < 0.01, "**",
+                               ifelse(negrec_3factor_norms_reg$pvalue < 0.05, "*", "")))
+)
+print(negrec_3factor_norms_results)
+
+# ============================================================================
+# MODEL 3: POSITIVE RECIPROCITY - 6-FACTOR INDIVIDUAL + NORM-BASED COUNTRY
+# ============================================================================
+
+posrec_6factor_norms.model <- '
+# Level 1: 6-factor individual endorsement predicting positive reciprocity
+Positive_Reciprocity ~ D_self_end_CWC + D_other_end_CWC + 
+                      H_self_end_CWC + H_other_end_CWC + 
+                      F_self_end_CWC + F_other_end_CWC
+
+# Level 2: Country-level norms predicting positive reciprocity
+Positive_Reciprocity ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+posrec_6factor_norms.fit <- sem(
+  model = posrec_6factor_norms.model,
+  data = DF_selfreport_norms_6factor,
+  cluster = "country_res_full"
+)
+
+print("POSITIVE RECIPROCITY - 6-Factor Individual + Norm-Based Country:")
+print(summary(posrec_6factor_norms.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results
+posrec_6factor_norms_std <- standardizedSolution(posrec_6factor_norms.fit, ci = TRUE, level = 0.95)
+posrec_6factor_norms_reg <- posrec_6factor_norms_std[posrec_6factor_norms_std$op == "~",]
+posrec_6factor_norms_results <- data.frame(
+  Parameter = posrec_6factor_norms_reg$rhs,
+  Std_Beta = round(posrec_6factor_norms_reg$est.std, 4),
+  CI_Lower = round(posrec_6factor_norms_reg$ci.lower, 4),
+  CI_Upper = round(posrec_6factor_norms_reg$ci.upper, 4),
+  p_value = round(posrec_6factor_norms_reg$pvalue, 4),
+  Significance = ifelse(posrec_6factor_norms_reg$pvalue < 0.001, "***",
+                        ifelse(posrec_6factor_norms_reg$pvalue < 0.01, "**",
+                               ifelse(posrec_6factor_norms_reg$pvalue < 0.05, "*", "")))
+)
+print(posrec_6factor_norms_results)
+
+# ============================================================================
+# MODEL 4: NEGATIVE RECIPROCITY - 6-FACTOR INDIVIDUAL + NORM-BASED COUNTRY
+# ============================================================================
+
+negrec_6factor_norms.model <- '
+# Level 1: 6-factor individual endorsement predicting negative reciprocity
+Negative_Reciprocity ~ D_self_end_CWC + D_other_end_CWC + 
+                      H_self_end_CWC + H_other_end_CWC + 
+                      F_self_end_CWC + F_other_end_CWC
+
+# Level 2: Country-level norms predicting negative reciprocity
+Negative_Reciprocity ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+'
+
+negrec_6factor_norms.fit <- sem(
+  model = negrec_6factor_norms.model,
+  data = DF_selfreport_norms_6factor,
+  cluster = "country_res_full"
+)
+
+print("NEGATIVE RECIPROCITY - 6-Factor Individual + Norm-Based Country:")
+print(summary(negrec_6factor_norms.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results
+negrec_6factor_norms_std <- standardizedSolution(negrec_6factor_norms.fit, ci = TRUE, level = 0.95)
+negrec_6factor_norms_reg <- negrec_6factor_norms_std[negrec_6factor_norms_std$op == "~",]
+negrec_6factor_norms_results <- data.frame(
+  Parameter = negrec_6factor_norms_reg$rhs,
+  Std_Beta = round(negrec_6factor_norms_reg$est.std, 4),
+  CI_Lower = round(negrec_6factor_norms_reg$ci.lower, 4),
+  CI_Upper = round(negrec_6factor_norms_reg$ci.upper, 4),
+  p_value = round(negrec_6factor_norms_reg$pvalue, 4),
+  Significance = ifelse(negrec_6factor_norms_reg$pvalue < 0.001, "***",
+                        ifelse(negrec_6factor_norms_reg$pvalue < 0.01, "**",
+                               ifelse(negrec_6factor_norms_reg$pvalue < 0.05, "*", "")))
+)
+print(negrec_6factor_norms_results)
+
+# ============================================================================
+# MODELS 5-8: ENDORSEMENT-BASED COUNTRY PREDICTORS
+# ============================================================================
+
+# MODEL 5: POSITIVE RECIPROCITY - 3-FACTOR INDIVIDUAL + ENDORSEMENT-BASED COUNTRY
+print("\nMODEL 5: POSITIVE RECIPROCITY - 3-Factor Individual + Endorsement-Based Country")
+
+posrec_3factor_endorse.model <- '
+Positive_Reciprocity ~ D_end_CWC + H_end_CWC + F_end_CWC
+Positive_Reciprocity ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM
+'
+
+posrec_3factor_endorse.fit <- sem(
+  model = posrec_3factor_endorse.model,
+  data = DF_selfreport_endorse_3factor,
+  cluster = "country_res_full"
+)
+
+print(summary(posrec_3factor_endorse.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for Model 5
+posrec_3factor_endorse_std <- standardizedSolution(posrec_3factor_endorse.fit, ci = TRUE, level = 0.95)
+posrec_3factor_endorse_reg <- posrec_3factor_endorse_std[posrec_3factor_endorse_std$op == "~",]
+posrec_3factor_endorse_results <- data.frame(
+  Parameter = posrec_3factor_endorse_reg$rhs,
+  Std_Beta = round(posrec_3factor_endorse_reg$est.std, 4),
+  CI_Lower = round(posrec_3factor_endorse_reg$ci.lower, 4),
+  CI_Upper = round(posrec_3factor_endorse_reg$ci.upper, 4),
+  p_value = round(posrec_3factor_endorse_reg$pvalue, 4),
+  Significance = ifelse(posrec_3factor_endorse_reg$pvalue < 0.001, "***",
+                        ifelse(posrec_3factor_endorse_reg$pvalue < 0.01, "**",
+                               ifelse(posrec_3factor_endorse_reg$pvalue < 0.05, "*", "")))
+)
+print("\nStandardized Coefficients with 95% CI:")
+print(posrec_3factor_endorse_results)
+
+# MODEL 6: NEGATIVE RECIPROCITY - 3-FACTOR INDIVIDUAL + ENDORSEMENT-BASED COUNTRY
+print("\nMODEL 6: NEGATIVE RECIPROCITY - 3-Factor Individual + Endorsement-Based Country")
+
+negrec_3factor_endorse.model <- '
+Negative_Reciprocity ~ D_end_CWC + H_end_CWC + F_end_CWC
+Negative_Reciprocity ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM
+'
+
+negrec_3factor_endorse.fit <- sem(
+  model = negrec_3factor_endorse.model,
+  data = DF_selfreport_endorse_3factor,
+  cluster = "country_res_full"
+)
+
+print(summary(negrec_3factor_endorse.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for Model 6
+negrec_3factor_endorse_std <- standardizedSolution(negrec_3factor_endorse.fit, ci = TRUE, level = 0.95)
+negrec_3factor_endorse_reg <- negrec_3factor_endorse_std[negrec_3factor_endorse_std$op == "~",]
+negrec_3factor_endorse_results <- data.frame(
+  Parameter = negrec_3factor_endorse_reg$rhs,
+  Std_Beta = round(negrec_3factor_endorse_reg$est.std, 4),
+  CI_Lower = round(negrec_3factor_endorse_reg$ci.lower, 4),
+  CI_Upper = round(negrec_3factor_endorse_reg$ci.upper, 4),
+  p_value = round(negrec_3factor_endorse_reg$pvalue, 4),
+  Significance = ifelse(negrec_3factor_endorse_reg$pvalue < 0.001, "***",
+                        ifelse(negrec_3factor_endorse_reg$pvalue < 0.01, "**",
+                               ifelse(negrec_3factor_endorse_reg$pvalue < 0.05, "*", "")))
+)
+print("\nStandardized Coefficients with 95% CI:")
+print(negrec_3factor_endorse_results)
+
+# MODEL 7: POSITIVE RECIPROCITY - 6-FACTOR INDIVIDUAL + ENDORSEMENT-BASED COUNTRY
+print("\nMODEL 7: POSITIVE RECIPROCITY - 6-Factor Individual + Endorsement-Based Country")
+
+posrec_6factor_endorse.model <- '
+Positive_Reciprocity ~ D_self_end_CWC + D_other_end_CWC + 
+                      H_self_end_CWC + H_other_end_CWC + 
+                      F_self_end_CWC + F_other_end_CWC
+Positive_Reciprocity ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM
+'
+
+posrec_6factor_endorse.fit <- sem(
+  model = posrec_6factor_endorse.model,
+  data = DF_selfreport_endorse_6factor,
+  cluster = "country_res_full"
+)
+
+print(summary(posrec_6factor_endorse.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for Model 7
+posrec_6factor_endorse_std <- standardizedSolution(posrec_6factor_endorse.fit, ci = TRUE, level = 0.95)
+posrec_6factor_endorse_reg <- posrec_6factor_endorse_std[posrec_6factor_endorse_std$op == "~",]
+posrec_6factor_endorse_results <- data.frame(
+  Parameter = posrec_6factor_endorse_reg$rhs,
+  Std_Beta = round(posrec_6factor_endorse_reg$est.std, 4),
+  CI_Lower = round(posrec_6factor_endorse_reg$ci.lower, 4),
+  CI_Upper = round(posrec_6factor_endorse_reg$ci.upper, 4),
+  p_value = round(posrec_6factor_endorse_reg$pvalue, 4),
+  Significance = ifelse(posrec_6factor_endorse_reg$pvalue < 0.001, "***",
+                        ifelse(posrec_6factor_endorse_reg$pvalue < 0.01, "**",
+                               ifelse(posrec_6factor_endorse_reg$pvalue < 0.05, "*", "")))
+)
+print("\nStandardized Coefficients with 95% CI:")
+print(posrec_6factor_endorse_results)
+
+# MODEL 8: NEGATIVE RECIPROCITY - 6-FACTOR INDIVIDUAL + ENDORSEMENT-BASED COUNTRY
+print("\nMODEL 8: NEGATIVE RECIPROCITY - 6-Factor Individual + Endorsement-Based Country")
+
+negrec_6factor_endorse.model <- '
+Negative_Reciprocity ~ D_self_end_CWC + D_other_end_CWC + 
+                      H_self_end_CWC + H_other_end_CWC + 
+                      F_self_end_CWC + F_other_end_CWC
+Negative_Reciprocity ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM
+'
+
+negrec_6factor_endorse.fit <- sem(
+  model = negrec_6factor_endorse.model,
+  data = DF_selfreport_endorse_6factor,
+  cluster = "country_res_full"
+)
+
+print(summary(negrec_6factor_endorse.fit, standardized = TRUE, fit.measures = TRUE, rsquare = TRUE))
+
+# Extract standardized results for Model 8
+negrec_6factor_endorse_std <- standardizedSolution(negrec_6factor_endorse.fit, ci = TRUE, level = 0.95)
+negrec_6factor_endorse_reg <- negrec_6factor_endorse_std[negrec_6factor_endorse_std$op == "~",]
+negrec_6factor_endorse_results <- data.frame(
+  Parameter = negrec_6factor_endorse_reg$rhs,
+  Std_Beta = round(negrec_6factor_endorse_reg$est.std, 4),
+  CI_Lower = round(negrec_6factor_endorse_reg$ci.lower, 4),
+  CI_Upper = round(negrec_6factor_endorse_reg$ci.upper, 4),
+  p_value = round(negrec_6factor_endorse_reg$pvalue, 4),
+  Significance = ifelse(negrec_6factor_endorse_reg$pvalue < 0.001, "***",
+                        ifelse(negrec_6factor_endorse_reg$pvalue < 0.01, "**",
+                               ifelse(negrec_6factor_endorse_reg$pvalue < 0.05, "*", "")))
+)
+print("\nStandardized Coefficients with 95% CI:")
+print(negrec_6factor_endorse_results)
+
+# ============================================================================
+# COMPREHENSIVE RESULTS SUMMARY
+# ============================================================================
+
+# R-squared comparison for all models
+print("\nR-SQUARED COMPARISON ACROSS ALL MODELS:")
+cat("Positive Reciprocity - 3F Individual + Norms Country: R² = ", round(inspect(posrec_3factor_norms.fit, "r2"), 3), "\n")
+cat("Negative Reciprocity - 3F Individual + Norms Country: R² = ", round(inspect(negrec_3factor_norms.fit, "r2"), 3), "\n")
+cat("Positive Reciprocity - 6F Individual + Norms Country: R² = ", round(inspect(posrec_6factor_norms.fit, "r2"), 3), "\n")
+cat("Negative Reciprocity - 6F Individual + Norms Country: R² = ", round(inspect(negrec_6factor_norms.fit, "r2"), 3), "\n")
+cat("Positive Reciprocity - 3F Individual + Endorse Country: R² = ", round(inspect(posrec_3factor_endorse.fit, "r2"), 3), "\n")
+cat("Negative Reciprocity - 3F Individual + Endorse Country: R² = ", round(inspect(negrec_3factor_endorse.fit, "r2"), 3), "\n")
+cat("Positive Reciprocity - 6F Individual + Endorse Country: R² = ", round(inspect(posrec_6factor_endorse.fit, "r2"), 3), "\n")
+cat("Negative Reciprocity - 6F Individual + Endorse Country: R² = ", round(inspect(negrec_6factor_endorse.fit, "r2"), 3), "\n")
+
+print("\nKEY DETAILED RESULTS:")
+print("\nPositive Reciprocity - 3F Individual + Norms Country:")
+print(posrec_3factor_norms_results)
+
+print("\nNegative Reciprocity - 3F Individual + Norms Country:")
+print(negrec_3factor_norms_results)
+
+print("\nPositive Reciprocity - 6F Individual + Norms Country:")
+print(posrec_6factor_norms_results)
+
+print("\nNegative Reciprocity - 6F Individual + Norms Country:")
+print(negrec_6factor_norms_results)
+print("\nSELF-REPORTED RECIPROCITY ANALYSIS COMPLETE")
+```
+
+#### Other attitudinal and behavioral manifestations of DHF
+
+[Tables in line with prepreg H4-H5 + table with individual-level correlations of DHF endorsement with values and moral foundations]
+
+```{r h4-analysis}
+# Prepare dt4 with 3-factor and 6-factor individual predictors + country norms
+DF_final_H4 <- dt4 %>%
+  mutate(
+    # Individual-level variables: 6-factor model with group-mean centering (CWC)
+    D_self_end_CWC = center(D_self_end, type = "CWC", cluster = country_res_full),
+    D_other_end_CWC = center(D_other_end, type = "CWC", cluster = country_res_full),
+    H_self_end_CWC = center(H_self_end, type = "CWC", cluster = country_res_full),
+    H_other_end_CWC = center(H_other_end, type = "CWC", cluster = country_res_full),
+    F_self_end_CWC = center(F_self_end, type = "CWC", cluster = country_res_full),
+    F_other_end_CWC = center(F_other_end, type = "CWC", cluster = country_res_full),
+    
+    # Individual-level variables: 3-factor model with group-mean centering (CWC)
+    D_end_CWC = center(D_end, type = "CWC", cluster = country_res_full),
+    H_end_CWC = center(H_end, type = "CWC", cluster = country_res_full),
+    F_end_CWC = center(F_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: grand-mean centering (CGM)
+    D_norm_agg_CGM = center(D_norm_mean_country, type = "CGM"),
+    H_norm_agg_CGM = center(H_norm_mean_country, type = "CGM"),
+    F_norm_agg_CGM = center(F_norm_mean_country, type = "CGM")
+  )
+
+# Test hypothesis 4a (6-factor individual predictors)
+h4.model.a.6f <- lmer(Total_Violence ~ D_self_end_CWC + D_other_end_CWC +
+                     H_self_end_CWC + H_other_end_CWC +
+                     F_self_end_CWC + F_other_end_CWC +
+                     D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM + (1|country_res_full),
+                   data = DF_final_H4,
+                   na.action = "na.omit")
+# Do not present numbers in scientific notation
+#options(scipen = 999, digits = 4)
+summary(h4.model.a.6f)
+
+# Test hypothesis 4a (3-factor individual predictors)
+h4.model.a.3f <- lmer(Total_Violence ~ D_end_CWC + H_end_CWC + F_end_CWC +
+                     D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM + (1|country_res_full),
+                   data = DF_final_H4,
+                   na.action = "na.omit")
+summary(h4.model.a.3f)
+
+# Test hypotheses 4b-c (6-factor individual predictors)
+h4.model.b.6f <- lmer(Other_Face_Concern ~ D_self_end_CWC + D_other_end_CWC +
+                     H_self_end_CWC + H_other_end_CWC +
+                     F_self_end_CWC + F_other_end_CWC +
+                     D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM + (1|country_res_full),
+                   data = DF_final_H4, 
+                   na.action = "na.omit")
+summary(h4.model.b.6f)
+
+# Test hypotheses 4b-c (3-factor individual predictors)
+h4.model.b.3f <- lmer(Other_Face_Concern ~ D_end_CWC + H_end_CWC + F_end_CWC +
+                     D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM + (1|country_res_full),
+                   data = DF_final_H4, 
+                   na.action = "na.omit")
+summary(h4.model.b.3f)
+```
+
+```{r h5-analysis}
+# 6-factor individual predictors
+provocation.model.6f <-'
+Level: 1
+  Retaliation ~ D_self_end_CWC + D_other_end_CWC + H_self_end_CWC + H_other_end_CWC + F_self_end_CWC + F_other_end_CWC
+  Withdrawal ~ D_self_end_CWC + D_other_end_CWC + H_self_end_CWC + H_other_end_CWC + F_self_end_CWC + F_other_end_CWC
+  Humor ~ D_self_end_CWC + D_other_end_CWC + H_self_end_CWC + H_other_end_CWC + F_self_end_CWC + F_other_end_CWC
+Level: 2
+  Retaliation  ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+  Withdrawal ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+  Humor ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM 
+'
+
+provocation.fit.6f <- sem(
+  model = provocation.model.6f,
+  data = DF_final_H4,
+  cluster = "country_res_full"
+)
+
+summary(provocation.fit.6f, 
+        standardized = TRUE,
+        fit.measures = TRUE,
+        rsquare = TRUE)
+
+tidy(fitmeasures(provocation.fit.6f))
+tidy(provocation.fit.6f)
+
+# 3-factor individual predictors
+provocation.model.3f <-'
+Level: 1
+  Retaliation ~ D_end_CWC + H_end_CWC + F_end_CWC
+  Withdrawal ~ D_end_CWC + H_end_CWC + F_end_CWC
+  Humor ~ D_end_CWC + H_end_CWC + F_end_CWC
+Level: 2
+  Retaliation  ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+  Withdrawal ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM
+  Humor ~ D_norm_agg_CGM + H_norm_agg_CGM + F_norm_agg_CGM 
+'
+
+provocation.fit.3f <- sem(
+  model = provocation.model.3f,
+  data = DF_final_H4,
+  cluster = "country_res_full"
+)
+
+summary(provocation.fit.3f, 
+        standardized = TRUE,
+        fit.measures = TRUE,
+        rsquare = TRUE)
+
+tidy(fitmeasures(provocation.fit.3f))
+tidy(provocation.fit.3f)
+```
+
+```{r h4-h5-model-country-personal}
+# Prepare dt4 with 3-factor and 6-factor individual predictors + country personal endorsement
+DF_final_H4 <- dt4 %>%
+  mutate(
+    # Individual-level variables: 6-factor model with group-mean centering (CWC)
+    D_self_end_CWC = center(D_self_end, type = "CWC", cluster = country_res_full),
+    D_other_end_CWC = center(D_other_end, type = "CWC", cluster = country_res_full),
+    H_self_end_CWC = center(H_self_end, type = "CWC", cluster = country_res_full),
+    H_other_end_CWC = center(H_other_end, type = "CWC", cluster = country_res_full),
+    F_self_end_CWC = center(F_self_end, type = "CWC", cluster = country_res_full),
+    F_other_end_CWC = center(F_other_end, type = "CWC", cluster = country_res_full),
+    
+    # Individual-level variables: 3-factor model with group-mean centering (CWC)
+    D_end_CWC = center(D_end, type = "CWC", cluster = country_res_full),
+    H_end_CWC = center(H_end, type = "CWC", cluster = country_res_full),
+    F_end_CWC = center(F_end, type = "CWC", cluster = country_res_full),
+    
+    # Country-level variables: personal endorsement grand-mean centering (CGM)
+    D_end_agg_CGM = center(D_end_mean_country, type = "CGM"),
+    H_end_agg_CGM = center(H_end_mean_country, type = "CGM"),
+    F_end_agg_CGM = center(F_end_mean_country, type = "CGM")
+  )
+
+# Test hypothesis 4a (6-factor individual predictors)
+h4.model.a.6f <- lmer(Total_Violence ~ D_self_end_CWC + D_other_end_CWC +
+                        H_self_end_CWC + H_other_end_CWC +
+                        F_self_end_CWC + F_other_end_CWC +
+                        D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM + (1|country_res_full),
+                      data = DF_final_H4,
+                      na.action = "na.omit")
+
+summary(h4.model.a.6f)
+
+# Test hypothesis 4a (3-factor individual predictors)
+h4.model.a.3f <- lmer(Total_Violence ~ D_end_CWC + H_end_CWC + F_end_CWC +
+                        D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM + (1|country_res_full),
+                      data = DF_final_H4,
+                      na.action = "na.omit")
+
+summary(h4.model.a.3f)
+
+# Test hypotheses 4b-c (6-factor individual predictors)
+h4.model.b.6f <- lmer(Other_Face_Concern ~ D_self_end_CWC + D_other_end_CWC +
+                        H_self_end_CWC + H_other_end_CWC +
+                        F_self_end_CWC + F_other_end_CWC +
+                        D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM + (1|country_res_full),
+                      data = DF_final_H4, 
+                      na.action = "na.omit")
+
+summary(h4.model.b.6f)
+
+# Test hypotheses 4b-c (3-factor individual predictors)
+h4.model.b.3f <- lmer(Other_Face_Concern ~ D_end_CWC + H_end_CWC + F_end_CWC +
+                        D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM + (1|country_res_full),
+                      data = DF_final_H4, 
+                      na.action = "na.omit")
+
+summary(h4.model.b.3f)
+
+# 6-factor individual predictors
+provocation.model.6f <-'
+Level: 1
+  Retaliation ~ D_self_end_CWC + D_other_end_CWC + H_self_end_CWC + H_other_end_CWC + F_self_end_CWC + F_other_end_CWC
+  Withdrawal ~ D_self_end_CWC + D_other_end_CWC + H_self_end_CWC + H_other_end_CWC + F_self_end_CWC + F_other_end_CWC
+  Humor ~ D_self_end_CWC + D_other_end_CWC + H_self_end_CWC + H_other_end_CWC + F_self_end_CWC + F_other_end_CWC
+Level: 2
+  Retaliation  ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM
+  Withdrawal ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM
+  Humor ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM 
+'
+
+provocation.fit.6f <- sem(
+  model = provocation.model.6f,
+  data = DF_final_H4,
+  cluster = "country_res_full"
+)
+
+summary(provocation.fit.6f, 
+        standardized = TRUE,
+        fit.measures = TRUE,
+        rsquare = TRUE)
+
+tidy(fitmeasures(provocation.fit.6f))
+tidy(provocation.fit.6f)
+
+# 3-factor individual predictors
+provocation.model.3f <-'
+Level: 1
+  Retaliation ~ D_end_CWC + H_end_CWC + F_end_CWC
+  Withdrawal ~ D_end_CWC + H_end_CWC + F_end_CWC
+  Humor ~ D_end_CWC + H_end_CWC + F_end_CWC
+Level: 2
+  Retaliation  ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM
+  Withdrawal ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM
+  Humor ~ D_end_agg_CGM + H_end_agg_CGM + F_end_agg_CGM 
+'
+
+provocation.fit.3f <- sem(
+  model = provocation.model.3f,
+  data = DF_final_H4,
+  cluster = "country_res_full"
+)
+
+summary(provocation.fit.3f, 
+        standardized = TRUE,
+        fit.measures = TRUE,
+        rsquare = TRUE)
+
+tidy(fitmeasures(provocation.fit.3f))
+tidy(provocation.fit.3f)
+```
