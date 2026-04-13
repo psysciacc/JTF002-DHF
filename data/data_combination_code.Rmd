@@ -1687,6 +1687,14 @@ country_metadata <- read_csv("codebooks/countries_data.csv", show_col_types = FA
 
 dhf_all <- dhf_all %>%
   left_join(country_metadata)
+
+# add in additional country variables
+country_metadata2 <- read_csv("codebooks/additional_country_variables_merged.csv") %>%
+  rename(country_res_full = dbf_country) %>% 
+  select(-iso3c)
+
+dhf_all <- dhf_all %>% 
+  left_join(country_metadata2)
 ```
 
 ## Recoding comprehension questions
