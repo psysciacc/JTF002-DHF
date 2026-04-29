@@ -2,6 +2,7 @@ export default {
   title: "DHF Cross-Cultural Study",
   root: "src",
   output: "../docs",
+  base: "/JTF002-DHF",
   pages: [
     { name: "Overview", path: "/" },
     { name: "Country Endorsement", path: "/endorsement" },
