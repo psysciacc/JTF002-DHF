@@ -3512,6 +3512,8 @@ country_endors <- dt4 %>%
     )
   )
 
+write.csv(country_endors, "output/country_endorsement.csv")
+
 dt4 <- dt4 %>%
   left_join(country_endors, by = "country_res_full")
 ```
@@ -3558,6 +3560,8 @@ country_norm <- dt4 %>%
       .names = "{.col}_mean_country"
     )
   )
+
+write.csv(country_norm, "output/country_norms.csv")
 
 dt4 <- dt4 %>%
   left_join(country_norm, by = "country_res_full")
