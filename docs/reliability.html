@@ -39,9 +39,15 @@ const raw = FileAttachment("./data/alpha_results.csv").csv({ typed: true });
 return {raw};
 }});
 
-define({id: "642c3fb7", inputs: ["raw"], outputs: ["byCountry","scaleOrder","countryOrder","lookup","z","text"], body: (raw) => {
+define({id: "87232806", inputs: ["raw"], outputs: ["schwartzSubscales","filtered_raw","byCountry","scaleOrder","countryOrder","lookup","z","text"], body: (raw) => {
+const schwartzSubscales = new Set([
+  "Achievement", "Benevolence", "Conformity", "Hedonism", "Power",
+  "Security", "Self_Direction", "Stimulation", "Tradition", "Universalism",
+]);
+const filtered_raw = raw.filter(d => !schwartzSubscales.has(d.Scale));
+
 // Exclude "Overall" for the per-country heatmap
-const byCountry = raw.filter(d => d.Country !== "Overall" && d.Alpha != null);
+const byCountry = filtered_raw.filter(d => d.Country !== "Overall" && d.Alpha != null);
 
 const scaleOrder = [...new Set(byCountry.map(d => d.Scale))].sort();
 const countryOrder = [...new Set(byCountry.map(d => d.Country))].sort();
@@ -53,7 +59,7 @@ const text = countryOrder.map(c => scaleOrder.map(s => {
   const v = lookup.get(`${c}|${s}`);
   return v == null ? "No data" : v.toFixed(3);
 }));
-return {byCountry,scaleOrder,countryOrder,lookup,z,text};
+return {schwartzSubscales,filtered_raw,byCountry,scaleOrder,countryOrder,lookup,z,text};
 }});
 
 define({id: "1cc0e566", inputs: ["getComputedStyle","Plotly","z","scaleOrder","countryOrder","text","display"], outputs: ["fg","heatmapDiv"], body: (getComputedStyle,Plotly,z,scaleOrder,countryOrder,text,display) => {
@@ -97,8 +103,8 @@ display(heatmapDiv);
 return {fg,heatmapDiv};
 }});
 
-define({id: "c3f47e83", inputs: ["raw","Plotly","fg","display"], outputs: ["overallAlpha","barDiv"], body: (raw,Plotly,fg,display) => {
-const overallAlpha = raw.filter(d => d.Country === "Overall").sort((a, b) => b.Alpha - a.Alpha);
+define({id: "0b5dca0d", inputs: ["filtered_raw","Plotly","fg","display"], outputs: ["overallAlpha","barDiv"], body: (filtered_raw,Plotly,fg,display) => {
+const overallAlpha = filtered_raw.filter(d => d.Country === "Overall").sort((a, b) => b.Alpha - a.Alpha);
 
 const barDiv = document.createElement("div");
 Plotly.newPlot(barDiv, [{
@@ -136,7 +142,7 @@ display(barDiv);
 return {overallAlpha,barDiv};
 }});
 
-define({id: "8e73a24f", inputs: ["raw","display"], outputs: ["loadScript","tableData","wrapper","tbl"], body: async (raw,display) => {
+define({id: "93f0fe92", inputs: ["filtered_raw","display"], outputs: ["loadScript","tableData","wrapper","tbl"], body: async (filtered_raw,display) => {
 async function loadScript(src) {
   return new Promise((resolve, reject) => {
     if (document.querySelector(`script[src="${src}"]`)) return resolve();
@@ -150,7 +156,7 @@ async function loadScript(src) {
 await loadScript("https://code.jquery.com/jquery-3.7.1.min.js");
 await loadScript("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
 
-const tableData = raw.filter(d => d.Alpha != null);
+const tableData = filtered_raw.filter(d => d.Alpha != null);
 
 const wrapper = document.createElement("div");
 wrapper.style.cssText = "overflow-x:auto;";
@@ -232,21 +238,21 @@ return {loadScript,tableData,wrapper,tbl};
 <h1 id="scale-reliability-cronbachs-a" tabindex="-1"><a class="observablehq-header-anchor" href="#scale-reliability-cronbachs-a">Scale Reliability (Cronbach's α)</a></h1>
 <p>Cronbach's alpha measures internal consistency for each scale within each country. Values ≥ 0.70 are conventionally acceptable; values &lt; 0.60 indicate poor reliability.</p>
 <div class="observablehq observablehq--block"><!--:33a12038:--></div>
-<div class="observablehq observablehq--block"><!--:642c3fb7:--></div>
+<div class="observablehq observablehq--block"><!--:87232806:--></div>
 <h2 id="alpha-heatmap-all-countries-scales" tabindex="-1"><a class="observablehq-header-anchor" href="#alpha-heatmap-all-countries-scales">Alpha Heatmap — All Countries × Scales</a></h2>
 <p>Each cell shows Cronbach's α. Hover for exact values. Grey cells = scale not administered in that country.</p>
 <div class="observablehq observablehq--block"><!--:1cc0e566:--></div>
 <hr>
 <h2 id="overall-a-by-scale" tabindex="-1"><a class="observablehq-header-anchor" href="#overall-a-by-scale">Overall α by Scale</a></h2>
 <p>Average reliability across all countries for each scale.</p>
-<div class="observablehq observablehq--block"><!--:c3f47e83:--></div>
+<div class="observablehq observablehq--block"><!--:0b5dca0d:--></div>
 <hr>
 <h2 id="full-reliability-table" tabindex="-1"><a class="observablehq-header-anchor" href="#full-reliability-table">Full Reliability Table</a></h2>
-<div class="observablehq observablehq--block"><!--:8e73a24f:--></div>
+<div class="observablehq observablehq--block"><!--:93f0fe92:--></div>
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="prev" href="./norms"><span>Country Norms</span></a><a rel="next" href="./countries"><span>Country Comparisons</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-29T00:16:37">Apr 29, 2026</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-29T10:03:15">Apr 29, 2026</a>.</div>
 </footer>
 </div>
 </body>

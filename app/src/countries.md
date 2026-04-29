@@ -11,7 +11,14 @@ const desc = FileAttachment("data/scale_descriptives.csv").csv({ typed: true });
 ```
 
 ```js
-const allScales = [...new Set(desc.filter(d => d.Group !== "Overall").map(d => d.Scale))].sort();
+const schwartzSubscales = new Set([
+  "Achievement", "Benevolence", "Conformity", "Hedonism", "Power",
+  "Security", "Self_Direction", "Stimulation", "Tradition", "Universalism",
+]);
+
+const allScales = [...new Set(desc.filter(d => d.Group !== "Overall").map(d => d.Scale))]
+  .filter(s => !schwartzSubscales.has(s))
+  .sort();
 
 const scaleDomainMap = {
   "Other_Face_Concern": "Face & Conflict",
@@ -32,20 +39,10 @@ const scaleDomainMap = {
   "MFQ_Loyalty": "Moral Foundations",
   "MFQ_Authority": "Moral Foundations",
   "MFQ_Purity": "Moral Foundations",
-  "Achievement": "Schwartz Values",
-  "Benevolence": "Schwartz Values",
-  "Conformity": "Schwartz Values",
   "Conservation": "Schwartz Values",
-  "Hedonism": "Schwartz Values",
   "Openness_to_Change": "Schwartz Values",
-  "Power": "Schwartz Values",
-  "Security": "Schwartz Values",
-  "Self_Direction": "Schwartz Values",
   "Self_Enhancement": "Schwartz Values",
   "Self_Transcendence": "Schwartz Values",
-  "Stimulation": "Schwartz Values",
-  "Tradition": "Schwartz Values",
-  "Universalism": "Schwartz Values",
   "Intrinsic_Religiosity": "Other",
   "Composite_Religiosity": "Other",
   "Subjective_Wellbeing": "Other",
@@ -73,7 +70,7 @@ const domainColors = {
 };
 
 const filtered = desc
-  .filter(d => d.Scale === selectedScale && d.Group !== "Overall" && d.Mean != null)
+  .filter(d => d.Scale === selectedScale && d.Group !== "Overall" && typeof d.Mean === "number")
   .sort((a, b) => a.Mean - b.Mean);
 
 const domain = scaleDomainMap[selectedScale] ?? "Other";
@@ -142,74 +139,6 @@ display(dotDiv);
 
 ---
 
-## Multi-Scale Overview: Mean by Country
-
-Compare country means across a domain at a glance.
-
-```js
-const domainInput = Inputs.select(Object.keys(domainColors), {
-  label: "Domain",
-  value: "Face & Conflict",
-});
-const selectedDomain = view(domainInput);
-```
-
-```js
-const domainScales = allScales.filter(s => (scaleDomainMap[s] ?? "Other") === selectedDomain);
-
-const domainData = desc.filter(d =>
-  domainScales.includes(d.Scale) && d.Group !== "Overall" && d.Mean != null
-);
-
-// Pivot: for each country, compute mean across domain scales
-const countryMap = new Map();
-for (const row of domainData) {
-  if (!countryMap.has(row.Group)) countryMap.set(row.Group, []);
-  countryMap.get(row.Group).push({ scale: row.Scale, mean: row.Mean, n: row.N });
-}
-
-const overviewRows = [...countryMap.entries()]
-  .map(([country, rows]) => ({
-    country,
-    domainMean: rows.reduce((s, r) => s + r.mean, 0) / rows.length,
-    scales: rows,
-  }))
-  .sort((a, b) => a.domainMean - b.domainMean);
-
-const overviewDiv = document.createElement("div");
-
-Plotly.newPlot(overviewDiv,
-  domainScales.map((scale, i) => {
-    const scaleRows = overviewRows.map(r => ({
-      country: r.country,
-      mean: r.scales.find(s => s.scale === scale)?.mean ?? null,
-    }));
-    return {
-      type: "bar",
-      name: scale.replace(/_/g, " "),
-      x: scaleRows.map(r => r.country),
-      y: scaleRows.map(r => r.mean),
-      hovertemplate: "<b>%{x}</b><br>%{fullData.name}: %{y:.3f}<extra></extra>",
-    };
-  }),
-  {
-    title: { text: `${selectedDomain} — Country Means by Scale`, font: { size: 15, color: fg } },
-    barmode: "group",
-    xaxis: { tickangle: -45, tickfont: { size: 9, color: fg }, automargin: true },
-    yaxis: { title: { text: "Mean Score", font: { color: fg } }, tickfont: { color: fg }, gridcolor: "#eee" },
-    margin: { t: 50, b: 160, l: 60, r: 20 },
-    plot_bgcolor: "transparent",
-    paper_bgcolor: "transparent",
-    height: 480,
-    legend: { orientation: "h", y: -0.35 },
-  },
-  { responsive: true, displayModeBar: true }
-);
-display(overviewDiv);
-```
-
----
-
 ## Descriptives Table
 
 ```js
@@ -226,7 +155,7 @@ async function loadScript(src) {
 await loadScript("https://code.jquery.com/jquery-3.7.1.min.js");
 await loadScript("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
 
-const descAll = desc.filter(d => d.Group !== "Overall" && d.Mean != null);
+const descAll = desc.filter(d => d.Group !== "Overall" && typeof d.Mean === "number");
 
 const dtWrapper = document.createElement("div");
 dtWrapper.style.cssText = "overflow-x:auto;";

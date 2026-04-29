@@ -44,8 +44,15 @@ const desc = FileAttachment("./data/scale_descriptives.csv").csv({ typed: true }
 return {desc};
 }});
 
-define({id: "5003a6e5", inputs: ["desc"], outputs: ["allScales","scaleDomainMap"], body: (desc) => {
-const allScales = [...new Set(desc.filter(d => d.Group !== "Overall").map(d => d.Scale))].sort();
+define({id: "d9c27cf9", inputs: ["desc"], outputs: ["schwartzSubscales","allScales","scaleDomainMap"], body: (desc) => {
+const schwartzSubscales = new Set([
+  "Achievement", "Benevolence", "Conformity", "Hedonism", "Power",
+  "Security", "Self_Direction", "Stimulation", "Tradition", "Universalism",
+]);
+
+const allScales = [...new Set(desc.filter(d => d.Group !== "Overall").map(d => d.Scale))]
+  .filter(s => !schwartzSubscales.has(s))
+  .sort();
 
 const scaleDomainMap = {
   "Other_Face_Concern": "Face & Conflict",
@@ -66,25 +73,15 @@ const scaleDomainMap = {
   "MFQ_Loyalty": "Moral Foundations",
   "MFQ_Authority": "Moral Foundations",
   "MFQ_Purity": "Moral Foundations",
-  "Achievement": "Schwartz Values",
-  "Benevolence": "Schwartz Values",
-  "Conformity": "Schwartz Values",
   "Conservation": "Schwartz Values",
-  "Hedonism": "Schwartz Values",
   "Openness_to_Change": "Schwartz Values",
-  "Power": "Schwartz Values",
-  "Security": "Schwartz Values",
-  "Self_Direction": "Schwartz Values",
   "Self_Enhancement": "Schwartz Values",
   "Self_Transcendence": "Schwartz Values",
-  "Stimulation": "Schwartz Values",
-  "Tradition": "Schwartz Values",
-  "Universalism": "Schwartz Values",
   "Intrinsic_Religiosity": "Other",
   "Composite_Religiosity": "Other",
   "Subjective_Wellbeing": "Other",
 };
-return {allScales,scaleDomainMap};
+return {schwartzSubscales,allScales,scaleDomainMap};
 }});
 
 define({id: "1a06d500", inputs: ["Inputs","allScales","view"], outputs: ["scaleInput","selectedScale"], body: (Inputs,allScales,view) => {
@@ -97,7 +94,7 @@ const selectedScale = view(scaleInput);
 return {scaleInput,selectedScale};
 }});
 
-define({id: "8cf8159a", inputs: ["desc","selectedScale","scaleDomainMap","getComputedStyle","Plotly","display"], outputs: ["domainColors","filtered","domain","color","fg","dotDiv"], body: (desc,selectedScale,scaleDomainMap,getComputedStyle,Plotly,display) => {
+define({id: "24833a27", inputs: ["desc","selectedScale","scaleDomainMap","getComputedStyle","Plotly","display"], outputs: ["domainColors","filtered","domain","color","fg","dotDiv"], body: (desc,selectedScale,scaleDomainMap,getComputedStyle,Plotly,display) => {
 const domainColors = {
   "Face & Conflict": "#4e79a7",
   "Violence Acceptance": "#e15759",
@@ -107,7 +104,7 @@ const domainColors = {
 };
 
 const filtered = desc
-  .filter(d => d.Scale === selectedScale && d.Group !== "Overall" && d.Mean != null)
+  .filter(d => d.Scale === selectedScale && d.Group !== "Overall" && typeof d.Mean === "number")
   .sort((a, b) => a.Mean - b.Mean);
 
 const domain = scaleDomainMap[selectedScale] ?? "Other";
@@ -175,71 +172,7 @@ display(dotDiv);
 return {domainColors,filtered,domain,color,fg,dotDiv};
 }});
 
-define({id: "f20fcfa4", inputs: ["Inputs","domainColors","view"], outputs: ["domainInput","selectedDomain"], body: (Inputs,domainColors,view) => {
-const domainInput = Inputs.select(Object.keys(domainColors), {
-  label: "Domain",
-  value: "Face & Conflict",
-});
-const selectedDomain = view(domainInput);
-return {domainInput,selectedDomain};
-}});
-
-define({id: "5068688e", inputs: ["allScales","scaleDomainMap","selectedDomain","desc","Plotly","fg","display"], outputs: ["domainScales","domainData","countryMap","overviewRows","overviewDiv"], body: (allScales,scaleDomainMap,selectedDomain,desc,Plotly,fg,display) => {
-const domainScales = allScales.filter(s => (scaleDomainMap[s] ?? "Other") === selectedDomain);
-
-const domainData = desc.filter(d =>
-  domainScales.includes(d.Scale) && d.Group !== "Overall" && d.Mean != null
-);
-
-// Pivot: for each country, compute mean across domain scales
-const countryMap = new Map();
-for (const row of domainData) {
-  if (!countryMap.has(row.Group)) countryMap.set(row.Group, []);
-  countryMap.get(row.Group).push({ scale: row.Scale, mean: row.Mean, n: row.N });
-}
-
-const overviewRows = [...countryMap.entries()]
-  .map(([country, rows]) => ({
-    country,
-    domainMean: rows.reduce((s, r) => s + r.mean, 0) / rows.length,
-    scales: rows,
-  }))
-  .sort((a, b) => a.domainMean - b.domainMean);
-
-const overviewDiv = document.createElement("div");
-
-Plotly.newPlot(overviewDiv,
-  domainScales.map((scale, i) => {
-    const scaleRows = overviewRows.map(r => ({
-      country: r.country,
-      mean: r.scales.find(s => s.scale === scale)?.mean ?? null,
-    }));
-    return {
-      type: "bar",
-      name: scale.replace(/_/g, " "),
-      x: scaleRows.map(r => r.country),
-      y: scaleRows.map(r => r.mean),
-      hovertemplate: "<b>%{x}</b><br>%{fullData.name}: %{y:.3f}<extra></extra>",
-    };
-  }),
-  {
-    title: { text: `${selectedDomain} — Country Means by Scale`, font: { size: 15, color: fg } },
-    barmode: "group",
-    xaxis: { tickangle: -45, tickfont: { size: 9, color: fg }, automargin: true },
-    yaxis: { title: { text: "Mean Score", font: { color: fg } }, tickfont: { color: fg }, gridcolor: "#eee" },
-    margin: { t: 50, b: 160, l: 60, r: 20 },
-    plot_bgcolor: "transparent",
-    paper_bgcolor: "transparent",
-    height: 480,
-    legend: { orientation: "h", y: -0.35 },
-  },
-  { responsive: true, displayModeBar: true }
-);
-display(overviewDiv);
-return {domainScales,domainData,countryMap,overviewRows,overviewDiv};
-}});
-
-define({id: "55c82977", inputs: ["desc","scaleDomainMap","display"], outputs: ["loadScript","descAll","dtWrapper","dtTbl"], body: async (desc,scaleDomainMap,display) => {
+define({id: "2e0a0185", inputs: ["desc","scaleDomainMap","display"], outputs: ["loadScript","descAll","dtWrapper","dtTbl"], body: async (desc,scaleDomainMap,display) => {
 async function loadScript(src) {
   return new Promise((resolve, reject) => {
     if (document.querySelector(`script[src="${src}"]`)) return resolve();
@@ -253,7 +186,7 @@ async function loadScript(src) {
 await loadScript("https://code.jquery.com/jquery-3.7.1.min.js");
 await loadScript("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
 
-const descAll = desc.filter(d => d.Group !== "Overall" && d.Mean != null);
+const descAll = desc.filter(d => d.Group !== "Overall" && typeof d.Mean === "number");
 
 const dtWrapper = document.createElement("div");
 dtWrapper.style.cssText = "overflow-x:auto;";
@@ -326,7 +259,6 @@ return {loadScript,descAll,dtWrapper,dtTbl};
 <div>Contents</div>
 <ol>
 <li class="observablehq-secondary-link"><a href="#select-a-scale">Select a Scale</a></li>
-<li class="observablehq-secondary-link"><a href="#multi-scale-overview-mean-by-country">Multi-Scale Overview: Mean by Country</a></li>
 <li class="observablehq-secondary-link"><a href="#descriptives-table">Descriptives Table</a></li>
 </ol>
 </nav>
@@ -335,22 +267,17 @@ return {loadScript,descAll,dtWrapper,dtTbl};
 <h1 id="country-comparisons" tabindex="-1"><a class="observablehq-header-anchor" href="#country-comparisons">Country Comparisons</a></h1>
 <p>Explore how mean scale scores vary across countries. Points show the country mean; error bars show ±1 SD.</p>
 <div class="observablehq observablehq--block"><!--:e89f4cb3:--></div>
-<div class="observablehq observablehq--block"><!--:5003a6e5:--></div>
+<div class="observablehq observablehq--block"><!--:d9c27cf9:--></div>
 <h2 id="select-a-scale" tabindex="-1"><a class="observablehq-header-anchor" href="#select-a-scale">Select a Scale</a></h2>
 <div class="observablehq observablehq--block"><!--:1a06d500:--></div>
-<div class="observablehq observablehq--block"><!--:8cf8159a:--></div>
-<hr>
-<h2 id="multi-scale-overview-mean-by-country" tabindex="-1"><a class="observablehq-header-anchor" href="#multi-scale-overview-mean-by-country">Multi-Scale Overview: Mean by Country</a></h2>
-<p>Compare country means across a domain at a glance.</p>
-<div class="observablehq observablehq--block"><!--:f20fcfa4:--></div>
-<div class="observablehq observablehq--block"><!--:5068688e:--></div>
+<div class="observablehq observablehq--block"><!--:24833a27:--></div>
 <hr>
 <h2 id="descriptives-table" tabindex="-1"><a class="observablehq-header-anchor" href="#descriptives-table">Descriptives Table</a></h2>
-<div class="observablehq observablehq--block"><!--:55c82977:--></div>
+<div class="observablehq observablehq--block"><!--:2e0a0185:--></div>
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="prev" href="./reliability"><span>Scale Reliability</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-29T00:16:37">Apr 29, 2026</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-29T10:03:15">Apr 29, 2026</a>.</div>
 </footer>
 </div>
 </body>

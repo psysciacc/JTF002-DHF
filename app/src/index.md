@@ -13,13 +13,12 @@ This dashboard presents data from a large-scale Psychological Science Accelerato
 ```js
 const desc = FileAttachment("data/scale_descriptives.csv").csv({ typed: true });
 const isoLookup = FileAttachment("data/countries_iso.csv").csv({ typed: false });
+const countryN = FileAttachment("data/country_n_app.csv").csv({ typed: true });
 ```
 
 ```js
-// One row per country using Composite_Religiosity (good coverage across all sites)
-const countrySizes = desc
-  .filter(d => d.Scale === "Composite_Religiosity" && d.Group !== "Overall")
-  .map(d => ({ country: d.Group, n: d.N }))
+const countrySizes = countryN
+  .map(d => ({ country: d.country_res_full, n: d.n }))
   .sort((a, b) => b.n - a.n);
 
 const countries = countrySizes.map(d => d.country);
@@ -155,50 +154,28 @@ legend.onAdd = () => {
 legend.addTo(lmap);
 ```
 
----
-
-## Scale Coverage Summary
-
-The study measured **${scales.length} psychological scales** spanning five conceptual domains:
-
-```js
-const scales = [...new Set(desc.filter(d => d.Group !== "Overall").map(d => d.Scale))].sort();
-
-const scaleDomains = {
-  "Face & Conflict": ["Other_Face_Concern", "Self_Face_Concern", "Withdrawal", "Retaliation", "Humor"],
-  "Violence Acceptance": ["Positive_Reciprocity", "Negative_Reciprocity", "Penal_Code_Violence", "War_Acceptance", "Corporal_Punishment", "Intimate_Violence", "Total_Violence_Scale"],
-  "Moral Foundations": ["MFQ_Care", "MFQ_Equality", "MFQ_Proportionality", "MFQ_Loyalty", "MFQ_Authority", "MFQ_Purity"],
-  "Schwartz Values": ["Achievement", "Benevolence", "Conformity", "Conservation", "Hedonism", "Openness_to_Change", "Power", "Security", "Self_Direction", "Self_Enhancement", "Self_Transcendence", "Stimulation", "Tradition", "Universalism"],
-  "Other": ["Intrinsic_Religiosity", "Composite_Religiosity", "Subjective_Wellbeing"],
-};
-
-const domainTable = document.createElement("div");
-domainTable.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;";
-
-for (const [domain, scaleList] of Object.entries(scaleDomains)) {
-  const card = document.createElement("div");
-  card.className = "card";
-  card.innerHTML = `
-    <strong style="font-size:1.05rem;">${domain}</strong>
-    <ul style="margin:.5rem 0 0;padding-left:1.2rem;font-size:.88rem;line-height:1.7;">
-      ${scaleList.map(s => `<li>${s.replace(/_/g, " ")}</li>`).join("")}
-    </ul>
-  `;
-  domainTable.appendChild(card);
-}
-display(domainTable);
-```
+<small style="color:var(--theme-foreground-muted)">Kosovo and Taiwan are included in the study but are not shown on the map due to their ambiguous status in standard geographic datasets.</small>
 
 ---
 
 ## Quick Stats
 
 ```js
+const schwartzSubscales = new Set([
+  "Achievement", "Benevolence", "Conformity", "Hedonism", "Power",
+  "Security", "Self_Direction", "Stimulation", "Tradition", "Universalism",
+]);
+const scales = [...new Set(desc.filter(d => d.Group !== "Overall").map(d => d.Scale))]
+  .filter(s => !schwartzSubscales.has(s))
+  .sort();
+```
+
+```js
 const alpha = FileAttachment("data/alpha_results.csv").csv({ typed: true });
 ```
 
 ```js
-const overallAlpha = alpha.filter(d => d.Country === "Overall");
+const overallAlpha = alpha.filter(d => d.Country === "Overall" && !schwartzSubscales.has(d.Scale));
 const avgAlpha = overallAlpha.reduce((s, d) => s + d.Alpha, 0) / overallAlpha.length;
 
 const statsDiv = document.createElement("div");

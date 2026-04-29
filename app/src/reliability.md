@@ -11,8 +11,14 @@ const raw = FileAttachment("data/alpha_results.csv").csv({ typed: true });
 ```
 
 ```js
+const schwartzSubscales = new Set([
+  "Achievement", "Benevolence", "Conformity", "Hedonism", "Power",
+  "Security", "Self_Direction", "Stimulation", "Tradition", "Universalism",
+]);
+const filtered_raw = raw.filter(d => !schwartzSubscales.has(d.Scale));
+
 // Exclude "Overall" for the per-country heatmap
-const byCountry = raw.filter(d => d.Country !== "Overall" && d.Alpha != null);
+const byCountry = filtered_raw.filter(d => d.Country !== "Overall" && d.Alpha != null);
 
 const scaleOrder = [...new Set(byCountry.map(d => d.Scale))].sort();
 const countryOrder = [...new Set(byCountry.map(d => d.Country))].sort();
@@ -77,7 +83,7 @@ display(heatmapDiv);
 Average reliability across all countries for each scale.
 
 ```js
-const overallAlpha = raw.filter(d => d.Country === "Overall").sort((a, b) => b.Alpha - a.Alpha);
+const overallAlpha = filtered_raw.filter(d => d.Country === "Overall").sort((a, b) => b.Alpha - a.Alpha);
 
 const barDiv = document.createElement("div");
 Plotly.newPlot(barDiv, [{
@@ -132,7 +138,7 @@ async function loadScript(src) {
 await loadScript("https://code.jquery.com/jquery-3.7.1.min.js");
 await loadScript("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
 
-const tableData = raw.filter(d => d.Alpha != null);
+const tableData = filtered_raw.filter(d => d.Alpha != null);
 
 const wrapper = document.createElement("div");
 wrapper.style.cssText = "overflow-x:auto;";

@@ -329,6 +329,13 @@ nrow(dt4)
 #all -99 and -999 in the dataset are now assigned as missing 
 dt4[dt4 == -99] <- NA
 dt4[dt4 == -999] <- NA
+
+country_n <- dt4 %>% 
+  select(country_res_full) %>% 
+  group_by(country_res_full) %>% 
+  summarize(n = n())
+
+write.csv(country_n, "output/country_n_app.csv")
 ```
 
 The final sample (N = 26,511) ranged in age from 18 to 92 years old, M = 25.4, SD = 10.1. 
@@ -4090,6 +4097,11 @@ apaTables::apa.cor.table(
 ```
 
 DHF and other cultural dimensions
+
+ASK LUCY ABOUT THIS SECTION 
+- A few missing variables 
+- The Openness_to_Change_mean_country, Conservation_mean_country, Self_Enhancement_mean_country ... no code found on how these were calculated
+- Also need to figure out where the other variables are 
 
 ```{r correl-table-other-cultural}
 # believe these are mean_country centered above, but should check

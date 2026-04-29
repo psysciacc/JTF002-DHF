@@ -9,6 +9,7 @@ What do people think is *normal* within their culture for Dignity, Honour, and F
 ```js
 const rawNorms = FileAttachment("data/country_norms.csv").csv({ typed: true });
 const rawEnd   = FileAttachment("data/country_endorsement.csv").csv({ typed: true });
+const isoLookup = FileAttachment("data/countries_iso.csv").csv({ typed: false });
 ```
 
 ```js
@@ -20,7 +21,135 @@ const data = rawNorms
   .sort((a, b) => a.avgMean - b.avgMean);
 
 const countries = data.map(d => d.country_res_full);
+```
 
+## Norms Map
+
+```js
+const measureOptions = {
+  "Dignity":         "D_norm_mean_country",
+  "Honour":          "H_norm_mean_country",
+  "Face":            "F_norm_mean_country",
+  "Dignity (Self)":  "D_self_norm_mean_country",
+  "Dignity (Other)": "D_other_norm_mean_country",
+  "Honour (Self)":   "H_self_norm_mean_country",
+  "Honour (Other)":  "H_other_norm_mean_country",
+  "Face (Self)":     "F_self_norm_mean_country",
+  "Face (Other)":    "F_other_norm_mean_country",
+};
+const measureInput = Inputs.select(Object.keys(measureOptions), { label: "Measure", value: "Dignity" });
+const selectedMeasure = view(measureInput);
+```
+
+```js
+const numericToIso3 = {
+  8:"ALB", 32:"ARG", 51:"ARM", 36:"AUS", 40:"AUT", 50:"BGD",
+  70:"BIH", 76:"BRA", 100:"BGR", 120:"CMR", 124:"CAN", 152:"CHL",
+  156:"CHN", 170:"COL", 191:"HRV", 196:"CYP", 203:"CZE", 231:"ETH",
+  250:"FRA", 268:"GEO", 276:"DEU", 288:"GHA", 300:"GRC", 344:"HKG",
+  348:"HUN", 356:"IND", 360:"IDN", 364:"IRN", 368:"IRQ", 372:"IRL",
+  376:"ISR", 380:"ITA", 392:"JPN", 398:"KAZ", 404:"KEN", 414:"KWT",
+  422:"LBN", 458:"MYS", 484:"MEX", 504:"MAR", 516:"NAM", 528:"NLD",
+  554:"NZL", 566:"NGA", 807:"MKD", 586:"PAK", 608:"PHL", 616:"POL",
+  620:"PRT", 642:"ROU", 643:"RUS", 682:"SAU", 688:"SRB", 702:"SGP",
+  703:"SVK", 710:"ZAF", 724:"ESP", 756:"CHE", 764:"THA", 792:"TUR",
+  804:"UKR", 784:"ARE", 826:"GBR", 840:"USA", 860:"UZB", 704:"VNM",
+};
+
+const isoMap = new Map(isoLookup.map(d => [d.dhf_country_name, d.iso3c]));
+const col = measureOptions[selectedMeasure];
+
+const mapNormData = data
+  .map(d => ({ country: d.country_res_full, value: d[col], iso3c: isoMap.get(d.country_res_full) ?? "" }))
+  .filter(d => d.iso3c.length === 3 && typeof d.value === "number");
+
+const normDataByIso3 = new Map(mapNormData.map(d => [d.iso3c, d]));
+const normValues = mapNormData.map(d => d.value);
+const vMin = Math.min(...normValues);
+const vMax = Math.max(...normValues);
+
+const constructColor = {
+  "Dignity": [78,121,167], "Dignity (Self)": [78,121,167], "Dignity (Other)": [78,121,167],
+  "Honour":  [225,87,89],  "Honour (Self)":  [225,87,89],  "Honour (Other)":  [225,87,89],
+  "Face":    [89,161,79],  "Face (Self)":    [89,161,79],  "Face (Other)":    [89,161,79],
+};
+const [r2, g2, b2] = constructColor[selectedMeasure];
+
+function getNormColor(v) {
+  const t = (v - vMin) / (vMax - vMin || 1);
+  return `rgb(${Math.round(240+(r2-240)*t)},${Math.round(240+(g2-240)*t)},${Math.round(240+(b2-240)*t)})`;
+}
+
+function fixRing(ring) {
+  if (ring.length < 2) return ring;
+  const out = [[...ring[0]]];
+  for (let i = 1; i < ring.length; i++) {
+    let lng = ring[i][0];
+    const prev = out[i-1][0];
+    while (lng - prev >  180) lng -= 360;
+    while (lng - prev < -180) lng += 360;
+    out.push([lng, ring[i][1]]);
+  }
+  return out;
+}
+function fixGeometry(geom) {
+  if (!geom) return;
+  if (geom.type === "Polygon")      geom.coordinates = geom.coordinates.map(fixRing);
+  if (geom.type === "MultiPolygon") geom.coordinates = geom.coordinates.map(p => p.map(fixRing));
+}
+
+const world = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r => r.json());
+const geojson = topojson.feature(world, world.objects.countries);
+geojson.features.forEach(f => fixGeometry(f.geometry));
+
+const normMapContainer = document.createElement("div");
+normMapContainer.style.cssText = "height:480px;width:100%;border-radius:8px;overflow:hidden;";
+display(normMapContainer);
+await new Promise(r => requestAnimationFrame(r));
+
+const lmap = L.map(normMapContainer, {
+  center: [25, 10], zoom: 2, minZoom: 1, maxZoom: 6,
+  zoomControl: true, attributionControl: false, scrollWheelZoom: false,
+});
+
+L.geoJSON(geojson, {
+  style(feature) {
+    const iso3 = numericToIso3[+feature.id];
+    const d = iso3 ? normDataByIso3.get(iso3) : null;
+    return { fillColor: d ? getNormColor(d.value) : "#f0f0f0", fillOpacity: 1, color: "#ccc", weight: 0.5 };
+  },
+  onEachFeature(feature, layer) {
+    const iso3 = numericToIso3[+feature.id];
+    const d = iso3 ? normDataByIso3.get(iso3) : null;
+    if (d) {
+      layer.bindTooltip(`<strong>${d.country}</strong><br>${selectedMeasure}: ${d.value.toFixed(3)}`, { sticky: true });
+      layer.on("mouseover", function() { this.setStyle({ fillOpacity: 0.75, weight: 1.5, color: "#333" }); });
+      layer.on("mouseout",  function() { this.setStyle({ fillOpacity: 1,    weight: 0.5, color: "#ccc" }); });
+    }
+  },
+}).addTo(lmap);
+
+const legend = L.control({ position: "bottomright" });
+legend.onAdd = () => {
+  const div = L.DomUtil.create("div");
+  div.style.cssText = "background:rgba(255,255,255,0.92);padding:10px 14px;border-radius:7px;font:13px/1.8 system-ui,sans-serif;color:#333;box-shadow:0 2px 8px rgba(0,0,0,.15);";
+  div.innerHTML = `
+    <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;color:#666">${selectedMeasure}</div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <span style="font-size:11px">${vMin.toFixed(2)}</span>
+      <div style="width:80px;height:12px;border-radius:3px;background:linear-gradient(to right,rgb(240,240,240),rgb(${r2},${g2},${b2}));border:1px solid rgba(0,0,0,.1)"></div>
+      <span style="font-size:11px">${vMax.toFixed(2)}</span>
+    </div>`;
+  return div;
+};
+legend.addTo(lmap);
+```
+
+---
+
+## Norms by Country
+
+```js
 const dotDiv = document.createElement("div");
 Plotly.newPlot(dotDiv, [
   {
