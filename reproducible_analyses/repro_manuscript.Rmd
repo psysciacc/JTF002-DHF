@@ -3512,6 +3512,22 @@ country_endors <- dt4 %>%
     )
   )
 
+# country_endors <- dt4 %>%
+#   group_by(country_res_full) %>%
+#   summarize(
+#     across(
+#       c(D_self_end, D_other_end, H_self_end, H_other_end, F_self_end, F_other_end,
+#         D_end, H_end, F_end,
+#         D_self_endc, D_other_endc, H_self_endc, H_other_endc, F_self_endc, F_other_endc,
+#         D_endc, H_endc, F_endc),
+#       list(
+#         mean = ~mean(.x, na.rm = TRUE),
+#         sd   = ~sd(.x, na.rm = TRUE)
+#       ),
+#       .names = "{.col}_{.fn}_country"
+#     )
+#   )
+
 write.csv(country_endors, "output/country_endorsement.csv")
 
 dt4 <- dt4 %>%
@@ -3560,6 +3576,22 @@ country_norm <- dt4 %>%
       .names = "{.col}_mean_country"
     )
   )
+
+# country_norm <- dt4 %>%
+#   group_by(country_res_full) %>%
+#   summarize(
+#     across(
+#       c(D_self_norm, D_other_norm, H_self_norm, H_other_norm, F_self_norm, F_other_norm,
+#         D_norm, H_norm, F_norm,
+#         D_self_normc, D_other_normc, H_self_normc, H_other_normc, F_self_normc, F_other_normc,
+#         D_normc, H_normc, F_normc),
+#       list(
+#         mean = ~mean(.x, na.rm = TRUE),
+#         sd   = ~sd(.x, na.rm = TRUE)
+#       ),
+#       .names = "{.col}_{.fn}_country"
+#     )
+#   )
 
 write.csv(country_norm, "output/country_norms.csv")
 

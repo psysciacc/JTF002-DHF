@@ -103,8 +103,8 @@ if (filtered.length === 0) {
       },
       marker: {
         color,
-        size: 8,
-        line: { color: "white", width: 1 },
+        size: 10,
+        line: { color: fg, width: 1.5 },
       },
       hovertemplate:
         "<b>%{y}</b><br>" +
@@ -122,12 +122,13 @@ if (filtered.length === 0) {
     xaxis: {
       title: { text: "Mean Score", font: { color: fg } },
       tickfont: { color: fg },
-      gridcolor: "#eee",
+      gridcolor: "rgba(128,128,128,0.15)",
       zeroline: false,
     },
     yaxis: {
       tickfont: { size: 10, color: fg },
       automargin: true,
+      gridcolor: "rgba(128,128,128,0.15)",
     },
     margin: { t: 60, b: 60, l: 180, r: 30 },
     height: Math.max(500, filtered.length * 14 + 80),
