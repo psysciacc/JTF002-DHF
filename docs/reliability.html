@@ -56,7 +56,9 @@ const text = countryOrder.map(c => scaleOrder.map(s => {
 return {byCountry,scaleOrder,countryOrder,lookup,z,text};
 }});
 
-define({id: "72e9f14d", inputs: ["Plotly","z","scaleOrder","countryOrder","text","display"], outputs: ["heatmapDiv"], body: (Plotly,z,scaleOrder,countryOrder,text,display) => {
+define({id: "1cc0e566", inputs: ["getComputedStyle","Plotly","z","scaleOrder","countryOrder","text","display"], outputs: ["fg","heatmapDiv"], body: (getComputedStyle,Plotly,z,scaleOrder,countryOrder,text,display) => {
+const fg = getComputedStyle(document.documentElement).getPropertyValue("--theme-foreground").trim() || "#333";
+
 const heatmapDiv = document.createElement("div");
 Plotly.newPlot(heatmapDiv, [{
   type: "heatmap",
@@ -75,26 +77,27 @@ Plotly.newPlot(heatmapDiv, [{
   zmin: 0,
   zmax: 1,
   colorbar: {
-    title: "α",
+    title: { text: "α", font: { color: fg } },
     tickvals: [0, 0.3, 0.6, 0.7, 0.8, 1.0],
     ticktext: ["0", "0.3", "0.6 (poor)", "0.7 (ok)", "0.8 (good)", "1.0"],
+    tickfont: { color: fg },
     len: 0.8,
   },
   zauto: false,
 }], {
-  title: { text: "Cronbach's α by Country and Scale", font: { size: 15 } },
-  xaxis: { tickangle: -45, tickfont: { size: 10 }, automargin: true },
-  yaxis: { tickfont: { size: 10 }, automargin: true },
+  title: { text: "Cronbach's α by Country and Scale", font: { size: 15, color: fg } },
+  xaxis: { tickangle: -45, tickfont: { size: 10, color: fg }, automargin: true },
+  yaxis: { tickfont: { size: 10, color: fg }, automargin: true },
   margin: { t: 50, b: 180, l: 160, r: 20 },
   height: Math.max(600, countryOrder.length * 12),
-  plot_bgcolor: "transparent",
+  plot_bgcolor: "#ffffff",
   paper_bgcolor: "transparent",
 }, { responsive: true, displayModeBar: true });
 display(heatmapDiv);
-return {heatmapDiv};
+return {fg,heatmapDiv};
 }});
 
-define({id: "2675f1be", inputs: ["raw","Plotly","display"], outputs: ["overallAlpha","barDiv"], body: (raw,Plotly,display) => {
+define({id: "c3f47e83", inputs: ["raw","Plotly","fg","display"], outputs: ["overallAlpha","barDiv"], body: (raw,Plotly,fg,display) => {
 const overallAlpha = raw.filter(d => d.Country === "Overall").sort((a, b) => b.Alpha - a.Alpha);
 
 const barDiv = document.createElement("div");
@@ -111,9 +114,9 @@ Plotly.newPlot(barDiv, [{
   },
   hovertemplate: "<b>%{x}</b><br>α = %{y:.3f}<extra></extra>",
 }], {
-  title: { text: "Overall Cronbach's α (all countries pooled)", font: { size: 15 } },
-  xaxis: { tickangle: -45, tickfont: { size: 11 }, automargin: true },
-  yaxis: { title: "Cronbach's α", range: [0, 1], gridcolor: "#eee" },
+  title: { text: "Overall Cronbach's α (all countries pooled)", font: { size: 15, color: fg } },
+  xaxis: { tickangle: -45, tickfont: { size: 11, color: fg }, automargin: true },
+  yaxis: { title: { text: "Cronbach's α", font: { color: fg } }, tickfont: { color: fg }, range: [0, 1], gridcolor: "#eee" },
   shapes: [
     { type: "line", x0: -0.5, x1: overallAlpha.length - 0.5, y0: 0.7, y1: 0.7,
       line: { color: "#666", dash: "dash", width: 1 } },
@@ -133,16 +136,20 @@ display(barDiv);
 return {overallAlpha,barDiv};
 }});
 
-define({id: "47f08f8e", outputs: ["loadDataTables"], body: async () => {
-async function loadDataTables() {
-  await import("https://code.jquery.com/jquery-3.7.1.min.js");
-  await import("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
+define({id: "8e73a24f", inputs: ["raw","display"], outputs: ["loadScript","tableData","wrapper","tbl"], body: async (raw,display) => {
+async function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
 }
-await loadDataTables();
-return {loadDataTables};
-}});
+await loadScript("https://code.jquery.com/jquery-3.7.1.min.js");
+await loadScript("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
 
-define({id: "030e79c1", inputs: ["raw","display","$"], outputs: ["tableData","wrapper","tbl"], body: (raw,display,$) => {
 const tableData = raw.filter(d => d.Alpha != null);
 
 const wrapper = document.createElement("div");
@@ -182,13 +189,13 @@ tbl.innerHTML = `
 wrapper.appendChild(tbl);
 display(wrapper);
 
-$(tbl).DataTable({
+window.$(tbl).DataTable({
   pageLength: 25,
   order: [[5, "asc"]],
   language: { search: "Filter:" },
   columnDefs: [{ targets: [2, 3, 4, 5], className: "dt-right" }],
 });
-return {tableData,wrapper,tbl};
+return {loadScript,tableData,wrapper,tbl};
 }});
 
 </script>
@@ -203,9 +210,10 @@ return {tableData,wrapper,tbl};
   </ol>
   <ol>
     <li class="observablehq-link"><a href="./">Overview</a></li>
+    <li class="observablehq-link"><a href="./endorsement">Country Endorsement</a></li>
+    <li class="observablehq-link"><a href="./norms">Country Norms</a></li>
     <li class="observablehq-link observablehq-link-active"><a href="./reliability">Scale Reliability</a></li>
     <li class="observablehq-link"><a href="./countries">Country Comparisons</a></li>
-    <li class="observablehq-link"><a href="./items">Item Analysis</a></li>
   </ol>
 </nav>
 <script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
@@ -227,19 +235,18 @@ return {tableData,wrapper,tbl};
 <div class="observablehq observablehq--block"><!--:642c3fb7:--></div>
 <h2 id="alpha-heatmap-all-countries-scales" tabindex="-1"><a class="observablehq-header-anchor" href="#alpha-heatmap-all-countries-scales">Alpha Heatmap — All Countries × Scales</a></h2>
 <p>Each cell shows Cronbach's α. Hover for exact values. Grey cells = scale not administered in that country.</p>
-<div class="observablehq observablehq--block"><!--:72e9f14d:--></div>
+<div class="observablehq observablehq--block"><!--:1cc0e566:--></div>
 <hr>
 <h2 id="overall-a-by-scale" tabindex="-1"><a class="observablehq-header-anchor" href="#overall-a-by-scale">Overall α by Scale</a></h2>
 <p>Average reliability across all countries for each scale.</p>
-<div class="observablehq observablehq--block"><!--:2675f1be:--></div>
+<div class="observablehq observablehq--block"><!--:c3f47e83:--></div>
 <hr>
 <h2 id="full-reliability-table" tabindex="-1"><a class="observablehq-header-anchor" href="#full-reliability-table">Full Reliability Table</a></h2>
-<div class="observablehq observablehq--block"><!--:47f08f8e:--></div>
-<div class="observablehq observablehq--block"><!--:030e79c1:--></div>
+<div class="observablehq observablehq--block"><!--:8e73a24f:--></div>
 </main>
 <footer id="observablehq-footer">
-<nav><a rel="prev" href="./"><span>DHF Cross-Cultural Study</span></a><a rel="next" href="./countries"><span>Country Comparisons</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-28T23:07:48">Apr 28, 2026</a>.</div>
+<nav><a rel="prev" href="./norms"><span>Country Norms</span></a><a rel="next" href="./countries"><span>Country Comparisons</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-29T00:11:38">Apr 29, 2026</a>.</div>
 </footer>
 </div>
 </body>

@@ -4,6 +4,8 @@ export default {
   output: "../docs",
   pages: [
     { name: "Overview", path: "/" },
+    { name: "Country Endorsement", path: "/endorsement" },
+    { name: "Country Norms", path: "/norms" },
     { name: "Scale Reliability", path: "/reliability" },
     { name: "Country Comparisons", path: "/countries" },
   ],

@@ -97,7 +97,7 @@ const selectedScale = view(scaleInput);
 return {scaleInput,selectedScale};
 }});
 
-define({id: "75e06250", inputs: ["desc","selectedScale","scaleDomainMap","Plotly","display"], outputs: ["domainColors","filtered","domain","color","dotDiv"], body: (desc,selectedScale,scaleDomainMap,Plotly,display) => {
+define({id: "8cf8159a", inputs: ["desc","selectedScale","scaleDomainMap","getComputedStyle","Plotly","display"], outputs: ["domainColors","filtered","domain","color","fg","dotDiv"], body: (desc,selectedScale,scaleDomainMap,getComputedStyle,Plotly,display) => {
 const domainColors = {
   "Face & Conflict": "#4e79a7",
   "Violence Acceptance": "#e15759",
@@ -112,6 +112,8 @@ const filtered = desc
 
 const domain = scaleDomainMap[selectedScale] ?? "Other";
 const color = domainColors[domain];
+
+const fg = getComputedStyle(document.documentElement).getPropertyValue("--theme-foreground").trim() || "#333";
 
 const dotDiv = document.createElement("div");
 
@@ -135,8 +137,8 @@ if (filtered.length === 0) {
       },
       marker: {
         color,
-        size: 8,
-        line: { color: "white", width: 1 },
+        size: 10,
+        line: { color: fg, width: 1.5 },
       },
       hovertemplate:
         "<b>%{y}</b><br>" +
@@ -149,16 +151,18 @@ if (filtered.length === 0) {
   ], {
     title: {
       text: `${selectedScale.replace(/_/g, " ")} — Mean by Country (±1 SD)`,
-      font: { size: 15 },
+      font: { size: 15, color: fg },
     },
     xaxis: {
-      title: "Mean Score",
-      gridcolor: "#eee",
+      title: { text: "Mean Score", font: { color: fg } },
+      tickfont: { color: fg },
+      gridcolor: "rgba(128,128,128,0.15)",
       zeroline: false,
     },
     yaxis: {
-      tickfont: { size: 10 },
+      tickfont: { size: 10, color: fg },
       automargin: true,
+      gridcolor: "rgba(128,128,128,0.15)",
     },
     margin: { t: 60, b: 60, l: 180, r: 30 },
     height: Math.max(500, filtered.length * 14 + 80),
@@ -168,7 +172,7 @@ if (filtered.length === 0) {
   }, { responsive: true, displayModeBar: true });
 }
 display(dotDiv);
-return {domainColors,filtered,domain,color,dotDiv};
+return {domainColors,filtered,domain,color,fg,dotDiv};
 }});
 
 define({id: "f20fcfa4", inputs: ["Inputs","domainColors","view"], outputs: ["domainInput","selectedDomain"], body: (Inputs,domainColors,view) => {
@@ -180,7 +184,7 @@ const selectedDomain = view(domainInput);
 return {domainInput,selectedDomain};
 }});
 
-define({id: "ca375b3d", inputs: ["allScales","scaleDomainMap","selectedDomain","desc","Plotly","display"], outputs: ["domainScales","domainData","countryMap","overviewRows","overviewDiv"], body: (allScales,scaleDomainMap,selectedDomain,desc,Plotly,display) => {
+define({id: "5068688e", inputs: ["allScales","scaleDomainMap","selectedDomain","desc","Plotly","fg","display"], outputs: ["domainScales","domainData","countryMap","overviewRows","overviewDiv"], body: (allScales,scaleDomainMap,selectedDomain,desc,Plotly,fg,display) => {
 const domainScales = allScales.filter(s => (scaleDomainMap[s] ?? "Other") === selectedDomain);
 
 const domainData = desc.filter(d =>
@@ -219,10 +223,10 @@ Plotly.newPlot(overviewDiv,
     };
   }),
   {
-    title: { text: `${selectedDomain} — Country Means by Scale`, font: { size: 15 } },
+    title: { text: `${selectedDomain} — Country Means by Scale`, font: { size: 15, color: fg } },
     barmode: "group",
-    xaxis: { tickangle: -45, tickfont: { size: 9 }, automargin: true },
-    yaxis: { title: "Mean Score", gridcolor: "#eee" },
+    xaxis: { tickangle: -45, tickfont: { size: 9, color: fg }, automargin: true },
+    yaxis: { title: { text: "Mean Score", font: { color: fg } }, tickfont: { color: fg }, gridcolor: "#eee" },
     margin: { t: 50, b: 160, l: 60, r: 20 },
     plot_bgcolor: "transparent",
     paper_bgcolor: "transparent",
@@ -235,16 +239,20 @@ display(overviewDiv);
 return {domainScales,domainData,countryMap,overviewRows,overviewDiv};
 }});
 
-define({id: "47f08f8e", outputs: ["loadDataTables"], body: async () => {
-async function loadDataTables() {
-  await import("https://code.jquery.com/jquery-3.7.1.min.js");
-  await import("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
+define({id: "55c82977", inputs: ["desc","scaleDomainMap","display"], outputs: ["loadScript","descAll","dtWrapper","dtTbl"], body: async (desc,scaleDomainMap,display) => {
+async function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
 }
-await loadDataTables();
-return {loadDataTables};
-}});
+await loadScript("https://code.jquery.com/jquery-3.7.1.min.js");
+await loadScript("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
 
-define({id: "2950e818", inputs: ["desc","scaleDomainMap","display","$"], outputs: ["descAll","dtWrapper","dtTbl"], body: (desc,scaleDomainMap,display,$) => {
 const descAll = desc.filter(d => d.Group !== "Overall" && d.Mean != null);
 
 const dtWrapper = document.createElement("div");
@@ -284,13 +292,13 @@ dtTbl.innerHTML = `
 dtWrapper.appendChild(dtTbl);
 display(dtWrapper);
 
-$(dtTbl).DataTable({
+window.$(dtTbl).DataTable({
   pageLength: 25,
   order: [[0, "asc"]],
   language: { search: "Filter:" },
   columnDefs: [{ targets: [3, 4, 5, 6, 7], className: "dt-right" }],
 });
-return {descAll,dtWrapper,dtTbl};
+return {loadScript,descAll,dtWrapper,dtTbl};
 }});
 
 </script>
@@ -305,9 +313,10 @@ return {descAll,dtWrapper,dtTbl};
   </ol>
   <ol>
     <li class="observablehq-link"><a href="./">Overview</a></li>
+    <li class="observablehq-link"><a href="./endorsement">Country Endorsement</a></li>
+    <li class="observablehq-link"><a href="./norms">Country Norms</a></li>
     <li class="observablehq-link"><a href="./reliability">Scale Reliability</a></li>
     <li class="observablehq-link observablehq-link-active"><a href="./countries">Country Comparisons</a></li>
-    <li class="observablehq-link"><a href="./items">Item Analysis</a></li>
   </ol>
 </nav>
 <script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
@@ -329,20 +338,19 @@ return {descAll,dtWrapper,dtTbl};
 <div class="observablehq observablehq--block"><!--:5003a6e5:--></div>
 <h2 id="select-a-scale" tabindex="-1"><a class="observablehq-header-anchor" href="#select-a-scale">Select a Scale</a></h2>
 <div class="observablehq observablehq--block"><!--:1a06d500:--></div>
-<div class="observablehq observablehq--block"><!--:75e06250:--></div>
+<div class="observablehq observablehq--block"><!--:8cf8159a:--></div>
 <hr>
 <h2 id="multi-scale-overview-mean-by-country" tabindex="-1"><a class="observablehq-header-anchor" href="#multi-scale-overview-mean-by-country">Multi-Scale Overview: Mean by Country</a></h2>
 <p>Compare country means across a domain at a glance.</p>
 <div class="observablehq observablehq--block"><!--:f20fcfa4:--></div>
-<div class="observablehq observablehq--block"><!--:ca375b3d:--></div>
+<div class="observablehq observablehq--block"><!--:5068688e:--></div>
 <hr>
 <h2 id="descriptives-table" tabindex="-1"><a class="observablehq-header-anchor" href="#descriptives-table">Descriptives Table</a></h2>
-<div class="observablehq observablehq--block"><!--:47f08f8e:--></div>
-<div class="observablehq observablehq--block"><!--:2950e818:--></div>
+<div class="observablehq observablehq--block"><!--:55c82977:--></div>
 </main>
 <footer id="observablehq-footer">
-<nav><a rel="prev" href="./reliability"><span>Scale Reliability</span></a><a rel="next" href="./items"><span>Item Analysis</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-28T23:07:48">Apr 28, 2026</a>.</div>
+<nav><a rel="prev" href="./reliability"><span>Scale Reliability</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-29T00:11:38">Apr 29, 2026</a>.</div>
 </footer>
 </div>
 </body>
