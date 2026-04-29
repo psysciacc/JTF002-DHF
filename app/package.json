@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "observable preview",
-    "build": "observable build",
+    "build": "observable build && touch ../docs/.nojekyll",
     "clean": "rm -rf ../docs"
   },
   "dependencies": {
