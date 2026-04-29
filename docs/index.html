@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>DHF Cross-Cultural Study — Overview | DHF Cross-Cultural Study</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="preload" as="style" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
+<link rel="modulepreload" href="./_observablehq/client.0da6b234.js">
+<link rel="modulepreload" href="./_observablehq/runtime.607a8173.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.277aeab8.js">
+<link rel="modulepreload" href="./_npm/leaflet@1.9.4/721623d8.js">
+<link rel="modulepreload" href="./_npm/topojson-client@3.1.0/edd9ee95.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/9cffc2bd.js">
+
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+    <style>
+      :root { --theme-foreground-focus: #4e79a7; }
+      .card { background: var(--theme-background-alt); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+      table.dataTable thead th { background: var(--theme-background-alt); }
+      .leaflet-container { background: #fff !important; }
+    </style>
+  
+<script type="module">
+
+import {define} from "./_observablehq/client.0da6b234.js";
+import {registerFile} from "./_observablehq/stdlib.277aeab8.js";
+
+registerFile("./data/alpha_results.csv", {"name":"./data/alpha_results.csv","mimeType":"text/csv","path":"./_file/data/alpha_results.1498398e.csv","lastModified":1777433148785,"size":91123});
+registerFile("./data/countries_iso.csv", {"name":"./data/countries_iso.csv","mimeType":"text/csv","path":"./_file/data/countries_iso.73f969da.csv","lastModified":1777433458459,"size":920});
+registerFile("./data/scale_descriptives.csv", {"name":"./data/scale_descriptives.csv","mimeType":"text/csv","path":"./_file/data/scale_descriptives.ba4a3099.csv","lastModified":1777433148774,"size":86129});
+
+define({id: "3d29da27", mode: "inline", inputs: ["totalN","display"], body: async (totalN,display) => {
+display(await(
+totalN.toLocaleString()
+))
+}});
+
+define({id: "eb31586d", mode: "inline", inputs: ["countries","display"], body: async (countries,display) => {
+display(await(
+countries.length
+))
+}});
+
+define({id: "11d3aa8d", inputs: ["FileAttachment"], outputs: ["desc","isoLookup"], body: (FileAttachment) => {
+const desc = FileAttachment("./data/scale_descriptives.csv").csv({ typed: true });
+const isoLookup = FileAttachment("./data/countries_iso.csv").csv({ typed: false });
+return {desc,isoLookup};
+}});
+
+define({id: "c4c4021b", inputs: ["desc","isoLookup"], outputs: ["countrySizes","countries","totalN","isoMap","mapData"], body: (desc,isoLookup) => {
+// One row per country using Composite_Religiosity (good coverage across all sites)
+const countrySizes = desc
+  .filter(d => d.Scale === "Composite_Religiosity" && d.Group !== "Overall")
+  .map(d => ({ country: d.Group, n: d.N }))
+  .sort((a, b) => b.n - a.n);
+
+const countries = countrySizes.map(d => d.country);
+const totalN = countrySizes.reduce((s, d) => s + d.n, 0);
+
+// Join with ISO codes; drop rows without a code (Kosovo, Taiwan, North of Cyprus)
+const isoMap = new Map(isoLookup.map(d => [d.dhf_country_name, d.iso3c]));
+const mapData = countrySizes
+  .map(d => ({ ...d, iso3c: isoMap.get(d.country) ?? "" }))
+  .filter(d => d.iso3c.length === 3);
+return {countrySizes,countries,totalN,isoMap,mapData};
+}});
+
+define({id: "dcfa32ca", inputs: ["mapData","topojson","display","L"], outputs: ["numericToIso3","mapRows","dataByIso3","binDefs","getColor","world","geojson","fixRing","fixGeometry","mapContainer","lmap","legend"], body: async (mapData,topojson,display,L) => {
+// ISO 3166-1 numeric → ISO3 for every study country
+const numericToIso3 = {
+  8:"ALB", 32:"ARG", 51:"ARM", 36:"AUS", 40:"AUT", 50:"BGD",
+  70:"BIH", 76:"BRA", 100:"BGR", 120:"CMR", 124:"CAN", 152:"CHL",
+  156:"CHN", 170:"COL", 191:"HRV", 196:"CYP", 203:"CZE", 231:"ETH",
+  250:"FRA", 268:"GEO", 276:"DEU", 288:"GHA", 300:"GRC", 344:"HKG",
+  348:"HUN", 356:"IND", 360:"IDN", 364:"IRN", 368:"IRQ", 372:"IRL",
+  376:"ISR", 380:"ITA", 392:"JPN", 398:"KAZ", 404:"KEN", 414:"KWT",
+  422:"LBN", 458:"MYS", 484:"MEX", 504:"MAR", 516:"NAM", 528:"NLD",
+  554:"NZL", 566:"NGA", 807:"MKD", 586:"PAK", 608:"PHL", 616:"POL",
+  620:"PRT", 642:"ROU", 643:"RUS", 682:"SAU", 688:"SRB", 702:"SGP",
+  703:"SVK", 710:"ZAF", 724:"ESP", 756:"CHE", 764:"THA", 792:"TUR",
+  804:"UKR", 784:"ARE", 826:"GBR", 840:"USA", 860:"UZB", 704:"VNM",
+};
+
+const mapRows = mapData.filter(d => d.n > 0);
+const dataByIso3 = new Map(mapRows.map(d => [d.iso3c, d]));
+
+const binDefs = [
+  { min: 0,    max: 100,      label: "< 100",   color: "#deebf7" },
+  { min: 100,  max: 250,      label: "100–249",  color: "#9ecae1" },
+  { min: 250,  max: 500,      label: "250–499",  color: "#4292c6" },
+  { min: 500,  max: 1000,     label: "500–999",  color: "#2171b5" },
+  { min: 1000, max: Infinity, label: "1,000+",   color: "#084594" },
+];
+
+function getColor(n) {
+  return (binDefs.find(b => n >= b.min && n < b.max) ?? binDefs.at(-1)).color;
+}
+
+// Fetch world atlas topojson at browser runtime (no build-time CDN issue)
+const world = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+  .then(r => r.json());
+const geojson = topojson.feature(world, world.objects.countries);
+
+// Fix antimeridian: Russia's ring goes from ~178°E to ~−168°W — coordinates are
+// all within [−180, 180] but the polygon "wraps the long way" so Leaflet fills
+// the entire northern hemisphere. Fix by unwrapping consecutive longitude jumps
+// > 180°, turning −168° into +192° so the ring is one continuous eastward path.
+function fixRing(ring) {
+  if (ring.length < 2) return ring;
+  const out = [[...ring[0]]];
+  for (let i = 1; i < ring.length; i++) {
+    let lng = ring[i][0];
+    const prev = out[i - 1][0];
+    while (lng - prev >  180) lng -= 360;
+    while (lng - prev < -180) lng += 360;
+    out.push([lng, ring[i][1]]);
+  }
+  return out;
+}
+function fixGeometry(geom) {
+  if (!geom) return;
+  if (geom.type === "Polygon")      geom.coordinates = geom.coordinates.map(fixRing);
+  if (geom.type === "MultiPolygon") geom.coordinates = geom.coordinates.map(p => p.map(fixRing));
+}
+geojson.features.forEach(f => fixGeometry(f.geometry));
+
+// Build container and initialise Leaflet after it's in the DOM
+const mapContainer = document.createElement("div");
+mapContainer.style.cssText = "height:560px;width:100%;border-radius:8px;overflow:hidden;";
+display(mapContainer);
+await new Promise(r => requestAnimationFrame(r));
+
+const lmap = L.map(mapContainer, {
+  center: [25, 10],
+  zoom: 2,
+  minZoom: 1,
+  maxZoom: 6,
+  zoomControl: true,
+  attributionControl: false,
+  scrollWheelZoom: false,
+});
+
+L.geoJSON(geojson, {
+  style(feature) {
+    const iso3 = numericToIso3[+feature.id];
+    const d = iso3 ? dataByIso3.get(iso3) : null;
+    return {
+      fillColor:   d ? getColor(d.n) : "#f0f0f0",
+      fillOpacity: 1,
+      color:       "#ccc",
+      weight:      0.5,
+    };
+  },
+  onEachFeature(feature, layer) {
+    const iso3 = numericToIso3[+feature.id];
+    const d = iso3 ? dataByIso3.get(iso3) : null;
+    if (d) {
+      layer.bindTooltip(
+        `<strong>${d.country}</strong><br>N = ${d.n.toLocaleString()}`,
+        { sticky: true }
+      );
+      layer.on("mouseover", function() { this.setStyle({ fillOpacity: 0.75, weight: 1.5, color: "#333" }); });
+      layer.on("mouseout",  function() { this.setStyle({ fillOpacity: 1,    weight: 0.5, color: "#ccc"  }); });
+    }
+  },
+}).addTo(lmap);
+
+// Inline legend (bottom-right)
+const legend = L.control({ position: "bottomright" });
+legend.onAdd = () => {
+  const div = L.DomUtil.create("div");
+  div.style.cssText = [
+    "background:rgba(255,255,255,0.92)",
+    "padding:10px 14px",
+    "border-radius:7px",
+    "font:13px/1.8 system-ui,sans-serif",
+    "color:#333",
+    "box-shadow:0 2px 8px rgba(0,0,0,.15)",
+  ].join(";");
+  div.innerHTML =
+    `<div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;color:#666">Sample size</div>` +
+    binDefs.map(b =>
+      `<div><span style="display:inline-block;width:13px;height:13px;background:${b.color};` +
+      `border-radius:2px;margin-right:7px;vertical-align:middle;border:1px solid rgba(0,0,0,.1)"></span>${b.label}</div>`
+    ).join("");
+  return div;
+};
+legend.addTo(lmap);
+return {numericToIso3,mapRows,dataByIso3,binDefs,getColor,world,geojson,fixRing,fixGeometry,mapContainer,lmap,legend};
+}});
+
+define({id: "7a1a76e6", mode: "inline", inputs: ["scales","display"], body: async (scales,display) => {
+display(await(
+scales.length
+))
+}});
+
+define({id: "f57bd5ab", inputs: ["desc","display"], outputs: ["scales","scaleDomains","domainTable"], body: (desc,display) => {
+const scales = [...new Set(desc.filter(d => d.Group !== "Overall").map(d => d.Scale))].sort();
+
+const scaleDomains = {
+  "Face & Conflict": ["Other_Face_Concern", "Self_Face_Concern", "Withdrawal", "Retaliation", "Humor"],
+  "Violence Acceptance": ["Positive_Reciprocity", "Negative_Reciprocity", "Penal_Code_Violence", "War_Acceptance", "Corporal_Punishment", "Intimate_Violence", "Total_Violence_Scale"],
+  "Moral Foundations": ["MFQ_Care", "MFQ_Equality", "MFQ_Proportionality", "MFQ_Loyalty", "MFQ_Authority", "MFQ_Purity"],
+  "Schwartz Values": ["Achievement", "Benevolence", "Conformity", "Conservation", "Hedonism", "Openness_to_Change", "Power", "Security", "Self_Direction", "Self_Enhancement", "Self_Transcendence", "Stimulation", "Tradition", "Universalism"],
+  "Other": ["Intrinsic_Religiosity", "Composite_Religiosity", "Subjective_Wellbeing"],
+};
+
+const domainTable = document.createElement("div");
+domainTable.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;";
+
+for (const [domain, scaleList] of Object.entries(scaleDomains)) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <strong style="font-size:1.05rem;">${domain}</strong>
+    <ul style="margin:.5rem 0 0;padding-left:1.2rem;font-size:.88rem;line-height:1.7;">
+      ${scaleList.map(s => `<li>${s.replace(/_/g, " ")}</li>`).join("")}
+    </ul>
+  `;
+  domainTable.appendChild(card);
+}
+display(domainTable);
+return {scales,scaleDomains,domainTable};
+}});
+
+define({id: "66e1668c", inputs: ["FileAttachment"], outputs: ["alpha"], body: (FileAttachment) => {
+const alpha = FileAttachment("./data/alpha_results.csv").csv({ typed: true });
+return {alpha};
+}});
+
+define({id: "b1bf33e1", inputs: ["alpha","countries","totalN","scales","display"], outputs: ["overallAlpha","avgAlpha","statsDiv","stats"], body: (alpha,countries,totalN,scales,display) => {
+const overallAlpha = alpha.filter(d => d.Country === "Overall");
+const avgAlpha = overallAlpha.reduce((s, d) => s + d.Alpha, 0) / overallAlpha.length;
+
+const statsDiv = document.createElement("div");
+statsDiv.style.cssText = "display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;";
+
+const stats = [
+  { label: "Countries", value: countries.length },
+  { label: "Total Participants", value: totalN.toLocaleString() },
+  { label: "Scales Measured", value: scales.length },
+  { label: "Avg. Cronbach's α", value: avgAlpha.toFixed(3) },
+];
+
+for (const s of stats) {
+  const cell = document.createElement("div");
+  cell.className = "card";
+  cell.innerHTML = `
+    <div style="font-size:2rem;font-weight:700;color:var(--theme-foreground-focus);">${s.value}</div>
+    <div style="font-size:.9rem;color:var(--theme-foreground-muted);">${s.label}</div>
+  `;
+  statsDiv.appendChild(cell);
+}
+display(statsDiv);
+return {overallAlpha,avgAlpha,statsDiv,stats};
+}});
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link observablehq-link-active"><a href="./">DHF Cross-Cultural Study</a></li>
+  </ol>
+  <ol>
+    <li class="observablehq-link observablehq-link-active"><a href="./">Overview</a></li>
+    <li class="observablehq-link"><a href="./reliability">Scale Reliability</a></li>
+    <li class="observablehq-link"><a href="./countries">Country Comparisons</a></li>
+    <li class="observablehq-link"><a href="./items">Item Analysis</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#sample-size-by-country">Sample Size by Country</a></li>
+<li class="observablehq-secondary-link"><a href="#scale-coverage-summary">Scale Coverage Summary</a></li>
+<li class="observablehq-secondary-link"><a href="#quick-stats">Quick Stats</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="dignity-honour-and-face-a-cross-cultural-study" tabindex="-1"><a class="observablehq-header-anchor" href="#dignity-honour-and-face-a-cross-cultural-study">Dignity, Honour &amp; Face: A Cross-Cultural Study</a></h1>
+<p>This dashboard presents data from a large-scale Psychological Science Accelerator (PSA) project examining how people across the world conceptualize and respond to threats to <strong>Dignity</strong>, <strong>Honour</strong>, and <strong>Face</strong>. Data were collected from <strong><observablehq-loading></observablehq-loading><!--:3d29da27:--></strong> participants across <strong><observablehq-loading></observablehq-loading><!--:eb31586d:--></strong> countries using standardized surveys administered via Qualtrics and Gorilla.</p>
+<hr>
+<h2 id="sample-size-by-country" tabindex="-1"><a class="observablehq-header-anchor" href="#sample-size-by-country">Sample Size by Country</a></h2>
+<div class="observablehq observablehq--block"><!--:11d3aa8d:--></div>
+<div class="observablehq observablehq--block"><!--:c4c4021b:--></div>
+<div class="observablehq observablehq--block"><!--:dcfa32ca:--></div>
+<hr>
+<h2 id="scale-coverage-summary" tabindex="-1"><a class="observablehq-header-anchor" href="#scale-coverage-summary">Scale Coverage Summary</a></h2>
+<p>The study measured <strong><observablehq-loading></observablehq-loading><!--:7a1a76e6:--> psychological scales</strong> spanning five conceptual domains:</p>
+<div class="observablehq observablehq--block"><!--:f57bd5ab:--></div>
+<hr>
+<h2 id="quick-stats" tabindex="-1"><a class="observablehq-header-anchor" href="#quick-stats">Quick Stats</a></h2>
+<div class="observablehq observablehq--block"><!--:66e1668c:--></div>
+<div class="observablehq observablehq--block"><!--:b1bf33e1:--></div>
+<hr>
+<p><em>Data collected as part of the Psychological Science Accelerator project JTF002. Analyses run in R using lavaan for structural equation modelling.</em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="next" href="./reliability"><span>Scale Reliability</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-28T23:07:48">Apr 28, 2026</a>.</div>
+</footer>
+</div>
+</body>
+</html>

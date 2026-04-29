@@ -39,9 +39,6 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# pkgdown site
-docs/
-
 # translation temp files
 po/*~
 
@@ -49,3 +46,6 @@ po/*~
 rsconnect/
 .DS_Store
 data/raw_data/Africa Long Life/ALLS_W6_anon_original.csv
+.claude/settings.json
+/app/node_modules
+.positai

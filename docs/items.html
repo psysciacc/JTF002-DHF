@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Item Analysis | DHF Cross-Cultural Study</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.0da6b234.js">
+<link rel="modulepreload" href="./_observablehq/runtime.607a8173.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.277aeab8.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/9cffc2bd.js">
+
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+    <style>
+      :root { --theme-foreground-focus: #4e79a7; }
+      .card { background: var(--theme-background-alt); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+      table.dataTable thead th { background: var(--theme-background-alt); }
+      .leaflet-container { background: #fff !important; }
+    </style>
+  
+<script type="module">
+
+import {define} from "./_observablehq/client.0da6b234.js";
+import {registerFile} from "./_observablehq/stdlib.277aeab8.js";
+
+registerFile("./data/final_recommendations.csv", {"name":"./data/final_recommendations.csv","mimeType":"text/csv","path":"./_file/data/final_recommendations.ba7a8e7c.csv","lastModified":1777433148809,"size":285});
+registerFile("./data/item_problems.csv", {"name":"./data/item_problems.csv","mimeType":"text/csv","path":"./_file/data/item_problems.b6e5b4b9.csv","lastModified":1777433148801,"size":7487});
+registerFile("./data/scale_problems.csv", {"name":"./data/scale_problems.csv","mimeType":"text/csv","path":"./_file/data/scale_problems.4ac92065.csv","lastModified":1777433148793,"size":476});
+
+define({id: "850a8315", inputs: ["FileAttachment"], outputs: ["problems","items","recs"], body: (FileAttachment) => {
+const problems = FileAttachment("./data/scale_problems.csv").csv({ typed: true });
+const items = FileAttachment("./data/item_problems.csv").csv({ typed: true });
+const recs = FileAttachment("./data/final_recommendations.csv").csv({ typed: true });
+return {problems,items,recs};
+}});
+
+define({id: "50d0dd2c", inputs: ["problems","Plotly","display"], outputs: ["probSorted","probDiv"], body: (problems,Plotly,display) => {
+const probSorted = [...problems].sort((a, b) => b.Countries_with_problems - a.Countries_with_problems);
+
+const probDiv = document.createElement("div");
+Plotly.newPlot(probDiv, [{
+  type: "bar",
+  orientation: "h",
+  x: probSorted.map(d => d.Countries_with_problems),
+  y: probSorted.map(d => d.Scale.replace(/_/g, " ")),
+  marker: {
+    color: probSorted.map(d =>
+      d.Countries_with_problems >= 30 ? "#d73027" :
+      d.Countries_with_problems >= 15 ? "#fee08b" : "#1a9850"
+    ),
+  },
+  hovertemplate: "<b>%{y}</b><br>%{x} countries with α < 0.60<extra></extra>",
+}], {
+  title: { text: "Countries with Reliability Problems (α < 0.60) per Scale", font: { size: 15 } },
+  xaxis: {
+    title: "Number of Countries",
+    gridcolor: "#eee",
+  },
+  yaxis: {
+    tickfont: { size: 11 },
+    automargin: true,
+  },
+  margin: { t: 50, b: 60, l: 180, r: 30 },
+  height: Math.max(400, probSorted.length * 18 + 80),
+  plot_bgcolor: "transparent",
+  paper_bgcolor: "transparent",
+}, { responsive: true, displayModeBar: false });
+display(probDiv);
+return {probSorted,probDiv};
+}});
+
+define({id: "676d98bb", inputs: ["recs","Plotly","display"], outputs: ["removeCounts","keepCounts","recScales","recDiv"], body: (recs,Plotly,display) => {
+const removeCounts = {};
+const keepCounts = {};
+for (const r of recs) {
+  if (r.Recommendation === "REMOVE") removeCounts[r.Scale] = (removeCounts[r.Scale] ?? 0) + 1;
+  else keepCounts[r.Scale] = (keepCounts[r.Scale] ?? 0) + 1;
+}
+
+const recScales = [...new Set(recs.map(d => d.Scale))].sort();
+const recDiv = document.createElement("div");
+
+Plotly.newPlot(recDiv, [
+  {
+    type: "bar",
+    name: "REMOVE",
+    x: recScales.map(s => s.replace(/_/g, " ")),
+    y: recScales.map(s => removeCounts[s] ?? 0),
+    marker: { color: "#e15759" },
+    hovertemplate: "<b>%{x}</b><br>%{y} item(s) recommended for removal<extra></extra>",
+  },
+  {
+    type: "bar",
+    name: "KEEP",
+    x: recScales.map(s => s.replace(/_/g, " ")),
+    y: recScales.map(s => keepCounts[s] ?? 0),
+    marker: { color: "#76b7b2" },
+    hovertemplate: "<b>%{x}</b><br>%{y} item(s) recommended to keep<extra></extra>",
+  },
+], {
+  title: { text: "Item Recommendations by Scale", font: { size: 15 } },
+  barmode: "stack",
+  xaxis: { tickangle: -45, tickfont: { size: 10 }, automargin: true },
+  yaxis: { title: "Number of Items", gridcolor: "#eee", dtick: 1 },
+  legend: { orientation: "h", y: 1.1 },
+  margin: { t: 60, b: 160, l: 60, r: 20 },
+  plot_bgcolor: "transparent",
+  paper_bgcolor: "transparent",
+  height: 440,
+}, { responsive: true, displayModeBar: false });
+display(recDiv);
+return {removeCounts,keepCounts,recScales,recDiv};
+}});
+
+define({id: "47f08f8e", outputs: ["loadDataTables"], body: async () => {
+async function loadDataTables() {
+  await import("https://code.jquery.com/jquery-3.7.1.min.js");
+  await import("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
+}
+await loadDataTables();
+return {loadDataTables};
+}});
+
+define({id: "fe70b2c4", inputs: ["recs","display","$"], outputs: ["recWrapper","recTbl"], body: (recs,display,$) => {
+const recWrapper = document.createElement("div");
+recWrapper.style.cssText = "overflow-x:auto;";
+const recTbl = document.createElement("table");
+recTbl.id = "rec-table";
+recTbl.className = "display";
+recTbl.style.cssText = "width:100%;font-size:.88rem;";
+
+recTbl.innerHTML = `
+  <thead>
+    <tr>
+      <th>Scale</th>
+      <th>Item</th>
+      <th>Countries Helped</th>
+      <th>Total Countries</th>
+      <th>Proportion Helped</th>
+      <th>Avg Δα</th>
+      <th>Recommendation</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${recs.map(d => `
+      <tr>
+        <td>${d.Scale.replace(/_/g, " ")}</td>
+        <td><code>${d.Item}</code></td>
+        <td>${d.Countries_helped}</td>
+        <td>${d.Total_countries}</td>
+        <td>${(d.Proportion_helped * 100).toFixed(0)}%</td>
+        <td style="color:${d.Avg_improvement > 0 ? '#1a9850' : '#d73027'}">
+          ${d.Avg_improvement > 0 ? "+" : ""}${d.Avg_improvement.toFixed(3)}
+        </td>
+        <td>
+          <span style="
+            background:${d.Recommendation === 'REMOVE' ? '#d73027' : '#1a9850'};
+            color:white;padding:2px 8px;border-radius:4px;font-size:.8rem;font-weight:600;
+          ">${d.Recommendation}</span>
+        </td>
+      </tr>
+    `).join("")}
+  </tbody>
+`;
+recWrapper.appendChild(recTbl);
+display(recWrapper);
+
+$(recTbl).DataTable({
+  pageLength: 25,
+  order: [[6, "desc"], [4, "desc"]],
+  language: { search: "Filter:" },
+  columnDefs: [{ targets: [2, 3, 4, 5], className: "dt-right" }],
+});
+return {recWrapper,recTbl};
+}});
+
+define({id: "32c5823d", inputs: ["items","display","$"], outputs: ["itemWrapper","itemTbl"], body: (items,display,$) => {
+const itemWrapper = document.createElement("div");
+itemWrapper.style.cssText = "overflow-x:auto;";
+const itemTbl = document.createElement("table");
+itemTbl.id = "item-table";
+itemTbl.className = "display";
+itemTbl.style.cssText = "width:100%;font-size:.88rem;";
+
+itemTbl.innerHTML = `
+  <thead>
+    <tr>
+      <th>Scale</th>
+      <th>Item</th>
+      <th>Countries Helped</th>
+      <th>Proportion Helped</th>
+      <th>Avg Δα</th>
+      <th>Recommendation</th>
+      <th>Problem Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${items.map(d => `
+      <tr>
+        <td>${d.Scale.replace(/_/g, " ")}</td>
+        <td><code>${d.Item}</code></td>
+        <td>${d.Countries_helped} / ${d.Total_countries}</td>
+        <td>${(d.Proportion_helped * 100).toFixed(0)}%</td>
+        <td style="color:${d.Avg_improvement > 0 ? '#1a9850' : '#d73027'}">
+          ${d.Avg_improvement > 0 ? "+" : ""}${d.Avg_improvement.toFixed(3)}
+        </td>
+        <td>
+          <span style="
+            background:${d.Recommendation === 'REMOVE' ? '#d73027' : '#1a9850'};
+            color:white;padding:2px 8px;border-radius:4px;font-size:.8rem;font-weight:600;
+          ">${d.Recommendation}</span>
+        </td>
+        <td style="font-size:.82rem;max-width:280px;">${d.Problem_description ?? "—"}</td>
+      </tr>
+    `).join("")}
+  </tbody>
+`;
+itemWrapper.appendChild(itemTbl);
+display(itemWrapper);
+
+$(itemTbl).DataTable({
+  pageLength: 25,
+  order: [[3, "desc"]],
+  language: { search: "Filter:" },
+  columnDefs: [
+    { targets: [2, 3, 4], className: "dt-right" },
+    { targets: [6], orderable: false },
+  ],
+});
+return {itemWrapper,itemTbl};
+}});
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">DHF Cross-Cultural Study</a></li>
+  </ol>
+  <ol>
+    <li class="observablehq-link"><a href="./">Overview</a></li>
+    <li class="observablehq-link"><a href="./reliability">Scale Reliability</a></li>
+    <li class="observablehq-link"><a href="./countries">Country Comparisons</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./items">Item Analysis</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#scales-with-most-country-level-problems">Scales with Most Country-Level Problems</a></li>
+<li class="observablehq-secondary-link"><a href="#item-removal-recommendations">Item Removal Recommendations</a></li>
+<li class="observablehq-secondary-link"><a href="#item-recommendations-table">Item Recommendations Table</a></li>
+<li class="observablehq-secondary-link"><a href="#problematic-item-details">Problematic Item Details</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="item-analysis-and-scale-health" tabindex="-1"><a class="observablehq-header-anchor" href="#item-analysis-and-scale-health">Item Analysis &amp; Scale Health</a></h1>
+<p>This page summarises which items and scales showed reliability problems across countries, and the recommendations from the analysis pipeline.</p>
+<div class="observablehq observablehq--block"><!--:850a8315:--></div>
+<hr>
+<h2 id="scales-with-most-country-level-problems" tabindex="-1"><a class="observablehq-header-anchor" href="#scales-with-most-country-level-problems">Scales with Most Country-Level Problems</a></h2>
+<p>A "problem" is defined as Cronbach's α &lt; 0.60 in a given country.</p>
+<div class="observablehq observablehq--block"><!--:50d0dd2c:--></div>
+<hr>
+<h2 id="item-removal-recommendations" tabindex="-1"><a class="observablehq-header-anchor" href="#item-removal-recommendations">Item Removal Recommendations</a></h2>
+<p>The analysis evaluated whether removing individual items would improve scale reliability across countries.</p>
+<div class="observablehq observablehq--block"><!--:676d98bb:--></div>
+<hr>
+<h2 id="item-recommendations-table" tabindex="-1"><a class="observablehq-header-anchor" href="#item-recommendations-table">Item Recommendations Table</a></h2>
+<div class="observablehq observablehq--block"><!--:47f08f8e:--></div>
+<div class="observablehq observablehq--block"><!--:fe70b2c4:--></div>
+<hr>
+<h2 id="problematic-item-details" tabindex="-1"><a class="observablehq-header-anchor" href="#problematic-item-details">Problematic Item Details</a></h2>
+<div class="observablehq observablehq--block"><!--:32c5823d:--></div>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./countries"><span>Country Comparisons</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-28T23:07:48">Apr 28, 2026</a>.</div>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,273 @@
+---
+title: Country Comparisons
+---
+
+# Country Comparisons
+
+Explore how mean scale scores vary across countries. Points show the country mean; error bars show ±1 SD.
+
+```js
+const desc = FileAttachment("data/scale_descriptives.csv").csv({ typed: true });
+```
+
+```js
+const allScales = [...new Set(desc.filter(d => d.Group !== "Overall").map(d => d.Scale))].sort();
+
+const scaleDomainMap = {
+  "Other_Face_Concern": "Face & Conflict",
+  "Self_Face_Concern": "Face & Conflict",
+  "Withdrawal": "Face & Conflict",
+  "Retaliation": "Face & Conflict",
+  "Humor": "Face & Conflict",
+  "Positive_Reciprocity": "Violence Acceptance",
+  "Negative_Reciprocity": "Violence Acceptance",
+  "Penal_Code_Violence": "Violence Acceptance",
+  "War_Acceptance": "Violence Acceptance",
+  "Corporal_Punishment": "Violence Acceptance",
+  "Intimate_Violence": "Violence Acceptance",
+  "Total_Violence_Scale": "Violence Acceptance",
+  "MFQ_Care": "Moral Foundations",
+  "MFQ_Equality": "Moral Foundations",
+  "MFQ_Proportionality": "Moral Foundations",
+  "MFQ_Loyalty": "Moral Foundations",
+  "MFQ_Authority": "Moral Foundations",
+  "MFQ_Purity": "Moral Foundations",
+  "Achievement": "Schwartz Values",
+  "Benevolence": "Schwartz Values",
+  "Conformity": "Schwartz Values",
+  "Conservation": "Schwartz Values",
+  "Hedonism": "Schwartz Values",
+  "Openness_to_Change": "Schwartz Values",
+  "Power": "Schwartz Values",
+  "Security": "Schwartz Values",
+  "Self_Direction": "Schwartz Values",
+  "Self_Enhancement": "Schwartz Values",
+  "Self_Transcendence": "Schwartz Values",
+  "Stimulation": "Schwartz Values",
+  "Tradition": "Schwartz Values",
+  "Universalism": "Schwartz Values",
+  "Intrinsic_Religiosity": "Other",
+  "Composite_Religiosity": "Other",
+  "Subjective_Wellbeing": "Other",
+};
+```
+
+## Select a Scale
+
+```js
+const scaleInput = Inputs.select(allScales, {
+  label: "Scale",
+  value: "Other_Face_Concern",
+  format: s => s.replace(/_/g, " "),
+});
+const selectedScale = view(scaleInput);
+```
+
+```js
+const domainColors = {
+  "Face & Conflict": "#4e79a7",
+  "Violence Acceptance": "#e15759",
+  "Moral Foundations": "#59a14f",
+  "Schwartz Values": "#f28e2b",
+  "Other": "#9c755f",
+};
+
+const filtered = desc
+  .filter(d => d.Scale === selectedScale && d.Group !== "Overall" && d.Mean != null)
+  .sort((a, b) => a.Mean - b.Mean);
+
+const domain = scaleDomainMap[selectedScale] ?? "Other";
+const color = domainColors[domain];
+
+const fg = getComputedStyle(document.documentElement).getPropertyValue("--theme-foreground").trim() || "#333";
+
+const dotDiv = document.createElement("div");
+
+if (filtered.length === 0) {
+  dotDiv.textContent = "No data available for this scale.";
+} else {
+  Plotly.newPlot(dotDiv, [
+    // Error bar trace (SD)
+    {
+      type: "scatter",
+      mode: "markers",
+      x: filtered.map(d => d.Mean),
+      y: filtered.map(d => d.Group),
+      error_x: {
+        type: "data",
+        array: filtered.map(d => d.SD),
+        visible: true,
+        color: color + "80",
+        thickness: 1.5,
+        width: 4,
+      },
+      marker: {
+        color,
+        size: 8,
+        line: { color: "white", width: 1 },
+      },
+      hovertemplate:
+        "<b>%{y}</b><br>" +
+        "Mean = %{x:.3f}<br>" +
+        "SD = %{error_x.array:.3f}<br>" +
+        `N = %{customdata}<extra>${selectedScale.replace(/_/g, " ")}</extra>`,
+      customdata: filtered.map(d => d.N.toLocaleString()),
+      name: selectedScale.replace(/_/g, " "),
+    },
+  ], {
+    title: {
+      text: `${selectedScale.replace(/_/g, " ")} — Mean by Country (±1 SD)`,
+      font: { size: 15, color: fg },
+    },
+    xaxis: {
+      title: { text: "Mean Score", font: { color: fg } },
+      tickfont: { color: fg },
+      gridcolor: "#eee",
+      zeroline: false,
+    },
+    yaxis: {
+      tickfont: { size: 10, color: fg },
+      automargin: true,
+    },
+    margin: { t: 60, b: 60, l: 180, r: 30 },
+    height: Math.max(500, filtered.length * 14 + 80),
+    plot_bgcolor: "transparent",
+    paper_bgcolor: "transparent",
+    showlegend: false,
+  }, { responsive: true, displayModeBar: true });
+}
+display(dotDiv);
+```
+
+---
+
+## Multi-Scale Overview: Mean by Country
+
+Compare country means across a domain at a glance.
+
+```js
+const domainInput = Inputs.select(Object.keys(domainColors), {
+  label: "Domain",
+  value: "Face & Conflict",
+});
+const selectedDomain = view(domainInput);
+```
+
+```js
+const domainScales = allScales.filter(s => (scaleDomainMap[s] ?? "Other") === selectedDomain);
+
+const domainData = desc.filter(d =>
+  domainScales.includes(d.Scale) && d.Group !== "Overall" && d.Mean != null
+);
+
+// Pivot: for each country, compute mean across domain scales
+const countryMap = new Map();
+for (const row of domainData) {
+  if (!countryMap.has(row.Group)) countryMap.set(row.Group, []);
+  countryMap.get(row.Group).push({ scale: row.Scale, mean: row.Mean, n: row.N });
+}
+
+const overviewRows = [...countryMap.entries()]
+  .map(([country, rows]) => ({
+    country,
+    domainMean: rows.reduce((s, r) => s + r.mean, 0) / rows.length,
+    scales: rows,
+  }))
+  .sort((a, b) => a.domainMean - b.domainMean);
+
+const overviewDiv = document.createElement("div");
+
+Plotly.newPlot(overviewDiv,
+  domainScales.map((scale, i) => {
+    const scaleRows = overviewRows.map(r => ({
+      country: r.country,
+      mean: r.scales.find(s => s.scale === scale)?.mean ?? null,
+    }));
+    return {
+      type: "bar",
+      name: scale.replace(/_/g, " "),
+      x: scaleRows.map(r => r.country),
+      y: scaleRows.map(r => r.mean),
+      hovertemplate: "<b>%{x}</b><br>%{fullData.name}: %{y:.3f}<extra></extra>",
+    };
+  }),
+  {
+    title: { text: `${selectedDomain} — Country Means by Scale`, font: { size: 15, color: fg } },
+    barmode: "group",
+    xaxis: { tickangle: -45, tickfont: { size: 9, color: fg }, automargin: true },
+    yaxis: { title: { text: "Mean Score", font: { color: fg } }, tickfont: { color: fg }, gridcolor: "#eee" },
+    margin: { t: 50, b: 160, l: 60, r: 20 },
+    plot_bgcolor: "transparent",
+    paper_bgcolor: "transparent",
+    height: 480,
+    legend: { orientation: "h", y: -0.35 },
+  },
+  { responsive: true, displayModeBar: true }
+);
+display(overviewDiv);
+```
+
+---
+
+## Descriptives Table
+
+```js
+async function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+await loadScript("https://code.jquery.com/jquery-3.7.1.min.js");
+await loadScript("https://cdn.datatables.net/2.0.8/js/dataTables.min.js");
+
+const descAll = desc.filter(d => d.Group !== "Overall" && d.Mean != null);
+
+const dtWrapper = document.createElement("div");
+dtWrapper.style.cssText = "overflow-x:auto;";
+const dtTbl = document.createElement("table");
+dtTbl.id = "desc-table";
+dtTbl.className = "display";
+dtTbl.style.cssText = "width:100%;font-size:.88rem;";
+dtTbl.innerHTML = `
+  <thead>
+    <tr>
+      <th>Country</th>
+      <th>Scale</th>
+      <th>Domain</th>
+      <th>N</th>
+      <th>Mean</th>
+      <th>SD</th>
+      <th>Min</th>
+      <th>Max</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${descAll.map(d => `
+      <tr>
+        <td>${d.Group}</td>
+        <td>${d.Scale.replace(/_/g, " ")}</td>
+        <td>${scaleDomainMap[d.Scale] ?? "Other"}</td>
+        <td>${d.N.toLocaleString()}</td>
+        <td>${d.Mean.toFixed(3)}</td>
+        <td>${d.SD != null ? d.SD.toFixed(3) : "—"}</td>
+        <td>${d.Min != null ? d.Min.toFixed(3) : "—"}</td>
+        <td>${d.Max != null ? d.Max.toFixed(3) : "—"}</td>
+      </tr>
+    `).join("")}
+  </tbody>
+`;
+dtWrapper.appendChild(dtTbl);
+display(dtWrapper);
+
+window.$(dtTbl).DataTable({
+  pageLength: 25,
+  order: [[0, "asc"]],
+  language: { search: "Filter:" },
+  columnDefs: [{ targets: [3, 4, 5, 6, 7], className: "dt-right" }],
+});
+```
