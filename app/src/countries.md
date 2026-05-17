@@ -61,6 +61,10 @@ const selectedScale = view(scaleInput);
 ```
 
 ```js
+const flipCountries = view(Inputs.toggle({ label: "Flip axes" }));
+```
+
+```js
 const domainColors = {
   "Face & Conflict": "#4e79a7",
   "Violence Acceptance": "#e15759",
@@ -78,36 +82,32 @@ const color = domainColors[domain];
 
 const fg = getComputedStyle(document.documentElement).getPropertyValue("--theme-foreground").trim() || "#333";
 
+const countryWrapper = document.createElement("div");
+countryWrapper.style.cssText = "overflow-x:auto;";
 const dotDiv = document.createElement("div");
+countryWrapper.appendChild(dotDiv);
 
 if (filtered.length === 0) {
   dotDiv.textContent = "No data available for this scale.";
 } else {
+  const countryPlotWidth = flipCountries ? Math.max(900, filtered.length * 14 + 80) : null;
   Plotly.newPlot(dotDiv, [
-    // Error bar trace (SD)
     {
       type: "scatter",
       mode: "markers",
-      x: filtered.map(d => d.Mean),
-      y: filtered.map(d => d.Group),
-      error_x: {
-        type: "data",
-        array: filtered.map(d => d.SD),
-        visible: true,
-        color: color + "80",
-        thickness: 1.5,
-        width: 4,
-      },
+      x: flipCountries ? filtered.map(d => d.Group) : filtered.map(d => d.Mean),
+      y: flipCountries ? filtered.map(d => d.Mean) : filtered.map(d => d.Group),
+      ...(flipCountries
+        ? { error_y: { type: "data", array: filtered.map(d => d.SD), visible: true, color: color + "80", thickness: 1.5, width: 4 } }
+        : { error_x: { type: "data", array: filtered.map(d => d.SD), visible: true, color: color + "80", thickness: 1.5, width: 4 } }),
       marker: {
         color,
         size: 10,
         line: { color: fg, width: 1.5 },
       },
-      hovertemplate:
-        "<b>%{y}</b><br>" +
-        "Mean = %{x:.3f}<br>" +
-        "SD = %{error_x.array:.3f}<br>" +
-        `N = %{customdata}<extra>${selectedScale.replace(/_/g, " ")}</extra>`,
+      hovertemplate: flipCountries
+        ? "<b>%{x}</b><br>Mean = %{y:.3f}<br>SD = %{error_y.array:.3f}<br>" + `N = %{customdata}<extra>${selectedScale.replace(/_/g, " ")}</extra>`
+        : "<b>%{y}</b><br>Mean = %{x:.3f}<br>SD = %{error_x.array:.3f}<br>" + `N = %{customdata}<extra>${selectedScale.replace(/_/g, " ")}</extra>`,
       customdata: filtered.map(d => d.N.toLocaleString()),
       name: selectedScale.replace(/_/g, " "),
     },
@@ -117,24 +117,28 @@ if (filtered.length === 0) {
       font: { size: 15, color: fg },
     },
     xaxis: {
-      title: { text: "Mean Score", font: { color: fg } },
-      tickfont: { color: fg },
+      title: { text: flipCountries ? "Country" : "Mean Score", font: { color: fg } },
+      tickfont: { size: 10, color: fg },
+      automargin: true,
       gridcolor: "rgba(128,128,128,0.15)",
       zeroline: false,
+      ...(flipCountries ? { tickangle: -45 } : {}),
     },
     yaxis: {
+      title: flipCountries ? { text: "Mean Score", font: { color: fg } } : undefined,
       tickfont: { size: 10, color: fg },
       automargin: true,
       gridcolor: "rgba(128,128,128,0.15)",
     },
-    margin: { t: 60, b: 60, l: 180, r: 30 },
-    height: Math.max(500, filtered.length * 14 + 80),
+    margin: flipCountries ? { t: 60, b: 180, l: 60, r: 30 } : { t: 60, b: 60, l: 180, r: 30 },
+    height: flipCountries ? 600 : Math.max(500, filtered.length * 14 + 80),
+    ...(countryPlotWidth ? { width: countryPlotWidth } : {}),
     plot_bgcolor: "transparent",
     paper_bgcolor: "transparent",
     showlegend: false,
-  }, { responsive: true, displayModeBar: true });
+  }, { responsive: !flipCountries, displayModeBar: true });
 }
-display(dotDiv);
+display(countryWrapper);
 ```
 
 ---

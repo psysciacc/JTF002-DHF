@@ -150,44 +150,53 @@ legend.addTo(lmap);
 ## Norms by Country
 
 ```js
+const flipNormsDot = view(Inputs.toggle({ label: "Flip axes" }));
+```
+
+```js
+const normDotWrapper = document.createElement("div");
+normDotWrapper.style.cssText = "overflow-x:auto;";
 const dotDiv = document.createElement("div");
-Plotly.newPlot(dotDiv, [
-  {
-    type: "scatter", mode: "markers", name: "Dignity",
-    x: data.map(d => d.D_norm_mean_country),
-    y: countries,
-    error_x: { type: "data", array: data.map(d => d.D_norm_sd_country), visible: true, color: "#4e79a780", thickness: 1.5, width: 4 },
-    marker: { color: "#4e79a7", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{y}</b><br>Dignity Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>",
-  },
-  {
-    type: "scatter", mode: "markers", name: "Honour",
-    x: data.map(d => d.H_norm_mean_country),
-    y: countries,
-    error_x: { type: "data", array: data.map(d => d.H_norm_sd_country), visible: true, color: "#e1575980", thickness: 1.5, width: 4 },
-    marker: { color: "#e15759", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{y}</b><br>Honour Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>",
-  },
-  {
-    type: "scatter", mode: "markers", name: "Face",
-    x: data.map(d => d.F_norm_mean_country),
-    y: countries,
-    error_x: { type: "data", array: data.map(d => d.F_norm_sd_country), visible: true, color: "#59a14f80", thickness: 1.5, width: 4 },
-    marker: { color: "#59a14f", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{y}</b><br>Face Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>",
-  },
-], {
+normDotWrapper.appendChild(dotDiv);
+const normTraces = [
+  { name: "Dignity", meanKey: "D_norm_mean_country", sdKey: "D_norm_sd_country", color: "#4e79a7", errColor: "#4e79a780" },
+  { name: "Honour",  meanKey: "H_norm_mean_country", sdKey: "H_norm_sd_country", color: "#e15759", errColor: "#e1575980" },
+  { name: "Face",    meanKey: "F_norm_mean_country", sdKey: "F_norm_sd_country", color: "#59a14f", errColor: "#59a14f80" },
+].map(({ name, meanKey, sdKey, color, errColor }) => ({
+  type: "scatter", mode: "markers", name,
+  x: flipNormsDot ? countries : data.map(d => d[meanKey]),
+  y: flipNormsDot ? data.map(d => d[meanKey]) : countries,
+  ...(flipNormsDot
+    ? { error_y: { type: "data", array: data.map(d => d[sdKey]), visible: true, color: errColor, thickness: 1.5, width: 4 } }
+    : { error_x: { type: "data", array: data.map(d => d[sdKey]), visible: true, color: errColor, thickness: 1.5, width: 4 } }),
+  marker: { color, size: 8, line: { color: fg, width: 1 } },
+  hovertemplate: flipNormsDot
+    ? `<b>%{x}</b><br>${name} Norm: %{y:.3f} ± %{error_y.array:.3f}<extra></extra>`
+    : `<b>%{y}</b><br>${name} Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
+}));
+const normDotWidth = flipNormsDot ? Math.max(900, countries.length * 14 + 80) : null;
+Plotly.newPlot(dotDiv, normTraces, {
   title: { text: "Dignity, Honour & Face Norms by Country (±1 SD)", font: { size: 15, color: fg } },
-  xaxis: { title: { text: "Mean Norm Score", font: { color: fg } }, tickfont: { color: fg }, gridcolor: "rgba(128,128,128,0.15)", zeroline: false },
-  yaxis: { tickfont: { size: 10, color: fg }, automargin: true, gridcolor: "rgba(128,128,128,0.15)" },
-  margin: { t: 60, b: 60, l: 200, r: 30 },
-  height: Math.max(500, countries.length * 14 + 80),
+  xaxis: {
+    title: { text: flipNormsDot ? "Country" : "Mean Norm Score", font: { color: fg } },
+    tickfont: { size: 10, color: fg }, automargin: true,
+    gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
+    ...(flipNormsDot ? { tickangle: -45 } : {}),
+  },
+  yaxis: {
+    title: flipNormsDot ? { text: "Mean Norm Score", font: { color: fg } } : undefined,
+    tickfont: { size: 10, color: fg }, automargin: true,
+    gridcolor: "rgba(128,128,128,0.15)",
+  },
+  margin: flipNormsDot ? { t: 60, b: 180, l: 60, r: 30 } : { t: 60, b: 60, l: 200, r: 30 },
+  height: flipNormsDot ? 600 : Math.max(500, countries.length * 14 + 80),
+  ...(normDotWidth ? { width: normDotWidth } : {}),
   plot_bgcolor: "transparent",
   paper_bgcolor: "transparent",
   showlegend: true,
   legend: { font: { color: fg } },
-}, { responsive: true, displayModeBar: true });
-display(dotDiv);
+}, { responsive: !flipNormsDot, displayModeBar: true });
+display(normDotWrapper);
 ```
 
 ---
@@ -202,6 +211,10 @@ const constructInput = Inputs.select(["Dignity", "Honour", "Face"], {
   value: "Dignity",
 });
 const selectedConstruct = view(constructInput);
+```
+
+```js
+const flipScatter = view(Inputs.toggle({ label: "Flip axes" }));
 ```
 
 ```js
@@ -234,17 +247,25 @@ Plotly.newPlot(scatterDiv, [
   },
   {
     type: "scatter", mode: "markers",
-    x: scatterData.map(d => d.end),
-    y: scatterData.map(d => d.norm),
+    x: flipScatter ? scatterData.map(d => d.norm) : scatterData.map(d => d.end),
+    y: flipScatter ? scatterData.map(d => d.end) : scatterData.map(d => d.norm),
     text: scatterData.map(d => d.country),
     marker: { color: dotColor, size: 9, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{text}</b><br>Endorsement: %{x:.3f}<br>Norm: %{y:.3f}<extra></extra>",
+    hovertemplate: flipScatter
+      ? "<b>%{text}</b><br>Norm: %{x:.3f}<br>Endorsement: %{y:.3f}<extra></extra>"
+      : "<b>%{text}</b><br>Endorsement: %{x:.3f}<br>Norm: %{y:.3f}<extra></extra>",
     showlegend: false,
   },
 ], {
   title: { text: `${selectedConstruct} — Endorsement vs. Norm by Country`, font: { size: 15, color: fg } },
-  xaxis: { title: { text: `${selectedConstruct} Endorsement`, font: { color: fg } }, tickfont: { color: fg }, range: [axMin, axMax], gridcolor: "rgba(128,128,128,0.15)" },
-  yaxis: { title: { text: `${selectedConstruct} Norm`, font: { color: fg } }, tickfont: { color: fg }, range: [axMin, axMax], gridcolor: "rgba(128,128,128,0.15)" },
+  xaxis: {
+    title: { text: flipScatter ? `${selectedConstruct} Norm` : `${selectedConstruct} Endorsement`, font: { color: fg } },
+    tickfont: { color: fg }, range: [axMin, axMax], gridcolor: "rgba(128,128,128,0.15)",
+  },
+  yaxis: {
+    title: { text: flipScatter ? `${selectedConstruct} Endorsement` : `${selectedConstruct} Norm`, font: { color: fg } },
+    tickfont: { color: fg }, range: [axMin, axMax], gridcolor: "rgba(128,128,128,0.15)",
+  },
   margin: { t: 60, b: 80, l: 80, r: 30 },
   height: 520,
   plot_bgcolor: "transparent",

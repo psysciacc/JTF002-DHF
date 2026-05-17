@@ -37,16 +37,29 @@ const text = countryOrder.map(c => scaleOrder.map(s => {
 Each cell shows Cronbach's α. Hover for exact values. Grey cells = scale not administered in that country.
 
 ```js
+const flipHeatmap = view(Inputs.toggle({ label: "Flip axes" }));
+```
+
+```js
 const fg = getComputedStyle(document.documentElement).getPropertyValue("--theme-foreground").trim() || "#333";
 
+const zT = scaleOrder.map((s, j) => countryOrder.map((c, i) => z[i][j]));
+const textT = scaleOrder.map((s, j) => countryOrder.map((c, i) => text[i][j]));
+
+const heatmapPlotWidth = flipHeatmap ? Math.max(800, countryOrder.length * 12 + 200) : null;
+const heatmapWrapper = document.createElement("div");
+heatmapWrapper.style.cssText = "overflow-x:auto;";
 const heatmapDiv = document.createElement("div");
+heatmapWrapper.appendChild(heatmapDiv);
 Plotly.newPlot(heatmapDiv, [{
   type: "heatmap",
-  z,
-  x: scaleOrder.map(s => s.replace(/_/g, " ")),
-  y: countryOrder,
-  text,
-  hovertemplate: "<b>%{y}</b><br>%{x}<br>α = %{text}<extra></extra>",
+  z: flipHeatmap ? zT : z,
+  x: flipHeatmap ? countryOrder : scaleOrder.map(s => s.replace(/_/g, " ")),
+  y: flipHeatmap ? scaleOrder.map(s => s.replace(/_/g, " ")) : countryOrder,
+  text: flipHeatmap ? textT : text,
+  hovertemplate: flipHeatmap
+    ? "<b>%{x}</b><br>%{y}<br>α = %{text}<extra></extra>"
+    : "<b>%{y}</b><br>%{x}<br>α = %{text}<extra></extra>",
   colorscale: [
     [0,   "#d73027"],
     [0.43, "#fee08b"],
@@ -68,12 +81,17 @@ Plotly.newPlot(heatmapDiv, [{
   title: { text: "Cronbach's α by Country and Scale", font: { size: 15, color: fg } },
   xaxis: { tickangle: -45, tickfont: { size: 10, color: fg }, automargin: true },
   yaxis: { tickfont: { size: 10, color: fg }, automargin: true },
-  margin: { t: 50, b: 180, l: 160, r: 20 },
-  height: Math.max(600, countryOrder.length * 12),
+  margin: flipHeatmap
+    ? { t: 50, b: 160, l: 220, r: 20 }
+    : { t: 50, b: 180, l: 160, r: 20 },
+  height: flipHeatmap
+    ? Math.max(400, scaleOrder.length * 20 + 200)
+    : Math.max(600, countryOrder.length * 12),
+  ...(heatmapPlotWidth ? { width: heatmapPlotWidth } : {}),
   plot_bgcolor: "#ffffff",
   paper_bgcolor: "transparent",
-}, { responsive: true, displayModeBar: true });
-display(heatmapDiv);
+}, { responsive: !flipHeatmap, displayModeBar: true });
+display(heatmapWrapper);
 ```
 
 ---
@@ -83,13 +101,18 @@ display(heatmapDiv);
 Average reliability across all countries for each scale.
 
 ```js
+const flipBar = view(Inputs.toggle({ label: "Flip axes" }));
+```
+
+```js
 const overallAlpha = filtered_raw.filter(d => d.Country === "Overall").sort((a, b) => b.Alpha - a.Alpha);
 
 const barDiv = document.createElement("div");
 Plotly.newPlot(barDiv, [{
   type: "bar",
-  x: overallAlpha.map(d => d.Scale.replace(/_/g, " ")),
-  y: overallAlpha.map(d => d.Alpha),
+  orientation: flipBar ? "h" : "v",
+  x: flipBar ? overallAlpha.map(d => d.Alpha) : overallAlpha.map(d => d.Scale.replace(/_/g, " ")),
+  y: flipBar ? overallAlpha.map(d => d.Scale.replace(/_/g, " ")) : overallAlpha.map(d => d.Alpha),
   marker: {
     color: overallAlpha.map(d =>
       d.Alpha >= 0.8 ? "#1a9850" :
@@ -97,25 +120,35 @@ Plotly.newPlot(barDiv, [{
       d.Alpha >= 0.6 ? "#fee08b" : "#d73027"
     )
   },
-  hovertemplate: "<b>%{x}</b><br>α = %{y:.3f}<extra></extra>",
+  hovertemplate: flipBar
+    ? "<b>%{y}</b><br>α = %{x:.3f}<extra></extra>"
+    : "<b>%{x}</b><br>α = %{y:.3f}<extra></extra>",
 }], {
   title: { text: "Overall Cronbach's α (all countries pooled)", font: { size: 15, color: fg } },
-  xaxis: { tickangle: -45, tickfont: { size: 11, color: fg }, automargin: true },
-  yaxis: { title: { text: "Cronbach's α", font: { color: fg } }, tickfont: { color: fg }, range: [0, 1], gridcolor: "#eee" },
-  shapes: [
-    { type: "line", x0: -0.5, x1: overallAlpha.length - 0.5, y0: 0.7, y1: 0.7,
-      line: { color: "#666", dash: "dash", width: 1 } },
-    { type: "line", x0: -0.5, x1: overallAlpha.length - 0.5, y0: 0.6, y1: 0.6,
-      line: { color: "#d73027", dash: "dot", width: 1 } },
+  xaxis: flipBar
+    ? { title: { text: "Cronbach's α", font: { color: fg } }, tickfont: { color: fg }, range: [0, 1], gridcolor: "#eee" }
+    : { tickangle: -45, tickfont: { size: 11, color: fg }, automargin: true },
+  yaxis: flipBar
+    ? { tickfont: { size: 11, color: fg }, automargin: true }
+    : { title: { text: "Cronbach's α", font: { color: fg } }, tickfont: { color: fg }, range: [0, 1], gridcolor: "#eee" },
+  shapes: flipBar ? [
+    { type: "line", x0: 0.7, x1: 0.7, y0: 0, y1: 1, yref: "paper", line: { color: "#666", dash: "dash", width: 1 } },
+    { type: "line", x0: 0.6, x1: 0.6, y0: 0, y1: 1, yref: "paper", line: { color: "#d73027", dash: "dot", width: 1 } },
+  ] : [
+    { type: "line", x0: -0.5, x1: overallAlpha.length - 0.5, y0: 0.7, y1: 0.7, line: { color: "#666", dash: "dash", width: 1 } },
+    { type: "line", x0: -0.5, x1: overallAlpha.length - 0.5, y0: 0.6, y1: 0.6, line: { color: "#d73027", dash: "dot", width: 1 } },
   ],
-  annotations: [
+  annotations: flipBar ? [
+    { x: 0.71, y: overallAlpha.length * 0.95, xref: "x", yref: "y", text: "α = 0.70", showarrow: false, font: { size: 10, color: "#666" } },
+    { x: 0.61, y: overallAlpha.length * 0.95, xref: "x", yref: "y", text: "α = 0.60", showarrow: false, font: { size: 10, color: "#d73027" } },
+  ] : [
     { x: overallAlpha.length * 0.92, y: 0.71, text: "α = 0.70", showarrow: false, font: { size: 10, color: "#666" } },
     { x: overallAlpha.length * 0.92, y: 0.61, text: "α = 0.60", showarrow: false, font: { size: 10, color: "#d73027" } },
   ],
-  margin: { t: 50, b: 160, l: 60, r: 20 },
+  margin: flipBar ? { t: 50, b: 60, l: 160, r: 20 } : { t: 50, b: 160, l: 60, r: 20 },
   plot_bgcolor: "transparent",
   paper_bgcolor: "transparent",
-  height: 420,
+  height: flipBar ? Math.max(420, overallAlpha.length * 20 + 100) : 420,
 }, { responsive: true, displayModeBar: false });
 display(barDiv);
 ```

@@ -149,44 +149,53 @@ legend.addTo(lmap);
 ## Endorsement by Country
 
 ```js
+const flipDotPlot1 = view(Inputs.toggle({ label: "Flip axes" }));
+```
+
+```js
+const endWrapper = document.createElement("div");
+endWrapper.style.cssText = "overflow-x:auto;";
 const dotDiv = document.createElement("div");
-Plotly.newPlot(dotDiv, [
-  {
-    type: "scatter", mode: "markers", name: "Dignity",
-    x: data.map(d => d.D_end_mean_country),
-    y: countries,
-    error_x: { type: "data", array: data.map(d => d.D_end_sd_country), visible: true, color: "#4e79a780", thickness: 1.5, width: 4 },
-    marker: { color: "#4e79a7", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{y}</b><br>Dignity: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>",
-  },
-  {
-    type: "scatter", mode: "markers", name: "Honour",
-    x: data.map(d => d.H_end_mean_country),
-    y: countries,
-    error_x: { type: "data", array: data.map(d => d.H_end_sd_country), visible: true, color: "#e1575980", thickness: 1.5, width: 4 },
-    marker: { color: "#e15759", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{y}</b><br>Honour: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>",
-  },
-  {
-    type: "scatter", mode: "markers", name: "Face",
-    x: data.map(d => d.F_end_mean_country),
-    y: countries,
-    error_x: { type: "data", array: data.map(d => d.F_end_sd_country), visible: true, color: "#59a14f80", thickness: 1.5, width: 4 },
-    marker: { color: "#59a14f", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{y}</b><br>Face: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>",
-  },
-], {
+endWrapper.appendChild(dotDiv);
+const endTraces = [
+  { name: "Dignity", meanKey: "D_end_mean_country", sdKey: "D_end_sd_country", color: "#4e79a7", errColor: "#4e79a780" },
+  { name: "Honour",  meanKey: "H_end_mean_country", sdKey: "H_end_sd_country", color: "#e15759", errColor: "#e1575980" },
+  { name: "Face",    meanKey: "F_end_mean_country", sdKey: "F_end_sd_country", color: "#59a14f", errColor: "#59a14f80" },
+].map(({ name, meanKey, sdKey, color, errColor }) => ({
+  type: "scatter", mode: "markers", name,
+  x: flipDotPlot1 ? countries : data.map(d => d[meanKey]),
+  y: flipDotPlot1 ? data.map(d => d[meanKey]) : countries,
+  ...(flipDotPlot1
+    ? { error_y: { type: "data", array: data.map(d => d[sdKey]), visible: true, color: errColor, thickness: 1.5, width: 4 } }
+    : { error_x: { type: "data", array: data.map(d => d[sdKey]), visible: true, color: errColor, thickness: 1.5, width: 4 } }),
+  marker: { color, size: 8, line: { color: fg, width: 1 } },
+  hovertemplate: flipDotPlot1
+    ? `<b>%{x}</b><br>${name}: %{y:.3f} ± %{error_y.array:.3f}<extra></extra>`
+    : `<b>%{y}</b><br>${name}: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
+}));
+const endPlotWidth = flipDotPlot1 ? Math.max(900, countries.length * 14 + 80) : null;
+Plotly.newPlot(dotDiv, endTraces, {
   title: { text: "Dignity, Honour & Face Endorsement by Country (±1 SD)", font: { size: 15, color: fg } },
-  xaxis: { title: { text: "Mean Endorsement", font: { color: fg } }, tickfont: { color: fg }, gridcolor: "rgba(128,128,128,0.15)", zeroline: false },
-  yaxis: { tickfont: { size: 10, color: fg }, automargin: true, gridcolor: "rgba(128,128,128,0.15)" },
-  margin: { t: 60, b: 60, l: 200, r: 30 },
-  height: Math.max(500, countries.length * 14 + 80),
+  xaxis: {
+    title: { text: flipDotPlot1 ? "Country" : "Mean Endorsement", font: { color: fg } },
+    tickfont: { size: 10, color: fg }, automargin: true,
+    gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
+    ...(flipDotPlot1 ? { tickangle: -45 } : {}),
+  },
+  yaxis: {
+    title: flipDotPlot1 ? { text: "Mean Endorsement", font: { color: fg } } : undefined,
+    tickfont: { size: 10, color: fg }, automargin: true,
+    gridcolor: "rgba(128,128,128,0.15)",
+  },
+  margin: flipDotPlot1 ? { t: 60, b: 180, l: 60, r: 30 } : { t: 60, b: 60, l: 200, r: 30 },
+  height: flipDotPlot1 ? 600 : Math.max(500, countries.length * 14 + 80),
+  ...(endPlotWidth ? { width: endPlotWidth } : {}),
   plot_bgcolor: "transparent",
   paper_bgcolor: "transparent",
   showlegend: true,
   legend: { font: { color: fg } },
-}, { responsive: true, displayModeBar: true });
-display(dotDiv);
+}, { responsive: !flipDotPlot1, displayModeBar: true });
+display(endWrapper);
 ```
 
 ---
@@ -204,42 +213,59 @@ const selectedConstruct = view(constructInput);
 ```
 
 ```js
+const flipSelfOther = view(Inputs.toggle({ label: "Flip axes" }));
+```
+
+```js
 const prefixMap = { "Dignity": "D", "Honour": "H", "Face": "F" };
 const prefix = prefixMap[selectedConstruct];
 
 const selfOtherData = [...data].sort((a, b) => a[`${prefix}_self_end_mean_country`] - b[`${prefix}_self_end_mean_country`]);
 const soCountries = selfOtherData.map(d => d.country_res_full);
 
+const soTraces = [
+  { name: "Self",  meanKey: `${prefix}_self_end_mean_country`,  sdKey: `${prefix}_self_end_sd_country`,  color: "#4e79a7", errColor: "#4e79a780" },
+  { name: "Other", meanKey: `${prefix}_other_end_mean_country`, sdKey: `${prefix}_other_end_sd_country`, color: "#f28e2b", errColor: "#f28e2b80" },
+].map(({ name, meanKey, sdKey, color, errColor }) => ({
+  type: "scatter", mode: "markers", name,
+  x: flipSelfOther ? soCountries : selfOtherData.map(d => d[meanKey]),
+  y: flipSelfOther ? selfOtherData.map(d => d[meanKey]) : soCountries,
+  ...(flipSelfOther
+    ? { error_y: { type: "data", array: selfOtherData.map(d => d[sdKey]), visible: true, color: errColor, thickness: 1.5, width: 4 } }
+    : { error_x: { type: "data", array: selfOtherData.map(d => d[sdKey]), visible: true, color: errColor, thickness: 1.5, width: 4 } }),
+  marker: { color, size: 8, line: { color: fg, width: 1 } },
+  hovertemplate: flipSelfOther
+    ? `<b>%{x}</b><br>${selectedConstruct} ${name}: %{y:.3f} ± %{error_y.array:.3f}<extra></extra>`
+    : `<b>%{y}</b><br>${selectedConstruct} ${name}: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
+}));
+
+const soPlotWidth = flipSelfOther ? Math.max(900, soCountries.length * 14 + 80) : null;
+const soWrapperDiv = document.createElement("div");
+soWrapperDiv.style.cssText = "overflow-x:auto;";
 const selfOtherDiv = document.createElement("div");
-Plotly.newPlot(selfOtherDiv, [
-  {
-    type: "scatter", mode: "markers", name: "Self",
-    x: selfOtherData.map(d => d[`${prefix}_self_end_mean_country`]),
-    y: soCountries,
-    error_x: { type: "data", array: selfOtherData.map(d => d[`${prefix}_self_end_sd_country`]), visible: true, color: "#4e79a780", thickness: 1.5, width: 4 },
-    marker: { color: "#4e79a7", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: `<b>%{y}</b><br>${selectedConstruct} Self: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
-  },
-  {
-    type: "scatter", mode: "markers", name: "Other",
-    x: selfOtherData.map(d => d[`${prefix}_other_end_mean_country`]),
-    y: soCountries,
-    error_x: { type: "data", array: selfOtherData.map(d => d[`${prefix}_other_end_sd_country`]), visible: true, color: "#f28e2b80", thickness: 1.5, width: 4 },
-    marker: { color: "#f28e2b", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: `<b>%{y}</b><br>${selectedConstruct} Other: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
-  },
-], {
+soWrapperDiv.appendChild(selfOtherDiv);
+Plotly.newPlot(selfOtherDiv, soTraces, {
   title: { text: `${selectedConstruct} — Self vs. Other Endorsement by Country (±1 SD)`, font: { size: 15, color: fg } },
-  xaxis: { title: { text: "Mean Endorsement", font: { color: fg } }, tickfont: { color: fg }, gridcolor: "rgba(128,128,128,0.15)", zeroline: false },
-  yaxis: { tickfont: { size: 10, color: fg }, automargin: true, gridcolor: "rgba(128,128,128,0.15)" },
-  margin: { t: 60, b: 60, l: 200, r: 30 },
-  height: Math.max(500, soCountries.length * 14 + 80),
+  xaxis: {
+    title: { text: flipSelfOther ? "Country" : "Mean Endorsement", font: { color: fg } },
+    tickfont: { size: 10, color: fg }, automargin: true,
+    gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
+    ...(flipSelfOther ? { tickangle: -45 } : {}),
+  },
+  yaxis: {
+    title: flipSelfOther ? { text: "Mean Endorsement", font: { color: fg } } : undefined,
+    tickfont: { size: 10, color: fg }, automargin: true,
+    gridcolor: "rgba(128,128,128,0.15)",
+  },
+  margin: flipSelfOther ? { t: 60, b: 180, l: 60, r: 30 } : { t: 60, b: 60, l: 200, r: 30 },
+  height: flipSelfOther ? 600 : Math.max(500, soCountries.length * 14 + 80),
+  ...(soPlotWidth ? { width: soPlotWidth } : {}),
   plot_bgcolor: "transparent",
   paper_bgcolor: "transparent",
   showlegend: true,
   legend: { font: { color: fg } },
-}, { responsive: true, displayModeBar: true });
-display(selfOtherDiv);
+}, { responsive: !flipSelfOther, displayModeBar: true });
+display(soWrapperDiv);
 ```
 
 ---
