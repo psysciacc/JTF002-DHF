@@ -12,7 +12,7 @@
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
 <link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
 <link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.f7bf0e12.css">
-<link rel="modulepreload" href="./_observablehq/client.0da6b234.js">
+<link rel="modulepreload" href="./_observablehq/client.087c7473.js">
 <link rel="modulepreload" href="./_observablehq/runtime.607a8173.js">
 <link rel="modulepreload" href="./_observablehq/stdlib.277aeab8.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/inputs.31cd1366.js">
@@ -34,10 +34,10 @@
   
 <script type="module">
 
-import {define} from "./_observablehq/client.0da6b234.js";
+import {define} from "./_observablehq/client.087c7473.js";
 import {registerFile} from "./_observablehq/stdlib.277aeab8.js";
 
-registerFile("./data/scale_descriptives.csv", {"name":"./data/scale_descriptives.csv","mimeType":"text/csv","path":"./_file/data/scale_descriptives.ba4a3099.csv","lastModified":1777433148774,"size":86129});
+registerFile("./data/scale_descriptives.csv", {"name":"./data/scale_descriptives.csv","mimeType":"text/csv","path":"./_file/data/scale_descriptives.ba4a3099.csv","lastModified":1779026696970,"size":86129});
 
 define({id: "e89f4cb3", inputs: ["FileAttachment"], outputs: ["desc"], body: (FileAttachment) => {
 const desc = FileAttachment("./data/scale_descriptives.csv").csv({ typed: true });
@@ -94,7 +94,12 @@ const selectedScale = view(scaleInput);
 return {scaleInput,selectedScale};
 }});
 
-define({id: "24833a27", inputs: ["desc","selectedScale","scaleDomainMap","getComputedStyle","Plotly","display"], outputs: ["domainColors","filtered","domain","color","fg","dotDiv"], body: (desc,selectedScale,scaleDomainMap,getComputedStyle,Plotly,display) => {
+define({id: "9f855eb6", inputs: ["view","Inputs"], outputs: ["flipCountries"], body: (view,Inputs) => {
+const flipCountries = view(Inputs.toggle({ label: "Flip axes" }));
+return {flipCountries};
+}});
+
+define({id: "c5926b96", inputs: ["desc","selectedScale","scaleDomainMap","getComputedStyle","flipCountries","Plotly","display"], outputs: ["domainColors","filtered","domain","color","fg","countryWrapper","dotDiv"], body: (desc,selectedScale,scaleDomainMap,getComputedStyle,flipCountries,Plotly,display) => {
 const domainColors = {
   "Face & Conflict": "#4e79a7",
   "Violence Acceptance": "#e15759",
@@ -112,36 +117,32 @@ const color = domainColors[domain];
 
 const fg = getComputedStyle(document.documentElement).getPropertyValue("--theme-foreground").trim() || "#333";
 
+const countryWrapper = document.createElement("div");
+countryWrapper.style.cssText = "overflow-x:auto;";
 const dotDiv = document.createElement("div");
+countryWrapper.appendChild(dotDiv);
 
 if (filtered.length === 0) {
   dotDiv.textContent = "No data available for this scale.";
 } else {
+  const countryPlotWidth = flipCountries ? Math.max(900, filtered.length * 14 + 80) : null;
   Plotly.newPlot(dotDiv, [
-    // Error bar trace (SD)
     {
       type: "scatter",
       mode: "markers",
-      x: filtered.map(d => d.Mean),
-      y: filtered.map(d => d.Group),
-      error_x: {
-        type: "data",
-        array: filtered.map(d => d.SD),
-        visible: true,
-        color: color + "80",
-        thickness: 1.5,
-        width: 4,
-      },
+      x: flipCountries ? filtered.map(d => d.Group) : filtered.map(d => d.Mean),
+      y: flipCountries ? filtered.map(d => d.Mean) : filtered.map(d => d.Group),
+      ...(flipCountries
+        ? { error_y: { type: "data", array: filtered.map(d => d.SD), visible: true, color: color + "80", thickness: 1.5, width: 4 } }
+        : { error_x: { type: "data", array: filtered.map(d => d.SD), visible: true, color: color + "80", thickness: 1.5, width: 4 } }),
       marker: {
         color,
         size: 10,
         line: { color: fg, width: 1.5 },
       },
-      hovertemplate:
-        "<b>%{y}</b><br>" +
-        "Mean = %{x:.3f}<br>" +
-        "SD = %{error_x.array:.3f}<br>" +
-        `N = %{customdata}<extra>${selectedScale.replace(/_/g, " ")}</extra>`,
+      hovertemplate: flipCountries
+        ? "<b>%{x}</b><br>Mean = %{y:.3f}<br>SD = %{error_y.array:.3f}<br>" + `N = %{customdata}<extra>${selectedScale.replace(/_/g, " ")}</extra>`
+        : "<b>%{y}</b><br>Mean = %{x:.3f}<br>SD = %{error_x.array:.3f}<br>" + `N = %{customdata}<extra>${selectedScale.replace(/_/g, " ")}</extra>`,
       customdata: filtered.map(d => d.N.toLocaleString()),
       name: selectedScale.replace(/_/g, " "),
     },
@@ -151,25 +152,29 @@ if (filtered.length === 0) {
       font: { size: 15, color: fg },
     },
     xaxis: {
-      title: { text: "Mean Score", font: { color: fg } },
-      tickfont: { color: fg },
+      title: { text: flipCountries ? "Country" : "Mean Score", font: { color: fg } },
+      tickfont: { size: 10, color: fg },
+      automargin: true,
       gridcolor: "rgba(128,128,128,0.15)",
       zeroline: false,
+      ...(flipCountries ? { tickangle: -45 } : {}),
     },
     yaxis: {
+      title: flipCountries ? { text: "Mean Score", font: { color: fg } } : undefined,
       tickfont: { size: 10, color: fg },
       automargin: true,
       gridcolor: "rgba(128,128,128,0.15)",
     },
-    margin: { t: 60, b: 60, l: 180, r: 30 },
-    height: Math.max(500, filtered.length * 14 + 80),
+    margin: flipCountries ? { t: 60, b: 180, l: 60, r: 30 } : { t: 60, b: 60, l: 180, r: 30 },
+    height: flipCountries ? 600 : Math.max(500, filtered.length * 14 + 80),
+    ...(countryPlotWidth ? { width: countryPlotWidth } : {}),
     plot_bgcolor: "transparent",
     paper_bgcolor: "transparent",
     showlegend: false,
-  }, { responsive: true, displayModeBar: true });
+  }, { responsive: !flipCountries, displayModeBar: true });
 }
-display(dotDiv);
-return {domainColors,filtered,domain,color,fg,dotDiv};
+display(countryWrapper);
+return {domainColors,filtered,domain,color,fg,countryWrapper,dotDiv};
 }});
 
 define({id: "2e0a0185", inputs: ["desc","scaleDomainMap","display"], outputs: ["loadScript","descAll","dtWrapper","dtTbl"], body: async (desc,scaleDomainMap,display) => {
@@ -270,14 +275,15 @@ return {loadScript,descAll,dtWrapper,dtTbl};
 <div class="observablehq observablehq--block"><!--:d9c27cf9:--></div>
 <h2 id="select-a-scale" tabindex="-1"><a class="observablehq-header-anchor" href="#select-a-scale">Select a Scale</a></h2>
 <div class="observablehq observablehq--block"><!--:1a06d500:--></div>
-<div class="observablehq observablehq--block"><!--:24833a27:--></div>
+<div class="observablehq observablehq--block"><!--:9f855eb6:--></div>
+<div class="observablehq observablehq--block"><!--:c5926b96:--></div>
 <hr>
 <h2 id="descriptives-table" tabindex="-1"><a class="observablehq-header-anchor" href="#descriptives-table">Descriptives Table</a></h2>
 <div class="observablehq observablehq--block"><!--:2e0a0185:--></div>
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="prev" href="./reliability"><span>Scale Reliability</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-29T10:03:15">Apr 29, 2026</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-17T09:04:56">May 17, 2026</a>.</div>
 </footer>
 </div>
 </body>

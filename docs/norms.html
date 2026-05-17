@@ -14,7 +14,7 @@
 <link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
 <link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.f7bf0e12.css">
 <link rel="stylesheet" type="text/css" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
-<link rel="modulepreload" href="./_observablehq/client.0da6b234.js">
+<link rel="modulepreload" href="./_observablehq/client.087c7473.js">
 <link rel="modulepreload" href="./_observablehq/runtime.607a8173.js">
 <link rel="modulepreload" href="./_observablehq/stdlib.277aeab8.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/inputs.31cd1366.js">
@@ -38,12 +38,12 @@
   
 <script type="module">
 
-import {define} from "./_observablehq/client.0da6b234.js";
+import {define} from "./_observablehq/client.087c7473.js";
 import {registerFile} from "./_observablehq/stdlib.277aeab8.js";
 
-registerFile("./data/countries_iso.csv", {"name":"./data/countries_iso.csv","mimeType":"text/csv","path":"./_file/data/countries_iso.6d471e09.csv","lastModified":1777472619466,"size":924});
-registerFile("./data/country_endorsement.csv", {"name":"./data/country_endorsement.csv","mimeType":"text/csv","path":"./_file/data/country_endorsement.b95ac4c7.csv","lastModified":1777439168347,"size":42768});
-registerFile("./data/country_norms.csv", {"name":"./data/country_norms.csv","mimeType":"text/csv","path":"./_file/data/country_norms.b255ee07.csv","lastModified":1777439168356,"size":42782});
+registerFile("./data/countries_iso.csv", {"name":"./data/countries_iso.csv","mimeType":"text/csv","path":"./_file/data/countries_iso.6d471e09.csv","lastModified":1779026696994,"size":924});
+registerFile("./data/country_endorsement.csv", {"name":"./data/country_endorsement.csv","mimeType":"text/csv","path":"./_file/data/country_endorsement.b95ac4c7.csv","lastModified":1779026696982,"size":42768});
+registerFile("./data/country_norms.csv", {"name":"./data/country_norms.csv","mimeType":"text/csv","path":"./_file/data/country_norms.b255ee07.csv","lastModified":1779026697013,"size":42782});
 
 define({id: "34531eec", inputs: ["FileAttachment"], outputs: ["rawNorms","rawEnd","isoLookup"], body: (FileAttachment) => {
 const rawNorms = FileAttachment("./data/country_norms.csv").csv({ typed: true });
@@ -186,46 +186,56 @@ legend.addTo(lmap);
 return {numericToIso3,isoMap,col,mapNormData,normDataByIso3,normValues,vMin,vMax,constructColor,r2,g2,b2,getNormColor,fixRing,fixGeometry,world,geojson,normMapContainer,lmap,legend};
 }});
 
-define({id: "c71555f1", inputs: ["Plotly","data","countries","fg","display"], outputs: ["dotDiv"], body: (Plotly,data,countries,fg,display) => {
+define({id: "b00aefba", inputs: ["view","Inputs"], outputs: ["flipNormsDot"], body: (view,Inputs) => {
+const flipNormsDot = view(Inputs.toggle({ label: "Flip axes" }));
+return {flipNormsDot};
+}});
+
+define({id: "587d76ef", inputs: ["flipNormsDot","countries","data","fg","Plotly","display"], outputs: ["normDotWrapper","dotDiv","normTraces","normDotWidth"], body: (flipNormsDot,countries,data,fg,Plotly,display) => {
+const normDotWrapper = document.createElement("div");
+normDotWrapper.style.cssText = "overflow-x:auto;";
 const dotDiv = document.createElement("div");
-Plotly.newPlot(dotDiv, [
-  {
-    type: "scatter", mode: "markers", name: "Dignity",
-    x: data.map(d => d.D_norm_mean_country),
-    y: countries,
-    error_x: { type: "data", array: data.map(d => d.D_norm_sd_country), visible: true, color: "#4e79a780", thickness: 1.5, width: 4 },
-    marker: { color: "#4e79a7", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{y}</b><br>Dignity Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>",
-  },
-  {
-    type: "scatter", mode: "markers", name: "Honour",
-    x: data.map(d => d.H_norm_mean_country),
-    y: countries,
-    error_x: { type: "data", array: data.map(d => d.H_norm_sd_country), visible: true, color: "#e1575980", thickness: 1.5, width: 4 },
-    marker: { color: "#e15759", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{y}</b><br>Honour Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>",
-  },
-  {
-    type: "scatter", mode: "markers", name: "Face",
-    x: data.map(d => d.F_norm_mean_country),
-    y: countries,
-    error_x: { type: "data", array: data.map(d => d.F_norm_sd_country), visible: true, color: "#59a14f80", thickness: 1.5, width: 4 },
-    marker: { color: "#59a14f", size: 8, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{y}</b><br>Face Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>",
-  },
-], {
+normDotWrapper.appendChild(dotDiv);
+const normTraces = [
+  { name: "Dignity", meanKey: "D_norm_mean_country", sdKey: "D_norm_sd_country", color: "#4e79a7", errColor: "#4e79a780" },
+  { name: "Honour",  meanKey: "H_norm_mean_country", sdKey: "H_norm_sd_country", color: "#e15759", errColor: "#e1575980" },
+  { name: "Face",    meanKey: "F_norm_mean_country", sdKey: "F_norm_sd_country", color: "#59a14f", errColor: "#59a14f80" },
+].map(({ name, meanKey, sdKey, color, errColor }) => ({
+  type: "scatter", mode: "markers", name,
+  x: flipNormsDot ? countries : data.map(d => d[meanKey]),
+  y: flipNormsDot ? data.map(d => d[meanKey]) : countries,
+  ...(flipNormsDot
+    ? { error_y: { type: "data", array: data.map(d => d[sdKey]), visible: true, color: errColor, thickness: 1.5, width: 4 } }
+    : { error_x: { type: "data", array: data.map(d => d[sdKey]), visible: true, color: errColor, thickness: 1.5, width: 4 } }),
+  marker: { color, size: 8, line: { color: fg, width: 1 } },
+  hovertemplate: flipNormsDot
+    ? `<b>%{x}</b><br>${name} Norm: %{y:.3f} ± %{error_y.array:.3f}<extra></extra>`
+    : `<b>%{y}</b><br>${name} Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
+}));
+const normDotWidth = flipNormsDot ? Math.max(900, countries.length * 14 + 80) : null;
+Plotly.newPlot(dotDiv, normTraces, {
   title: { text: "Dignity, Honour & Face Norms by Country (±1 SD)", font: { size: 15, color: fg } },
-  xaxis: { title: { text: "Mean Norm Score", font: { color: fg } }, tickfont: { color: fg }, gridcolor: "rgba(128,128,128,0.15)", zeroline: false },
-  yaxis: { tickfont: { size: 10, color: fg }, automargin: true, gridcolor: "rgba(128,128,128,0.15)" },
-  margin: { t: 60, b: 60, l: 200, r: 30 },
-  height: Math.max(500, countries.length * 14 + 80),
+  xaxis: {
+    title: { text: flipNormsDot ? "Country" : "Mean Norm Score", font: { color: fg } },
+    tickfont: { size: 10, color: fg }, automargin: true,
+    gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
+    ...(flipNormsDot ? { tickangle: -45 } : {}),
+  },
+  yaxis: {
+    title: flipNormsDot ? { text: "Mean Norm Score", font: { color: fg } } : undefined,
+    tickfont: { size: 10, color: fg }, automargin: true,
+    gridcolor: "rgba(128,128,128,0.15)",
+  },
+  margin: flipNormsDot ? { t: 60, b: 180, l: 60, r: 30 } : { t: 60, b: 60, l: 200, r: 30 },
+  height: flipNormsDot ? 600 : Math.max(500, countries.length * 14 + 80),
+  ...(normDotWidth ? { width: normDotWidth } : {}),
   plot_bgcolor: "transparent",
   paper_bgcolor: "transparent",
   showlegend: true,
   legend: { font: { color: fg } },
-}, { responsive: true, displayModeBar: true });
-display(dotDiv);
-return {dotDiv};
+}, { responsive: !flipNormsDot, displayModeBar: true });
+display(normDotWrapper);
+return {normDotWrapper,dotDiv,normTraces,normDotWidth};
 }});
 
 define({id: "d87d9205", inputs: ["Inputs","view"], outputs: ["constructInput","selectedConstruct"], body: (Inputs,view) => {
@@ -237,7 +247,12 @@ const selectedConstruct = view(constructInput);
 return {constructInput,selectedConstruct};
 }});
 
-define({id: "07b1d0e5", inputs: ["selectedConstruct","rawEnd","data","Plotly","fg","display"], outputs: ["prefixMap","colorMap","prefix","dotColor","endMap","scatterData","allVals","axMin","axMax","scatterDiv"], body: (selectedConstruct,rawEnd,data,Plotly,fg,display) => {
+define({id: "d7b5ddf8", inputs: ["view","Inputs"], outputs: ["flipScatter"], body: (view,Inputs) => {
+const flipScatter = view(Inputs.toggle({ label: "Flip axes" }));
+return {flipScatter};
+}});
+
+define({id: "b942ad53", inputs: ["selectedConstruct","rawEnd","data","Plotly","flipScatter","fg","display"], outputs: ["prefixMap","colorMap","prefix","dotColor","endMap","scatterData","allVals","axMin","axMax","scatterDiv"], body: (selectedConstruct,rawEnd,data,Plotly,flipScatter,fg,display) => {
 const prefixMap  = { "Dignity": "D", "Honour": "H", "Face": "F" };
 const colorMap   = { "Dignity": "#4e79a7", "Honour": "#e15759", "Face": "#59a14f" };
 const prefix     = prefixMap[selectedConstruct];
@@ -267,17 +282,25 @@ Plotly.newPlot(scatterDiv, [
   },
   {
     type: "scatter", mode: "markers",
-    x: scatterData.map(d => d.end),
-    y: scatterData.map(d => d.norm),
+    x: flipScatter ? scatterData.map(d => d.norm) : scatterData.map(d => d.end),
+    y: flipScatter ? scatterData.map(d => d.end) : scatterData.map(d => d.norm),
     text: scatterData.map(d => d.country),
     marker: { color: dotColor, size: 9, line: { color: fg, width: 1 } },
-    hovertemplate: "<b>%{text}</b><br>Endorsement: %{x:.3f}<br>Norm: %{y:.3f}<extra></extra>",
+    hovertemplate: flipScatter
+      ? "<b>%{text}</b><br>Norm: %{x:.3f}<br>Endorsement: %{y:.3f}<extra></extra>"
+      : "<b>%{text}</b><br>Endorsement: %{x:.3f}<br>Norm: %{y:.3f}<extra></extra>",
     showlegend: false,
   },
 ], {
   title: { text: `${selectedConstruct} — Endorsement vs. Norm by Country`, font: { size: 15, color: fg } },
-  xaxis: { title: { text: `${selectedConstruct} Endorsement`, font: { color: fg } }, tickfont: { color: fg }, range: [axMin, axMax], gridcolor: "rgba(128,128,128,0.15)" },
-  yaxis: { title: { text: `${selectedConstruct} Norm`, font: { color: fg } }, tickfont: { color: fg }, range: [axMin, axMax], gridcolor: "rgba(128,128,128,0.15)" },
+  xaxis: {
+    title: { text: flipScatter ? `${selectedConstruct} Norm` : `${selectedConstruct} Endorsement`, font: { color: fg } },
+    tickfont: { color: fg }, range: [axMin, axMax], gridcolor: "rgba(128,128,128,0.15)",
+  },
+  yaxis: {
+    title: { text: flipScatter ? `${selectedConstruct} Endorsement` : `${selectedConstruct} Norm`, font: { color: fg } },
+    tickfont: { color: fg }, range: [axMin, axMax], gridcolor: "rgba(128,128,128,0.15)",
+  },
   margin: { t: 60, b: 80, l: 80, r: 30 },
   height: 520,
   plot_bgcolor: "transparent",
@@ -390,19 +413,21 @@ return {loadScript,normWrapper,normTbl};
 <div class="observablehq observablehq--block"><!--:f6cd47d2:--></div>
 <hr>
 <h2 id="norms-by-country" tabindex="-1"><a class="observablehq-header-anchor" href="#norms-by-country">Norms by Country</a></h2>
-<div class="observablehq observablehq--block"><!--:c71555f1:--></div>
+<div class="observablehq observablehq--block"><!--:b00aefba:--></div>
+<div class="observablehq observablehq--block"><!--:587d76ef:--></div>
 <hr>
 <h2 id="endorsement-vs-norms" tabindex="-1"><a class="observablehq-header-anchor" href="#endorsement-vs-norms">Endorsement vs. Norms</a></h2>
 <p>Does what people personally endorse match what they perceive as normal in their culture? Points above the diagonal line indicate higher norms than endorsement; points below indicate higher endorsement than norms.</p>
 <div class="observablehq observablehq--block"><!--:d87d9205:--></div>
-<div class="observablehq observablehq--block"><!--:07b1d0e5:--></div>
+<div class="observablehq observablehq--block"><!--:d7b5ddf8:--></div>
+<div class="observablehq observablehq--block"><!--:b942ad53:--></div>
 <hr>
 <h2 id="norms-data-table" tabindex="-1"><a class="observablehq-header-anchor" href="#norms-data-table">Norms Data Table</a></h2>
 <div class="observablehq observablehq--block"><!--:d0cf4ca5:--></div>
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="prev" href="./endorsement"><span>Country Endorsement</span></a><a rel="next" href="./reliability"><span>Scale Reliability</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-04-29T10:03:15">Apr 29, 2026</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-17T09:04:56">May 17, 2026</a>.</div>
 </footer>
 </div>
 </body>
