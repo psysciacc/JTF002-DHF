@@ -24,7 +24,7 @@ const countrySizes = countryN
 const countries = countrySizes.map(d => d.country);
 const totalN = countrySizes.reduce((s, d) => s + d.n, 0);
 
-// Join with ISO codes; drop rows without a code (Kosovo, Taiwan, North of Cyprus)
+// Join with ISO codes
 const isoMap = new Map(isoLookup.map(d => [d.dhf_country_name, d.iso3c]));
 const mapData = countrySizes
   .map(d => ({ ...d, iso3c: isoMap.get(d.country) ?? "" }))
@@ -62,8 +62,9 @@ function getColor(n) {
   return (binDefs.find(b => n >= b.min && n < b.max) ?? binDefs.at(-1)).color;
 }
 
-// Fetch world atlas topojson at browser runtime (no build-time CDN issue)
-const world = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+// Fetch world atlas topojson at browser runtime.
+// The Visionscarto variant includes Kosovo and explicit 3-letter codes.
+const world = await fetch("https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/110m.json")
   .then(r => r.json());
 const geojson = topojson.feature(world, world.objects.countries);
 
@@ -108,7 +109,7 @@ const lmap = L.map(mapContainer, {
 
 L.geoJSON(geojson, {
   style(feature) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? dataByIso3.get(iso3) : null;
     return {
       fillColor:   d ? getColor(d.n) : "#f0f0f0",
@@ -118,7 +119,7 @@ L.geoJSON(geojson, {
     };
   },
   onEachFeature(feature, layer) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? dataByIso3.get(iso3) : null;
     if (d) {
       layer.bindTooltip(
@@ -153,8 +154,6 @@ legend.onAdd = () => {
 };
 legend.addTo(lmap);
 ```
-
-<small style="color:var(--theme-foreground-muted)">Kosovo and Taiwan are included in the study but are not shown on the map due to their ambiguous status in standard geographic datasets.</small>
 
 ---
 

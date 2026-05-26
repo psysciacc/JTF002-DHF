@@ -53,6 +53,7 @@ const numericToIso3 = {
   620:"PRT", 642:"ROU", 643:"RUS", 682:"SAU", 688:"SRB", 702:"SGP",
   703:"SVK", 710:"ZAF", 724:"ESP", 756:"CHE", 764:"THA", 792:"TUR",
   804:"UKR", 784:"ARE", 826:"GBR", 840:"USA", 860:"UZB", 704:"VNM",
+  158:"TWN",
 };
 
 const isoMap = new Map(isoLookup.map(d => [d.dhf_country_name, d.iso3c]));
@@ -97,7 +98,7 @@ function fixGeometry(geom) {
   if (geom.type === "MultiPolygon") geom.coordinates = geom.coordinates.map(p => p.map(fixRing));
 }
 
-const world = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r => r.json());
+const world = await fetch("https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/110m.json").then(r => r.json());
 const geojson = topojson.feature(world, world.objects.countries);
 geojson.features.forEach(f => fixGeometry(f.geometry));
 
@@ -113,12 +114,12 @@ const lmap = L.map(endMapContainer, {
 
 L.geoJSON(geojson, {
   style(feature) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? endDataByIso3.get(iso3) : null;
     return { fillColor: d ? getEndColor(d.value) : "#f0f0f0", fillOpacity: 1, color: "#ccc", weight: 0.5 };
   },
   onEachFeature(feature, layer) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? endDataByIso3.get(iso3) : null;
     if (d) {
       layer.bindTooltip(`<strong>${d.country}</strong><br>${selectedMeasure}: ${d.value.toFixed(3)}`, { sticky: true });
