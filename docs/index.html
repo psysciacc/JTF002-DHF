@@ -37,7 +37,7 @@ import {define} from "./_observablehq/client.087c7473.js";
 import {registerFile} from "./_observablehq/stdlib.277aeab8.js";
 
 registerFile("./data/alpha_results.csv", {"name":"./data/alpha_results.csv","mimeType":"text/csv","path":"./_file/data/alpha_results.1498398e.csv","lastModified":1779026697004,"size":91123});
-registerFile("./data/countries_iso.csv", {"name":"./data/countries_iso.csv","mimeType":"text/csv","path":"./_file/data/countries_iso.6d471e09.csv","lastModified":1779026696994,"size":924});
+registerFile("./data/countries_iso.csv", {"name":"./data/countries_iso.csv","mimeType":"text/csv","path":"./_file/data/countries_iso.44472e4c.csv","lastModified":1779810950358,"size":946});
 registerFile("./data/country_n_app.csv", {"name":"./data/country_n_app.csv","mimeType":"text/csv","path":"./_file/data/country_n_app.5e3ab447.csv","lastModified":1777472424012,"size":1307});
 registerFile("./data/scale_descriptives.csv", {"name":"./data/scale_descriptives.csv","mimeType":"text/csv","path":"./_file/data/scale_descriptives.ba4a3099.csv","lastModified":1779026696970,"size":86129});
 
@@ -60,7 +60,7 @@ const countryN = FileAttachment("./data/country_n_app.csv").csv({ typed: true })
 return {desc,isoLookup,countryN};
 }});
 
-define({id: "4a7706df", inputs: ["countryN","isoLookup"], outputs: ["countrySizes","countries","totalN","isoMap","mapData"], body: (countryN,isoLookup) => {
+define({id: "667549a5", inputs: ["countryN","isoLookup"], outputs: ["countrySizes","countries","totalN","isoMap","mapData"], body: (countryN,isoLookup) => {
 const countrySizes = countryN
   .map(d => ({ country: d.country_res_full, n: d.n }))
   .sort((a, b) => b.n - a.n);
@@ -68,7 +68,7 @@ const countrySizes = countryN
 const countries = countrySizes.map(d => d.country);
 const totalN = countrySizes.reduce((s, d) => s + d.n, 0);
 
-// Join with ISO codes; drop rows without a code (Kosovo, Taiwan, North of Cyprus)
+// Join with ISO codes
 const isoMap = new Map(isoLookup.map(d => [d.dhf_country_name, d.iso3c]));
 const mapData = countrySizes
   .map(d => ({ ...d, iso3c: isoMap.get(d.country) ?? "" }))
@@ -76,7 +76,7 @@ const mapData = countrySizes
 return {countrySizes,countries,totalN,isoMap,mapData};
 }});
 
-define({id: "dcfa32ca", inputs: ["mapData","topojson","display","L"], outputs: ["numericToIso3","mapRows","dataByIso3","binDefs","getColor","world","geojson","fixRing","fixGeometry","mapContainer","lmap","legend"], body: async (mapData,topojson,display,L) => {
+define({id: "2bf0a64c", inputs: ["mapData","topojson","display","L"], outputs: ["numericToIso3","mapRows","dataByIso3","binDefs","getColor","world","geojson","fixRing","fixGeometry","mapContainer","lmap","legend"], body: async (mapData,topojson,display,L) => {
 // ISO 3166-1 numeric → ISO3 for every study country
 const numericToIso3 = {
   8:"ALB", 32:"ARG", 51:"ARM", 36:"AUS", 40:"AUT", 50:"BGD",
@@ -107,8 +107,9 @@ function getColor(n) {
   return (binDefs.find(b => n >= b.min && n < b.max) ?? binDefs.at(-1)).color;
 }
 
-// Fetch world atlas topojson at browser runtime (no build-time CDN issue)
-const world = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+// Fetch world atlas topojson at browser runtime.
+// The Visionscarto variant includes Kosovo and explicit 3-letter codes.
+const world = await fetch("https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/110m.json")
   .then(r => r.json());
 const geojson = topojson.feature(world, world.objects.countries);
 
@@ -153,7 +154,7 @@ const lmap = L.map(mapContainer, {
 
 L.geoJSON(geojson, {
   style(feature) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? dataByIso3.get(iso3) : null;
     return {
       fillColor:   d ? getColor(d.n) : "#f0f0f0",
@@ -163,7 +164,7 @@ L.geoJSON(geojson, {
     };
   },
   onEachFeature(feature, layer) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? dataByIso3.get(iso3) : null;
     if (d) {
       layer.bindTooltip(
@@ -278,9 +279,8 @@ return {overallAlpha,avgAlpha,statsDiv,stats};
 <hr>
 <h2 id="sample-size-by-country" tabindex="-1"><a class="observablehq-header-anchor" href="#sample-size-by-country">Sample Size by Country</a></h2>
 <div class="observablehq observablehq--block"><!--:e98b3cad:--></div>
-<div class="observablehq observablehq--block"><!--:4a7706df:--></div>
-<div class="observablehq observablehq--block"><!--:dcfa32ca:--></div>
-<p><small style="color:var(--theme-foreground-muted)">Kosovo and Taiwan are included in the study but are not shown on the map due to their ambiguous status in standard geographic datasets.</small></p>
+<div class="observablehq observablehq--block"><!--:667549a5:--></div>
+<div class="observablehq observablehq--block"><!--:2bf0a64c:--></div>
 <hr>
 <h2 id="quick-stats" tabindex="-1"><a class="observablehq-header-anchor" href="#quick-stats">Quick Stats</a></h2>
 <div class="observablehq observablehq--block"><!--:2c3a3f17:--></div>
@@ -291,7 +291,7 @@ return {overallAlpha,avgAlpha,statsDiv,stats};
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="next" href="./endorsement"><span>Country Endorsement</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-17T09:04:56">May 17, 2026</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-26T11:29:37">May 26, 2026</a>.</div>
 </footer>
 </div>
 </body>

@@ -41,7 +41,7 @@
 import {define} from "./_observablehq/client.087c7473.js";
 import {registerFile} from "./_observablehq/stdlib.277aeab8.js";
 
-registerFile("./data/countries_iso.csv", {"name":"./data/countries_iso.csv","mimeType":"text/csv","path":"./_file/data/countries_iso.6d471e09.csv","lastModified":1779026696994,"size":924});
+registerFile("./data/countries_iso.csv", {"name":"./data/countries_iso.csv","mimeType":"text/csv","path":"./_file/data/countries_iso.44472e4c.csv","lastModified":1779810950358,"size":946});
 registerFile("./data/country_endorsement.csv", {"name":"./data/country_endorsement.csv","mimeType":"text/csv","path":"./_file/data/country_endorsement.b95ac4c7.csv","lastModified":1779026696982,"size":42768});
 registerFile("./data/country_norms.csv", {"name":"./data/country_norms.csv","mimeType":"text/csv","path":"./_file/data/country_norms.b255ee07.csv","lastModified":1779026697013,"size":42782});
 
@@ -81,7 +81,7 @@ const selectedMeasure = view(measureInput);
 return {measureOptions,measureInput,selectedMeasure};
 }});
 
-define({id: "f6cd47d2", inputs: ["isoLookup","measureOptions","selectedMeasure","data","topojson","display","L"], outputs: ["numericToIso3","isoMap","col","mapNormData","normDataByIso3","normValues","vMin","vMax","constructColor","r2","g2","b2","getNormColor","fixRing","fixGeometry","world","geojson","normMapContainer","lmap","legend"], body: async (isoLookup,measureOptions,selectedMeasure,data,topojson,display,L) => {
+define({id: "61e7d64a", inputs: ["isoLookup","measureOptions","selectedMeasure","data","topojson","display","L"], outputs: ["numericToIso3","isoMap","col","mapNormData","normDataByIso3","normValues","vMin","vMax","constructColor","r2","g2","b2","getNormColor","fixRing","fixGeometry","world","geojson","normMapContainer","lmap","legend"], body: async (isoLookup,measureOptions,selectedMeasure,data,topojson,display,L) => {
 const numericToIso3 = {
   8:"ALB", 32:"ARG", 51:"ARM", 36:"AUS", 40:"AUT", 50:"BGD",
   70:"BIH", 76:"BRA", 100:"BGR", 120:"CMR", 124:"CAN", 152:"CHL",
@@ -94,6 +94,7 @@ const numericToIso3 = {
   620:"PRT", 642:"ROU", 643:"RUS", 682:"SAU", 688:"SRB", 702:"SGP",
   703:"SVK", 710:"ZAF", 724:"ESP", 756:"CHE", 764:"THA", 792:"TUR",
   804:"UKR", 784:"ARE", 826:"GBR", 840:"USA", 860:"UZB", 704:"VNM",
+  158:"TWN",
 };
 
 const isoMap = new Map(isoLookup.map(d => [d.dhf_country_name, d.iso3c]));
@@ -138,7 +139,7 @@ function fixGeometry(geom) {
   if (geom.type === "MultiPolygon") geom.coordinates = geom.coordinates.map(p => p.map(fixRing));
 }
 
-const world = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r => r.json());
+const world = await fetch("https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/110m.json").then(r => r.json());
 const geojson = topojson.feature(world, world.objects.countries);
 geojson.features.forEach(f => fixGeometry(f.geometry));
 
@@ -154,12 +155,12 @@ const lmap = L.map(normMapContainer, {
 
 L.geoJSON(geojson, {
   style(feature) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? normDataByIso3.get(iso3) : null;
     return { fillColor: d ? getNormColor(d.value) : "#f0f0f0", fillOpacity: 1, color: "#ccc", weight: 0.5 };
   },
   onEachFeature(feature, layer) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? normDataByIso3.get(iso3) : null;
     if (d) {
       layer.bindTooltip(`<strong>${d.country}</strong><br>${selectedMeasure}: ${d.value.toFixed(3)}`, { sticky: true });
@@ -191,7 +192,7 @@ const flipNormsDot = view(Inputs.toggle({ label: "Flip axes" }));
 return {flipNormsDot};
 }});
 
-define({id: "587d76ef", inputs: ["flipNormsDot","countries","data","fg","Plotly","display"], outputs: ["normDotWrapper","dotDiv","normTraces","normDotWidth"], body: (flipNormsDot,countries,data,fg,Plotly,display) => {
+define({id: "44fb7198", inputs: ["flipNormsDot","countries","data","fg","Plotly","display"], outputs: ["normDotWrapper","dotDiv","normTraces","normDotWidth"], body: (flipNormsDot,countries,data,fg,Plotly,display) => {
 const normDotWrapper = document.createElement("div");
 normDotWrapper.style.cssText = "overflow-x:auto;";
 const dotDiv = document.createElement("div");
@@ -212,14 +213,14 @@ const normTraces = [
     ? `<b>%{x}</b><br>${name} Norm: %{y:.3f} ± %{error_y.array:.3f}<extra></extra>`
     : `<b>%{y}</b><br>${name} Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
 }));
-const normDotWidth = flipNormsDot ? Math.max(900, countries.length * 14 + 80) : null;
+const normDotWidth = flipNormsDot ? Math.max(1800, countries.length * 28 + 120) : null;
 Plotly.newPlot(dotDiv, normTraces, {
   title: { text: "Dignity, Honour & Face Norms by Country (±1 SD)", font: { size: 15, color: fg } },
   xaxis: {
     title: { text: flipNormsDot ? "Country" : "Mean Norm Score", font: { color: fg } },
-    tickfont: { size: 10, color: fg }, automargin: true,
+    tickfont: { size: flipNormsDot ? 11 : 8, color: fg }, automargin: true,
     gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
-    ...(flipNormsDot ? { tickangle: -45 } : {}),
+    ...(flipNormsDot ? { tickmode: "array", tickvals: countries, ticktext: countries, tickangle: -45 } : {}),
   },
   yaxis: {
     title: flipNormsDot ? { text: "Mean Norm Score", font: { color: fg } } : undefined,
@@ -410,11 +411,11 @@ return {loadScript,normWrapper,normTbl};
 <div class="observablehq observablehq--block"><!--:61603b5f:--></div>
 <h2 id="norms-map" tabindex="-1"><a class="observablehq-header-anchor" href="#norms-map">Norms Map</a></h2>
 <div class="observablehq observablehq--block"><!--:6237347e:--></div>
-<div class="observablehq observablehq--block"><!--:f6cd47d2:--></div>
+<div class="observablehq observablehq--block"><!--:61e7d64a:--></div>
 <hr>
 <h2 id="norms-by-country" tabindex="-1"><a class="observablehq-header-anchor" href="#norms-by-country">Norms by Country</a></h2>
 <div class="observablehq observablehq--block"><!--:b00aefba:--></div>
-<div class="observablehq observablehq--block"><!--:587d76ef:--></div>
+<div class="observablehq observablehq--block"><!--:44fb7198:--></div>
 <hr>
 <h2 id="endorsement-vs-norms" tabindex="-1"><a class="observablehq-header-anchor" href="#endorsement-vs-norms">Endorsement vs. Norms</a></h2>
 <p>Does what people personally endorse match what they perceive as normal in their culture? Points above the diagonal line indicate higher norms than endorsement; points below indicate higher endorsement than norms.</p>
@@ -427,7 +428,7 @@ return {loadScript,normWrapper,normTbl};
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="prev" href="./endorsement"><span>Country Endorsement</span></a><a rel="next" href="./reliability"><span>Scale Reliability</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-17T09:04:56">May 17, 2026</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-26T11:29:37">May 26, 2026</a>.</div>
 </footer>
 </div>
 </body>

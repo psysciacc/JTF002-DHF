@@ -174,14 +174,14 @@ const endTraces = [
     ? `<b>%{x}</b><br>${name}: %{y:.3f} ± %{error_y.array:.3f}<extra></extra>`
     : `<b>%{y}</b><br>${name}: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
 }));
-const endPlotWidth = flipDotPlot1 ? Math.max(900, countries.length * 14 + 80) : null;
+const endPlotWidth = flipDotPlot1 ? Math.max(1800, countries.length * 28 + 120) : null;
 Plotly.newPlot(dotDiv, endTraces, {
   title: { text: "Dignity, Honour & Face Endorsement by Country (±1 SD)", font: { size: 15, color: fg } },
   xaxis: {
     title: { text: flipDotPlot1 ? "Country" : "Mean Endorsement", font: { color: fg } },
-    tickfont: { size: 10, color: fg }, automargin: true,
+    tickfont: { size: flipDotPlot1 ? 11 : 8, color: fg }, automargin: true,
     gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
-    ...(flipDotPlot1 ? { tickangle: -45 } : {}),
+    ...(flipDotPlot1 ? { tickmode: "array", tickvals: countries, ticktext: countries, tickangle: -45 } : {}),
   },
   yaxis: {
     title: flipDotPlot1 ? { text: "Mean Endorsement", font: { color: fg } } : undefined,
@@ -240,7 +240,7 @@ const soTraces = [
     : `<b>%{y}</b><br>${selectedConstruct} ${name}: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
 }));
 
-const soPlotWidth = flipSelfOther ? Math.max(900, soCountries.length * 14 + 80) : null;
+const soPlotWidth = flipSelfOther ? Math.max(1800, soCountries.length * 28 + 120) : null;
 const soWrapperDiv = document.createElement("div");
 soWrapperDiv.style.cssText = "overflow-x:auto;";
 const selfOtherDiv = document.createElement("div");
@@ -249,9 +249,9 @@ Plotly.newPlot(selfOtherDiv, soTraces, {
   title: { text: `${selectedConstruct} — Self vs. Other Endorsement by Country (±1 SD)`, font: { size: 15, color: fg } },
   xaxis: {
     title: { text: flipSelfOther ? "Country" : "Mean Endorsement", font: { color: fg } },
-    tickfont: { size: 10, color: fg }, automargin: true,
+    tickfont: { size: flipSelfOther ? 11 : 8, color: fg }, automargin: true,
     gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
-    ...(flipSelfOther ? { tickangle: -45 } : {}),
+    ...(flipSelfOther ? { tickmode: "array", tickvals: soCountries, ticktext: soCountries, tickangle: -45 } : {}),
   },
   yaxis: {
     title: flipSelfOther ? { text: "Mean Endorsement", font: { color: fg } } : undefined,

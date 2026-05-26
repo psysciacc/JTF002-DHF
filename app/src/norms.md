@@ -175,14 +175,14 @@ const normTraces = [
     ? `<b>%{x}</b><br>${name} Norm: %{y:.3f} ± %{error_y.array:.3f}<extra></extra>`
     : `<b>%{y}</b><br>${name} Norm: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
 }));
-const normDotWidth = flipNormsDot ? Math.max(900, countries.length * 14 + 80) : null;
+const normDotWidth = flipNormsDot ? Math.max(1800, countries.length * 28 + 120) : null;
 Plotly.newPlot(dotDiv, normTraces, {
   title: { text: "Dignity, Honour & Face Norms by Country (±1 SD)", font: { size: 15, color: fg } },
   xaxis: {
     title: { text: flipNormsDot ? "Country" : "Mean Norm Score", font: { color: fg } },
-    tickfont: { size: 10, color: fg }, automargin: true,
+    tickfont: { size: flipNormsDot ? 11 : 8, color: fg }, automargin: true,
     gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
-    ...(flipNormsDot ? { tickangle: -45 } : {}),
+    ...(flipNormsDot ? { tickmode: "array", tickvals: countries, ticktext: countries, tickangle: -45 } : {}),
   },
   yaxis: {
     title: flipNormsDot ? { text: "Mean Norm Score", font: { color: fg } } : undefined,

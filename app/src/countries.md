@@ -87,10 +87,10 @@ countryWrapper.style.cssText = "overflow-x:auto;";
 const dotDiv = document.createElement("div");
 countryWrapper.appendChild(dotDiv);
 
-if (filtered.length === 0) {
-  dotDiv.textContent = "No data available for this scale.";
-} else {
-  const countryPlotWidth = flipCountries ? Math.max(900, filtered.length * 14 + 80) : null;
+  if (filtered.length === 0) {
+    dotDiv.textContent = "No data available for this scale.";
+  } else {
+  const countryPlotWidth = flipCountries ? Math.max(1800, filtered.length * 28 + 120) : null;
   Plotly.newPlot(dotDiv, [
     {
       type: "scatter",
@@ -118,11 +118,11 @@ if (filtered.length === 0) {
     },
     xaxis: {
       title: { text: flipCountries ? "Country" : "Mean Score", font: { color: fg } },
-      tickfont: { size: 10, color: fg },
+      tickfont: { size: flipCountries ? 11 : 8, color: fg },
       automargin: true,
       gridcolor: "rgba(128,128,128,0.15)",
       zeroline: false,
-      ...(flipCountries ? { tickangle: -45 } : {}),
+      ...(flipCountries ? { tickmode: "array", tickvals: filtered.map(d => d.Group), ticktext: filtered.map(d => d.Group), tickangle: -45 } : {}),
     },
     yaxis: {
       title: flipCountries ? { text: "Mean Score", font: { color: fg } } : undefined,

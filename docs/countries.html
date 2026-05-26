@@ -99,7 +99,7 @@ const flipCountries = view(Inputs.toggle({ label: "Flip axes" }));
 return {flipCountries};
 }});
 
-define({id: "c5926b96", inputs: ["desc","selectedScale","scaleDomainMap","getComputedStyle","flipCountries","Plotly","display"], outputs: ["domainColors","filtered","domain","color","fg","countryWrapper","dotDiv"], body: (desc,selectedScale,scaleDomainMap,getComputedStyle,flipCountries,Plotly,display) => {
+define({id: "6285c905", inputs: ["desc","selectedScale","scaleDomainMap","getComputedStyle","flipCountries","Plotly","display"], outputs: ["domainColors","filtered","domain","color","fg","countryWrapper","dotDiv"], body: (desc,selectedScale,scaleDomainMap,getComputedStyle,flipCountries,Plotly,display) => {
 const domainColors = {
   "Face & Conflict": "#4e79a7",
   "Violence Acceptance": "#e15759",
@@ -122,10 +122,10 @@ countryWrapper.style.cssText = "overflow-x:auto;";
 const dotDiv = document.createElement("div");
 countryWrapper.appendChild(dotDiv);
 
-if (filtered.length === 0) {
-  dotDiv.textContent = "No data available for this scale.";
-} else {
-  const countryPlotWidth = flipCountries ? Math.max(900, filtered.length * 14 + 80) : null;
+  if (filtered.length === 0) {
+    dotDiv.textContent = "No data available for this scale.";
+  } else {
+  const countryPlotWidth = flipCountries ? Math.max(1800, filtered.length * 28 + 120) : null;
   Plotly.newPlot(dotDiv, [
     {
       type: "scatter",
@@ -153,11 +153,11 @@ if (filtered.length === 0) {
     },
     xaxis: {
       title: { text: flipCountries ? "Country" : "Mean Score", font: { color: fg } },
-      tickfont: { size: 10, color: fg },
+      tickfont: { size: flipCountries ? 11 : 8, color: fg },
       automargin: true,
       gridcolor: "rgba(128,128,128,0.15)",
       zeroline: false,
-      ...(flipCountries ? { tickangle: -45 } : {}),
+      ...(flipCountries ? { tickmode: "array", tickvals: filtered.map(d => d.Group), ticktext: filtered.map(d => d.Group), tickangle: -45 } : {}),
     },
     yaxis: {
       title: flipCountries ? { text: "Mean Score", font: { color: fg } } : undefined,
@@ -276,14 +276,14 @@ return {loadScript,descAll,dtWrapper,dtTbl};
 <h2 id="select-a-scale" tabindex="-1"><a class="observablehq-header-anchor" href="#select-a-scale">Select a Scale</a></h2>
 <div class="observablehq observablehq--block"><!--:1a06d500:--></div>
 <div class="observablehq observablehq--block"><!--:9f855eb6:--></div>
-<div class="observablehq observablehq--block"><!--:c5926b96:--></div>
+<div class="observablehq observablehq--block"><!--:6285c905:--></div>
 <hr>
 <h2 id="descriptives-table" tabindex="-1"><a class="observablehq-header-anchor" href="#descriptives-table">Descriptives Table</a></h2>
 <div class="observablehq observablehq--block"><!--:2e0a0185:--></div>
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="prev" href="./reliability"><span>Scale Reliability</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-17T09:04:56">May 17, 2026</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-26T11:29:37">May 26, 2026</a>.</div>
 </footer>
 </div>
 </body>

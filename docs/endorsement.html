@@ -41,7 +41,7 @@
 import {define} from "./_observablehq/client.087c7473.js";
 import {registerFile} from "./_observablehq/stdlib.277aeab8.js";
 
-registerFile("./data/countries_iso.csv", {"name":"./data/countries_iso.csv","mimeType":"text/csv","path":"./_file/data/countries_iso.6d471e09.csv","lastModified":1779026696994,"size":924});
+registerFile("./data/countries_iso.csv", {"name":"./data/countries_iso.csv","mimeType":"text/csv","path":"./_file/data/countries_iso.44472e4c.csv","lastModified":1779810950358,"size":946});
 registerFile("./data/country_endorsement.csv", {"name":"./data/country_endorsement.csv","mimeType":"text/csv","path":"./_file/data/country_endorsement.b95ac4c7.csv","lastModified":1779026696982,"size":42768});
 
 define({id: "f2ceeaaa", inputs: ["FileAttachment"], outputs: ["raw","isoLookup"], body: (FileAttachment) => {
@@ -79,7 +79,7 @@ const selectedMeasure = view(measureInput);
 return {measureOptions,measureInput,selectedMeasure};
 }});
 
-define({id: "5c884400", inputs: ["isoLookup","measureOptions","selectedMeasure","data","topojson","display","L"], outputs: ["numericToIso3","isoMap","col","mapEndData","endDataByIso3","endValues","vMin","vMax","constructColor","r2","g2","b2","getEndColor","fixRing","fixGeometry","world","geojson","endMapContainer","lmap","legend"], body: async (isoLookup,measureOptions,selectedMeasure,data,topojson,display,L) => {
+define({id: "e440d090", inputs: ["isoLookup","measureOptions","selectedMeasure","data","topojson","display","L"], outputs: ["numericToIso3","isoMap","col","mapEndData","endDataByIso3","endValues","vMin","vMax","constructColor","r2","g2","b2","getEndColor","fixRing","fixGeometry","world","geojson","endMapContainer","lmap","legend"], body: async (isoLookup,measureOptions,selectedMeasure,data,topojson,display,L) => {
 const numericToIso3 = {
   8:"ALB", 32:"ARG", 51:"ARM", 36:"AUS", 40:"AUT", 50:"BGD",
   70:"BIH", 76:"BRA", 100:"BGR", 120:"CMR", 124:"CAN", 152:"CHL",
@@ -92,6 +92,7 @@ const numericToIso3 = {
   620:"PRT", 642:"ROU", 643:"RUS", 682:"SAU", 688:"SRB", 702:"SGP",
   703:"SVK", 710:"ZAF", 724:"ESP", 756:"CHE", 764:"THA", 792:"TUR",
   804:"UKR", 784:"ARE", 826:"GBR", 840:"USA", 860:"UZB", 704:"VNM",
+  158:"TWN",
 };
 
 const isoMap = new Map(isoLookup.map(d => [d.dhf_country_name, d.iso3c]));
@@ -136,7 +137,7 @@ function fixGeometry(geom) {
   if (geom.type === "MultiPolygon") geom.coordinates = geom.coordinates.map(p => p.map(fixRing));
 }
 
-const world = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r => r.json());
+const world = await fetch("https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/110m.json").then(r => r.json());
 const geojson = topojson.feature(world, world.objects.countries);
 geojson.features.forEach(f => fixGeometry(f.geometry));
 
@@ -152,12 +153,12 @@ const lmap = L.map(endMapContainer, {
 
 L.geoJSON(geojson, {
   style(feature) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? endDataByIso3.get(iso3) : null;
     return { fillColor: d ? getEndColor(d.value) : "#f0f0f0", fillOpacity: 1, color: "#ccc", weight: 0.5 };
   },
   onEachFeature(feature, layer) {
-    const iso3 = numericToIso3[+feature.id];
+    const iso3 = feature.properties?.a3 ?? numericToIso3[+feature.id];
     const d = iso3 ? endDataByIso3.get(iso3) : null;
     if (d) {
       layer.bindTooltip(`<strong>${d.country}</strong><br>${selectedMeasure}: ${d.value.toFixed(3)}`, { sticky: true });
@@ -189,7 +190,7 @@ const flipDotPlot1 = view(Inputs.toggle({ label: "Flip axes" }));
 return {flipDotPlot1};
 }});
 
-define({id: "8e2195ba", inputs: ["flipDotPlot1","countries","data","fg","Plotly","display"], outputs: ["endWrapper","dotDiv","endTraces","endPlotWidth"], body: (flipDotPlot1,countries,data,fg,Plotly,display) => {
+define({id: "1671b962", inputs: ["flipDotPlot1","countries","data","fg","Plotly","display"], outputs: ["endWrapper","dotDiv","endTraces","endPlotWidth"], body: (flipDotPlot1,countries,data,fg,Plotly,display) => {
 const endWrapper = document.createElement("div");
 endWrapper.style.cssText = "overflow-x:auto;";
 const dotDiv = document.createElement("div");
@@ -210,14 +211,14 @@ const endTraces = [
     ? `<b>%{x}</b><br>${name}: %{y:.3f} ± %{error_y.array:.3f}<extra></extra>`
     : `<b>%{y}</b><br>${name}: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
 }));
-const endPlotWidth = flipDotPlot1 ? Math.max(900, countries.length * 14 + 80) : null;
+const endPlotWidth = flipDotPlot1 ? Math.max(1800, countries.length * 28 + 120) : null;
 Plotly.newPlot(dotDiv, endTraces, {
   title: { text: "Dignity, Honour & Face Endorsement by Country (±1 SD)", font: { size: 15, color: fg } },
   xaxis: {
     title: { text: flipDotPlot1 ? "Country" : "Mean Endorsement", font: { color: fg } },
-    tickfont: { size: 10, color: fg }, automargin: true,
+    tickfont: { size: flipDotPlot1 ? 11 : 8, color: fg }, automargin: true,
     gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
-    ...(flipDotPlot1 ? { tickangle: -45 } : {}),
+    ...(flipDotPlot1 ? { tickmode: "array", tickvals: countries, ticktext: countries, tickangle: -45 } : {}),
   },
   yaxis: {
     title: flipDotPlot1 ? { text: "Mean Endorsement", font: { color: fg } } : undefined,
@@ -250,7 +251,7 @@ const flipSelfOther = view(Inputs.toggle({ label: "Flip axes" }));
 return {flipSelfOther};
 }});
 
-define({id: "58c1c66e", inputs: ["selectedConstruct","data","flipSelfOther","fg","Plotly","display"], outputs: ["prefixMap","prefix","selfOtherData","soCountries","soTraces","soPlotWidth","soWrapperDiv","selfOtherDiv"], body: (selectedConstruct,data,flipSelfOther,fg,Plotly,display) => {
+define({id: "3664fbf8", inputs: ["selectedConstruct","data","flipSelfOther","fg","Plotly","display"], outputs: ["prefixMap","prefix","selfOtherData","soCountries","soTraces","soPlotWidth","soWrapperDiv","selfOtherDiv"], body: (selectedConstruct,data,flipSelfOther,fg,Plotly,display) => {
 const prefixMap = { "Dignity": "D", "Honour": "H", "Face": "F" };
 const prefix = prefixMap[selectedConstruct];
 
@@ -273,7 +274,7 @@ const soTraces = [
     : `<b>%{y}</b><br>${selectedConstruct} ${name}: %{x:.3f} ± %{error_x.array:.3f}<extra></extra>`,
 }));
 
-const soPlotWidth = flipSelfOther ? Math.max(900, soCountries.length * 14 + 80) : null;
+const soPlotWidth = flipSelfOther ? Math.max(1800, soCountries.length * 28 + 120) : null;
 const soWrapperDiv = document.createElement("div");
 soWrapperDiv.style.cssText = "overflow-x:auto;";
 const selfOtherDiv = document.createElement("div");
@@ -282,9 +283,9 @@ Plotly.newPlot(selfOtherDiv, soTraces, {
   title: { text: `${selectedConstruct} — Self vs. Other Endorsement by Country (±1 SD)`, font: { size: 15, color: fg } },
   xaxis: {
     title: { text: flipSelfOther ? "Country" : "Mean Endorsement", font: { color: fg } },
-    tickfont: { size: 10, color: fg }, automargin: true,
+    tickfont: { size: flipSelfOther ? 11 : 8, color: fg }, automargin: true,
     gridcolor: "rgba(128,128,128,0.15)", zeroline: false,
-    ...(flipSelfOther ? { tickangle: -45 } : {}),
+    ...(flipSelfOther ? { tickmode: "array", tickvals: soCountries, ticktext: soCountries, tickangle: -45 } : {}),
   },
   yaxis: {
     title: flipSelfOther ? { text: "Mean Endorsement", font: { color: fg } } : undefined,
@@ -403,24 +404,24 @@ return {loadScript,endWrapper,endTbl};
 <div class="observablehq observablehq--block"><!--:bb0a34fd:--></div>
 <h2 id="endorsement-map" tabindex="-1"><a class="observablehq-header-anchor" href="#endorsement-map">Endorsement Map</a></h2>
 <div class="observablehq observablehq--block"><!--:63937a30:--></div>
-<div class="observablehq observablehq--block"><!--:5c884400:--></div>
+<div class="observablehq observablehq--block"><!--:e440d090:--></div>
 <hr>
 <h2 id="endorsement-by-country" tabindex="-1"><a class="observablehq-header-anchor" href="#endorsement-by-country">Endorsement by Country</a></h2>
 <div class="observablehq observablehq--block"><!--:35eeb107:--></div>
-<div class="observablehq observablehq--block"><!--:8e2195ba:--></div>
+<div class="observablehq observablehq--block"><!--:1671b962:--></div>
 <hr>
 <h2 id="self-vs-other-endorsement" tabindex="-1"><a class="observablehq-header-anchor" href="#self-vs-other-endorsement">Self vs. Other Endorsement</a></h2>
 <p>How does personal endorsement compare to perceived endorsement by others within the same culture?</p>
 <div class="observablehq observablehq--block"><!--:d87d9205:--></div>
 <div class="observablehq observablehq--block"><!--:c30f9069:--></div>
-<div class="observablehq observablehq--block"><!--:58c1c66e:--></div>
+<div class="observablehq observablehq--block"><!--:3664fbf8:--></div>
 <hr>
 <h2 id="endorsement-data-table" tabindex="-1"><a class="observablehq-header-anchor" href="#endorsement-data-table">Endorsement Data Table</a></h2>
 <div class="observablehq observablehq--block"><!--:58609a22:--></div>
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="prev" href="./"><span>DHF Cross-Cultural Study</span></a><a rel="next" href="./norms"><span>Country Norms</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-17T09:04:56">May 17, 2026</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2026-05-26T11:29:37">May 26, 2026</a>.</div>
 </footer>
 </div>
 </body>
