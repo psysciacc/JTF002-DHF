@@ -2882,14 +2882,13 @@ hierarchical.norms.test2.fit <- run_lavaan(cfa,model = hierarchical.model.test2,
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
                     #em.dx.tol = 1e-04
+                    save_path = "output/hierarchical.norms.test2.fit"
                     )
 
 lavaan_summary(hierarchical.norms.test2.fit, rds_path = "output/hierarchical.norms.test2.fit", label = "Norms Hierarchical L2",
         fit.measures = TRUE,
         rsquare = TRUE,
-        standardized = TRUE,
-                    save_path = "output/hierarchical.norms.test2.fit"
-)
+        standardized = TRUE)
 ```
 
 ```{r norms-hierarchical-test2-original-upload}
