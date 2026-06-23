@@ -55,7 +55,7 @@ largest_group <- function(vec) {
   paste0(top, " (", p, "%)")
 }
 
-RUN_MODEL <- TRUE # change me to rerun models
+RUN_MODEL <- FALSE # change me to rerun models
 
 # Helper: run cfa() or sem(), capture warnings/messages, save both fit + log
 run_lavaan <- function(FUN, ..., save_path) {
