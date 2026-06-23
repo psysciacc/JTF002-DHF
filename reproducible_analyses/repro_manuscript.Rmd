@@ -55,7 +55,139 @@ largest_group <- function(vec) {
   paste0(top, " (", p, "%)")
 }
 
-RUN_MODEL <- FALSE # change me to rerun models
+RUN_MODEL <- TRUE # change me to rerun models
+
+# Helper: run cfa() or sem(), capture warnings/messages, save both fit + log
+run_lavaan <- function(FUN, ..., save_path) {
+  captured_warnings <- character(0)
+  captured_messages <- character(0)
+
+  fit <- withCallingHandlers(
+    FUN(...),
+    warning = function(w) {
+      captured_warnings <<- c(captured_warnings, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    },
+    message = function(m) {
+      captured_messages <<- c(captured_messages, conditionMessage(m))
+      invokeRestart("muffleMessage")
+    }
+  )
+
+  log <- list(warnings = captured_warnings, messages = captured_messages)
+  saveRDS(fit, save_path)
+  saveRDS(log, paste0(save_path, ".warnings.rds"))
+
+  if (length(captured_warnings) > 0) {
+    cat("--- Warnings during cfa()/sem() ---\n")
+    for (w in captured_warnings) cat("WARNING:", w, "\n")
+  }
+  if (length(captured_messages) > 0) {
+    cat("--- Messages during cfa()/sem() ---\n")
+    for (m in captured_messages) cat("MESSAGE:", m, "\n")
+  }
+
+  invisible(fit)
+}
+
+# Helper: summarise a lavaan fit object and capture + print any warnings/messages
+# If rds_path is supplied, also reads the companion .warnings.rds saved by run_lavaan()
+lavaan_summary <- function(fit, label = NULL, rds_path = NULL, ...) {
+  if (!is.null(label)) cat("\n===", label, "===\n")
+
+  # Print warnings/messages captured at fit time (saved by run_lavaan)
+  if (!is.null(rds_path)) {
+    log_path <- paste0(rds_path, ".warnings.rds")
+    if (file.exists(log_path)) {
+      log <- readRDS(log_path)
+      if (length(log$warnings) > 0) {
+        cat("--- Warnings from cfa()/sem() ---\n")
+        for (w in log$warnings) cat("WARNING:", w, "\n")
+      }
+      if (length(log$messages) > 0) {
+        cat("--- Messages from cfa()/sem() ---\n")
+        for (m in log$messages) cat("MESSAGE:", m, "\n")
+      }
+      if (length(log$warnings) == 0 && length(log$messages) == 0)
+        cat("No warnings or messages captured during cfa()/sem()\n")
+    } else {
+      cat("(No warnings log found — rerun with RUN_MODEL <- TRUE to capture)\n")
+    }
+  }
+  
+  # Collect warnings and messages emitted during summary()
+  captured_warnings  <- character(0)
+  captured_messages  <- character(0)
+  
+  withCallingHandlers(
+    print(summary(fit, ...)),
+    warning = function(w) {
+      captured_warnings <<- c(captured_warnings, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    },
+    message = function(m) {
+      captured_messages <<- c(captured_messages, conditionMessage(m))
+      invokeRestart("muffleMessage")
+    }
+  )
+  
+  # Run lavaan's built-in post-estimation checks explicitly
+  cat("\n--- lavaan diagnostic checks ---\n")
+  cat("Converged          :", lavInspect(fit, "converged"), "\n")
+  cat("Post-check passed  :", lavInspect(fit, "post.check"), "\n")
+  
+  # Negative residual variances (Heywood cases)
+  # lavInspect returns a list for multilevel models (one matrix per level)
+  theta_raw <- lavInspect(fit, "theta")
+  if (is.list(theta_raw)) {
+    theta_diags <- lapply(names(theta_raw), function(lvl) {
+      d <- diag(theta_raw[[lvl]])
+      if (any(d < 0)) cat(sprintf("NEGATIVE RESIDUAL VARIANCES (Heywood) at level '%s':\n", lvl))
+      d[d < 0]
+    })
+    neg_resid <- unlist(theta_diags)
+    if (length(neg_resid) == 0) cat("Negative residual variances : none\n")
+  } else {
+    theta_diag <- diag(theta_raw)
+    neg_resid  <- theta_diag[theta_diag < 0]
+    if (length(neg_resid) > 0) {
+      cat("NEGATIVE RESIDUAL VARIANCES (Heywood):\n")
+      print(neg_resid)
+    } else {
+      cat("Negative residual variances : none\n")
+    }
+  }
+  
+  # Non-positive-definite latent covariance matrix
+  # Also a list for multilevel models
+  psi_raw <- lavInspect(fit, "cov.lv")
+  psi_list <- if (is.list(psi_raw)) psi_raw else list(single = psi_raw)
+  for (lvl in names(psi_list)) {
+    psi <- psi_list[[lvl]]
+    if (!is.null(psi) && length(psi) > 0) {
+      eigs <- tryCatch(eigen(psi, only.values = TRUE)$values, error = function(e) NULL)
+      lbl  <- if (length(psi_list) > 1) sprintf("psi [level '%s']", lvl) else "Latent cov matrix (psi)"
+      if (!is.null(eigs) && any(eigs <= 0)) {
+        cat(sprintf("WARNING: %s is NOT positive definite. Eigenvalues:\n", lbl))
+        print(round(eigs, 6))
+      } else {
+        cat(sprintf("%s : positive definite\n", lbl))
+      }
+    }
+  }
+  
+  # Print any captured warnings / messages
+  if (length(captured_warnings) > 0) {
+    cat("\n--- Warnings captured during summary() ---\n")
+    for (w in captured_warnings) cat("WARNING:", w, "\n")
+  }
+  if (length(captured_messages) > 0) {
+    cat("\n--- Messages captured during summary() ---\n")
+    for (m in captured_messages) cat("MESSAGE:", m, "\n")
+  }
+  
+  invisible(fit)
+}
 ```
 
 ## Session Info
@@ -193,7 +325,6 @@ corr_norm <- '
 ```{r import-data}
 # load data
 dt <- import("../data/processed_data/dhf_data_final.csv.zip")
-
 # example data structure 
 head(names(dt))
 ```
@@ -2042,7 +2173,7 @@ F_self =~ DHF_Norms_3+DHF_Norms_7+DHF_Norms_11+DHF_Norms_32+DHF_Norms_37
 F_other =~ DHF_Norms_8+DHF_Norms_21+DHF_Norms_28+DHF_Norms_33+DHF_Norms_38
 '
 fit <- cfa(dhf6_pilot2, data=dt_pilot2)
-summary(fit,fit.measures=TRUE, standardized=TRUE)
+lavaan_summary(fit, label = "Pilot2 CFA Norms", fit.measures=TRUE, standardized=TRUE)
 #CFI=.875, TLI=.861, RMSEA=.070, SRMR=.083
 ```
 
@@ -2056,7 +2187,7 @@ F_self =~ DHF_endorsement_3+DHF_endorsement_7+DHF_endorsement_11+DHF_endorsement
 F_other =~ DHF_endorsement_8+DHF_endorsement_21+DHF_endorsement_28+DHF_endorsement_33+DHF_endorsement_38
 '
 fit <- cfa(dhf6_pilot2, data=dt_pilot2)
-summary(fit,fit.measures=TRUE, standardized=TRUE)
+lavaan_summary(fit, label = "Pilot2 CFA Endorsement", fit.measures=TRUE, standardized=TRUE)
 #CFI=.822, TLI=.802, RMSEA=.063, SRMR=.078, x2=1091.67, df=390, p<.001, 
 #BIC=36094.056, AIC=35786.029
 ```
@@ -2136,25 +2267,23 @@ Level: 2
 ', 
 corr_endors)
 
-hierarchical.individual.test1.fit <- cfa(model = hierarchical.model.test1,
+hierarchical.individual.test1.fit <- run_lavaan(cfa,model = hierarchical.model.test1,
                     data = dt4,
                     cluster = "country_res_full",
                     # options to consider
-                    optim.method = "em"
+                    optim.method = "em",
                     # em.iter.max = 1000,
                     # em.fx.tol = 1e-08, 
-                    # em.dx.tol = 1e-04
-                    )
-beep()
-
-saveRDS(hierarchical.individual.test1.fit, "output/hierarchical.individual.test1.fit.rds")
+                    # em.dx.tol = 1e-04,
+                    save_path = "output/hierarchical.individual.test1.fit.rds"
+)
 ```
 
 ```{r individual-hierarchical-test1-updated-load}
 # warning model may be not identified
 hierarchical.individual.test1.fit <- readRDS( "output/hierarchical.individual.test1.fit.rds")
 
-summary(hierarchical.individual.test1.fit,
+lavaan_summary(hierarchical.individual.test1.fit, rds_path = "output/hierarchical.individual.test1.fit.rds", label = "Endorsement Hierarchical Individual L1",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2184,24 +2313,23 @@ Level: 2
   H =~ H_self + H_other
 ')
 
-hierarchical.individual.test2.fit <- cfa(model = hierarchical.model.test2,
+hierarchical.individual.test2.fit <- run_lavaan(cfa,model = hierarchical.model.test2,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(hierarchical.individual.test2.fit, "output/hierarchical.individual.test2.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/hierarchical.individual.test2.fit"
+)
 ```
 
 ```{r individual-hierarchical-test2-original-load}
 # some negative variances
 hierarchical.individual.test2.fit <- readRDS( "output/hierarchical.individual.test2.fit")
 
-summary(hierarchical.individual.test2.fit,
+lavaan_summary(hierarchical.individual.test2.fit, rds_path = "output/hierarchical.individual.test2.fit", label = "Endorsement Hierarchical Individual L2",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2224,24 +2352,23 @@ Level: 2
 ', 
 corr_endors)
 
-threefactor.individual.test1.fit <- cfa(model = threefactor.model.test1,
+threefactor.individual.test1.fit <- run_lavaan(cfa,model = threefactor.model.test1,
                     data = dt4,
                     cluster = "country_res_full",
                     # options to consider
-                    optim.method = "em" 
+                    optim.method = "em",
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(threefactor.individual.test1.fit, "output/threefactor.individual.test1.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/threefactor.individual.test1.fit"
+)
 ```
 
 ```{r individual-threefactor-test1-updated}
 # warning about positive definite
 threefactor.individual.test1.fit <- readRDS("output/threefactor.individual.test1.fit")
 
-summary(threefactor.individual.test1.fit,
+lavaan_summary(threefactor.individual.test1.fit, rds_path = "output/threefactor.individual.test1.fit", label = "Endorsement 3-Factor Individual L1",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2265,23 +2392,22 @@ Level: 2
 
 ')
 
-threefactor.individual.test2.fit <- cfa(model = threefactor.model.test2,
+threefactor.individual.test2.fit <- run_lavaan(cfa,model = threefactor.model.test2,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(threefactor.individual.test2.fit, "output/threefactor.individual.test2.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/threefactor.individual.test2.fit"
+)
 ```
 
 ```{r individual-threefactor-test2-load}
 threefactor.individual.test2.fit <- readRDS("output/threefactor.individual.test2.fit")
 
-summary(threefactor.individual.test2.fit,
+lavaan_summary(threefactor.individual.test2.fit, rds_path = "output/threefactor.individual.test2.fit", label = "Endorsement 3-Factor Individual L2",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2307,24 +2433,23 @@ Level: 2
 ', 
 corr_endors)
 
-sixfactor.individual.test1.fit <- cfa(model = sixfactor.model.test1,
+sixfactor.individual.test1.fit <- run_lavaan(cfa,model = sixfactor.model.test1,
                     data = dt4,
                     cluster = "country_res_full",
                     # options to consider
                     optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(sixfactor.individual.test1.fit, "output/sixfactor.individual.test1.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/sixfactor.individual.test1.fit"
+)
 ```
 
 ```{r individual-sixfactor-test1-upload}
 # warning about positive definite
 sixfactor.individual.test1.fit <- readRDS("output/sixfactor.individual.test1.fit")
 
-summary(sixfactor.individual.test1.fit,
+lavaan_summary(sixfactor.individual.test1.fit, rds_path = "output/sixfactor.individual.test1.fit", label = "Endorsement 6-Factor Individual L1",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2351,23 +2476,22 @@ Level: 2
 
 ')
 
-sixfactor.individual.test2.fit <- cfa(model = sixfactor.model.test2,
+sixfactor.individual.test2.fit <- run_lavaan(cfa,model = sixfactor.model.test2,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(sixfactor.individual.test2.fit, "output/sixfactor.individual.test2.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/sixfactor.individual.test2.fit"
+)
 ```
 
 ```{r individual-sixfactor-test2-upload}
 sixfactor.individual.test2.fit <- readRDS("output/sixfactor.individual.test2.fit")
 
-summary(sixfactor.individual.test2.fit,
+lavaan_summary(sixfactor.individual.test2.fit, rds_path = "output/sixfactor.individual.test2.fit", label = "Endorsement 6-Factor Individual L2",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2410,24 +2534,22 @@ Level: 2
   H_other ~~ 0.01*H_other
 ')
 
-hierarchical.model.testc.fit <- cfa(model = hierarchical.model.testc,
+hierarchical.model.testc.fit <- run_lavaan(cfa,model = hierarchical.model.testc,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     # optim.method = "em"
                     # em.iter.max = 1000,
                     # em.fx.tol = 1e-08, 
-                    # em.dx.tol = 1e-04
-                    )
-beep()
-
-saveRDS(hierarchical.model.testc.fit, "output/hierarchical.model.testc.fit")
+                    # em.dx.tol = 1e-04,
+                    save_path = "output/hierarchical.model.testc.fit"
+)
 ```
 
 ```{r individual-hierarchical-testc-updated-upload}
 hierarchical.model.testc.fit <- readRDS("output/hierarchical.model.testc.fit")
 
-summary(hierarchical.model.testc.fit,
+lavaan_summary(hierarchical.model.testc.fit, rds_path = "output/hierarchical.model.testc.fit", label = "Endorsement Hierarchical Combined",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2460,23 +2582,22 @@ Level: 2
 
 ')
 
-sixfactor.individual.testc.fit <- cfa(model = sixfactor.model.testc,
+sixfactor.individual.testc.fit <- run_lavaan(cfa,model = sixfactor.model.testc,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(sixfactor.individual.testc.fit, "output/sixfactor.individual.testc.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/sixfactor.individual.testc.fit"
+)
 ```
 
 ```{r individual-sixfactor-testc-upload}
 sixfactor.individual.testc.fit <- readRDS("output/sixfactor.individual.testc.fit")
 
-summary(sixfactor.individual.testc.fit,
+lavaan_summary(sixfactor.individual.testc.fit, rds_path = "output/sixfactor.individual.testc.fit", label = "Endorsement 6-Factor Combined",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2504,23 +2625,22 @@ Level: 2
 
 ')
 
-threefactor.individual.testc.fit <- cfa(model = threefactor.model.testc,
+threefactor.individual.testc.fit <- run_lavaan(cfa,model = threefactor.model.testc,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(threefactor.individual.testc.fit, "output/threefactor.individual.testc.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/threefactor.individual.testc.fit"
+)
 ```
 
 ```{r individual-threefactor-testc-upload}
 threefactor.individual.testc.fit <- readRDS("output/threefactor.individual.testc.fit")
 
-summary(threefactor.individual.testc.fit,
+lavaan_summary(threefactor.individual.testc.fit, rds_path = "output/threefactor.individual.testc.fit", label = "Endorsement 3-Factor Combined",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2549,23 +2669,22 @@ Level: 2
   F =~ dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25+ dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
 ')
 
-six3factor.individual.testc.fit <- cfa(model = six3factor.model.testc,
+six3factor.individual.testc.fit <- run_lavaan(cfa,model = six3factor.model.testc,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(six3factor.individual.testc.fit, "output/six3factor.individual.testc.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/six3factor.individual.testc.fit"
+)
 ```
 
 ```{r individual-six3factor-testc-upload}
 six3factor.individual.testc.fit <- readRDS("output/six3factor.individual.testc.fit")
 
-summary(six3factor.individual.testc.fit,
+lavaan_summary(six3factor.individual.testc.fit, rds_path = "output/six3factor.individual.testc.fit", label = "Endorsement 6+3-Factor Combined",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2594,23 +2713,22 @@ Level: 2
   F =~ dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25+ dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
 ')
 
-six3factor.model.testc.no13.fit <- cfa(model = six3factor.model.testc.no13,
+six3factor.model.testc.no13.fit <- run_lavaan(cfa,model = six3factor.model.testc.no13,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(six3factor.model.testc.no13.fit, "output/six3factor.model.testc.no13.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/six3factor.model.testc.no13.fit"
+)
 ```
 
 ```{r individual-six3factor-testc-no13-upload}
 six3factor.model.testc.no13.fit <- readRDS("output/six3factor.model.testc.no13.fit")
 
-summary(six3factor.model.testc.no13.fit,
+lavaan_summary(six3factor.model.testc.no13.fit, rds_path = "output/six3factor.model.testc.no13.fit", label = "Endorsement 6+3-Factor Combined no13",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2639,23 +2757,22 @@ Level: 2
   F =~ dhf_endors_21+dhf_endors_22+dhf_endors_23+dhf_endors_24+dhf_endors_25+ dhf_endors_26+dhf_endors_27+dhf_endors_28+dhf_endors_29+dhf_endors_30
 ')
 
-six3factor.model.testc.no20.fit <- cfa(model = six3factor.model.testc.no20,
+six3factor.model.testc.no20.fit <- run_lavaan(cfa,model = six3factor.model.testc.no20,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(six3factor.model.testc.no20.fit, "output/six3factor.model.testc.no20.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/six3factor.model.testc.no20.fit"
+)
 ```
 
 ```{r individual-six3factor-testc-no20-upload}
 six3factor.model.testc.no20.fit <- readRDS("output/six3factor.model.testc.no20.fit")
 
-summary(six3factor.model.testc.no20.fit,
+lavaan_summary(six3factor.model.testc.no20.fit, rds_path = "output/six3factor.model.testc.no20.fit", label = "Endorsement 6+3-Factor Combined no13+20",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2707,25 +2824,23 @@ Level: 2
 ', 
 corr_norm)
 
-hierarchical.norms.test1.fit <- cfa(model = hierarchical.model.test1,
+hierarchical.norms.test1.fit <- run_lavaan(cfa,model = hierarchical.model.test1,
                     data = dt4,
                     cluster = "country_res_full",
                     # options to consider
-                    optim.method = "em"
+                    optim.method = "em",
                     # em.iter.max = 1000,
                     # em.fx.tol = 1e-08, 
-                    # em.dx.tol = 1e-04
-                    )
-beep()
-
-saveRDS(hierarchical.norms.test1.fit, "output/hierarchical.norms.test1.fit")
+                    # em.dx.tol = 1e-04,
+                    save_path = "output/hierarchical.norms.test1.fit"
+)
 ```
 
 ```{r norms-hierarchical-test1-upload}
 # negative variance and not positive definite error 
 hierarchical.norms.test1.fit <- readRDS("output/hierarchical.norms.test1.fit")
 
-summary(hierarchical.norms.test1.fit, 
+lavaan_summary(hierarchical.norms.test1.fit, rds_path = "output/hierarchical.norms.test1.fit", label = "Norms Hierarchical L1", 
         fit.measures = TRUE, 
         rsquare = TRUE, 
         standardized = TRUE)
@@ -2759,9 +2874,9 @@ Level: 2
   D_other ~~ 0.01*D_other
 ')
 
-hierarchical.norms.test2.fit <- cfa(model = hierarchical.model.test2,
+hierarchical.norms.test2.fit <- run_lavaan(cfa,model = hierarchical.model.test2,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
@@ -2769,12 +2884,12 @@ hierarchical.norms.test2.fit <- cfa(model = hierarchical.model.test2,
                     #em.dx.tol = 1e-04
                     )
 
-summary(hierarchical.norms.test2.fit,
+lavaan_summary(hierarchical.norms.test2.fit, rds_path = "output/hierarchical.norms.test2.fit", label = "Norms Hierarchical L2",
         fit.measures = TRUE,
         rsquare = TRUE,
-        standardized = TRUE)
-
-saveRDS(hierarchical.norms.test2.fit, "output/hierarchical.norms.test2.fit")
+        standardized = TRUE,
+                    save_path = "output/hierarchical.norms.test2.fit"
+)
 ```
 
 ```{r norms-hierarchical-test2-original-upload}
@@ -2798,24 +2913,23 @@ Level: 2
 ', 
 corr_norm)
 
-threefactor.norms.test1.fit <- cfa(model = threefactor.model.test1,
+threefactor.norms.test1.fit <- run_lavaan(cfa,model = threefactor.model.test1,
                     data = dt4,
                     cluster = "country_res_full",
                     # options to consider
                     optim.method = "em", 
                     em.iter.max = 1000,
                     em.fx.tol = 1e-08, 
-                    em.dx.tol = 1e-04
-                    )
-
-saveRDS(threefactor.norms.test1.fit, "output/threefactor.norms.test1.fit")
+                    em.dx.tol = 1e-04,
+                    save_path = "output/threefactor.norms.test1.fit"
+)
 ```
 
 ```{r norms-threefactor-test1-upload}
 # model did not converge
 threefactor.norms.test1.fit <- readRDS("output/threefactor.norms.test1.fit")
 
-summary(threefactor.norms.test1.fit,
+lavaan_summary(threefactor.norms.test1.fit, rds_path = "output/threefactor.norms.test1.fit", label = "Norms 3-Factor L1",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2839,23 +2953,22 @@ Level: 2
 
 ')
 
-threefactor.norms.test2.fit <- cfa(model = threefactor.model.test2,
+threefactor.norms.test2.fit <- run_lavaan(cfa,model = threefactor.model.test2,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(threefactor.norms.test2.fit, "output/threefactor.norms.test2.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/threefactor.norms.test2.fit"
+)
 ```
 
 ```{r norms-threefactor-test2-upload}
 threefactor.norms.test2.fit <- readRDS("output/threefactor.norms.test2.fit")
 
-summary(threefactor.norms.test2.fit,
+lavaan_summary(threefactor.norms.test2.fit, rds_path = "output/threefactor.norms.test2.fit", label = "Norms 3-Factor L2",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2881,24 +2994,23 @@ Level: 2
 ', 
 corr_norm)
 
-sixfactor.norms.test1.fit <- cfa(model = sixfactor.model.test1,
+sixfactor.norms.test1.fit <- run_lavaan(cfa,model = sixfactor.model.test1,
                     data = dt4,
                     cluster = "country_res_full",
                     # options to consider
                     optim.method = "em", 
                     em.iter.max = 1000,
                     em.fx.tol = 1e-08, 
-                    em.dx.tol = 1e-04
-                    )
-
-saveRDS(sixfactor.norms.test1.fit, "output/sixfactor.norms.test1.fit")
+                    em.dx.tol = 1e-04,
+                    save_path = "output/sixfactor.norms.test1.fit"
+)
 ```
 
 ```{r norms-sixfactor-test1-upload}
 # model did not converge
 sixfactor.norms.test1.fit <- readRDS("output/sixfactor.norms.test1.fit")
 
-summary(sixfactor.norms.test1.fit,
+lavaan_summary(sixfactor.norms.test1.fit, rds_path = "output/sixfactor.norms.test1.fit", label = "Norms 6-Factor L1",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2925,23 +3037,22 @@ Level: 2
 
 ')
 
-sixfactor.norms.test2.fit <- cfa(model = sixfactor.model.test2,
+sixfactor.norms.test2.fit <- run_lavaan(cfa,model = sixfactor.model.test2,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(sixfactor.norms.test2.fit, "output/sixfactor.norms.test2.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/sixfactor.norms.test2.fit"
+)
 ```
 
 ```{r norms-sixfactor-test2-upload}
 sixfactor.norms.test2.fit <- readRDS("output/sixfactor.norms.test2.fit")
 
-summary(sixfactor.norms.test2.fit,
+lavaan_summary(sixfactor.norms.test2.fit, rds_path = "output/sixfactor.norms.test2.fit", label = "Norms 6-Factor L2",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -2986,24 +3097,22 @@ Level: 2
 
 ')
 
-hierarchical.model.testc.fit <- cfa(model = hierarchical.model.testc,
+hierarchical.model.testc.fit <- run_lavaan(cfa,model = hierarchical.model.testc,
                     data = dt4,
                     cluster = "country_res_full",
                     # options to consider
-                    optim.method = "em"
+                    optim.method = "em",
                     # em.iter.max = 1000,
                     # em.fx.tol = 1e-08, 
-                    # em.dx.tol = 1e-04
-                    )
-beep()
-
-saveRDS(hierarchical.model.testc.fit, "output/hierarchical.model.testc.fit")
+                    # em.dx.tol = 1e-04,
+                    save_path = "output/hierarchical.model.testc.fit"
+)
 ```
 
 ```{r norms-hierarchical-testc-upload}
 hierarchical.model.testc.fit <- readRDS("output/hierarchical.model.testc.fit")
 
-summary(hierarchical.model.testc.fit,
+lavaan_summary(hierarchical.model.testc.fit, rds_path = "output/hierarchical.model.testc.fit", label = "Endorsement Hierarchical Combined",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -3036,23 +3145,22 @@ Level: 2
 
 ')
 
-sixfactor.norms.testc.fit <- cfa(model = sixfactor.model.testc,
+sixfactor.norms.testc.fit <- run_lavaan(cfa,model = sixfactor.model.testc,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(sixfactor.norms.testc.fit, "output/sixfactor.norms.testc.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/sixfactor.norms.testc.fit"
+)
 ```
 
 ```{r norms-sixfactor-testc-upload}
 sixfactor.norms.testc.fit <- readRDS("output/sixfactor.norms.testc.fit")
 
-summary(sixfactor.norms.testc.fit,
+lavaan_summary(sixfactor.norms.testc.fit, rds_path = "output/sixfactor.norms.testc.fit", label = "Norms 6-Factor Combined",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -3080,23 +3188,22 @@ Level: 2
 
 ')
 
-threefactor.norms.testc.fit <- cfa(model = threefactor.model.testc,
+threefactor.norms.testc.fit <- run_lavaan(cfa,model = threefactor.model.testc,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(threefactor.norms.testc.fit, "output/threefactor.norms.testc.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/threefactor.norms.testc.fit"
+)
 ```
 
 ```{r norms-threefactor-testc-upload}
 threefactor.norms.testc.fit <- readRDS("output/threefactor.norms.testc.fit")
 
-summary(threefactor.norms.testc.fit,
+lavaan_summary(threefactor.norms.testc.fit, rds_path = "output/threefactor.norms.testc.fit", label = "Norms 3-Factor Combined",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -3125,23 +3232,22 @@ Level: 2
   F =~ dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25+ dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
 ')
 
-six3factor.norms.testc.fit <- cfa(model = six3factor.model.testc,
+six3factor.norms.testc.fit <- run_lavaan(cfa,model = six3factor.model.testc,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(six3factor.norms.testc.fit, "output/six3factor.norms.testc.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/six3factor.norms.testc.fit"
+)
 ```
 
 ```{r norms-six3factor-testc-upload}
 six3factor.norms.testc.fit <- readRDS("output/six3factor.norms.testc.fit")
 
-summary(six3factor.norms.testc.fit,
+lavaan_summary(six3factor.norms.testc.fit, rds_path = "output/six3factor.norms.testc.fit", label = "Norms 6+3-Factor Combined",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -3170,23 +3276,22 @@ Level: 2
   F =~ dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25+ dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
 ')
 
-six3factor.norms.testc.no13.fit <- cfa(model = six3factor.model.testc.no13,
+six3factor.norms.testc.no13.fit <- run_lavaan(cfa,model = six3factor.model.testc.no13,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(six3factor.norms.testc.no13.fit, "output/six3factor.norms.testc.no13.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/six3factor.norms.testc.no13.fit"
+)
 ```
 
 ```{r norms-six3factor-testc-no13-upload}
 six3factor.norms.testc.no13.fit <- readRDS("output/six3factor.norms.testc.no13.fit")
 
-summary(six3factor.norms.testc.no13.fit,
+lavaan_summary(six3factor.norms.testc.no13.fit, rds_path = "output/six3factor.norms.testc.no13.fit", label = "Norms 6+3-Factor Combined no13",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -3215,23 +3320,22 @@ Level: 2
   F =~ dhf_norm_21+dhf_norm_22+dhf_norm_23+dhf_norm_24+dhf_norm_25+ dhf_norm_26+dhf_norm_27+dhf_norm_28+dhf_norm_29+dhf_norm_30
 ')
 
-six3factor.norms.testc.no20.fit <- cfa(model = six3factor.model.testc.no20,
+six3factor.norms.testc.no20.fit <- run_lavaan(cfa,model = six3factor.model.testc.no20,
                     data = dt4,
-                    cluster = "country_res_full"
+                    cluster = "country_res_full",
                     # options to consider
                     #optim.method = "em", 
                     #em.iter.max = 1000
                     #em.fx.tol = 1e-08, 
-                    #em.dx.tol = 1e-04
-                    )
-
-saveRDS(six3factor.norms.testc.no20.fit, "output/six3factor.norms.testc.no20.fit")
+                    #em.dx.tol = 1e-04,
+                    save_path = "output/six3factor.norms.testc.no20.fit"
+)
 ```
 
 ```{r norms-six3factor-testc-no20-upload}
 six3factor.norms.testc.no20.fit <- readRDS("output/six3factor.norms.testc.no20.fit")
 
-summary(six3factor.norms.testc.no20.fit,
+lavaan_summary(six3factor.norms.testc.no20.fit, rds_path = "output/six3factor.norms.testc.no20.fit", label = "Norms 6+3-Factor Combined no13+20",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -3345,22 +3449,21 @@ F_self =~ dhf_endors_21 + dhf_endors_22 + dhf_endors_23 + dhf_endors_24 + dhf_en
 F_other =~ dhf_endors_26 + dhf_endors_27 + dhf_endors_28 + dhf_endors_29 + dhf_endors_30
 '
 
-endorse.model.configural.fit <- cfa(
+endorse.model.configural.fit <- run_lavaan(cfa,
   model = endorse.model.configural,
   data = dt4,
   group = "cluster",
   estimator = "ML",
   std.lv = FALSE,      # <- critical to match Mplus
-  missing = "fiml"
+  missing = "fiml",
+                    save_path = "output/endorse.model.configural.fit"
 )
-
-saveRDS(endorse.model.configural.fit, "output/endorse.model.configural.fit")
 ```
 
 ```{r mgcfa-endorse-upload}
 endorse.model.configural.fit <- readRDS("output/endorse.model.configural.fit")
 
-summary(endorse.model.configural.fit,
+lavaan_summary(endorse.model.configural.fit, rds_path = "output/endorse.model.configural.fit", label = "MGCFA Endorsement Configural",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -3415,22 +3518,21 @@ F_self =~ dhf_norm_21 + dhf_norm_22 + dhf_norm_23 + dhf_norm_24 + dhf_norm_25
 F_other =~ dhf_norm_26 + dhf_norm_27 + dhf_norm_28 + dhf_norm_29 + dhf_norm_30
 '
 
-norms.model.configural.fit <- cfa(
+norms.model.configural.fit <- run_lavaan(cfa,
   model = norms.model.configural,
   data = dt4,
   group = "cluster",
   estimator = "ML",
   std.lv = FALSE,      # <- critical to match Mplus
-  missing = "fiml"
+  missing = "fiml",
+                    save_path = "output/norms.model.configural.fit"
 )
-
-saveRDS(norms.model.configural.fit, "output/norms.model.configural.fit")
 ```
 
 ```{r mgcfa-norms-upload}
 norms.model.configural.fit <- readRDS("output/norms.model.configural.fit")
 
-summary(norms.model.configural.fit,
+lavaan_summary(norms.model.configural.fit, rds_path = "output/norms.model.configural.fit", label = "MGCFA Norms Configural",
         fit.measures = TRUE,
         rsquare = TRUE,
         standardized = TRUE)
@@ -5099,7 +5201,7 @@ provocation.fit.6f <- sem(
   cluster = "country_res_full"
 )
 
-summary(provocation.fit.6f, 
+lavaan_summary(provocation.fit.6f, label = "H5 Provocation 6-Factor", 
         standardized = TRUE,
         fit.measures = TRUE,
         rsquare = TRUE)
@@ -5125,7 +5227,7 @@ provocation.fit.3f <- sem(
   cluster = "country_res_full"
 )
 
-summary(provocation.fit.3f, 
+lavaan_summary(provocation.fit.3f, label = "H5 Provocation 3-Factor", 
         standardized = TRUE,
         fit.measures = TRUE,
         rsquare = TRUE)
@@ -5211,7 +5313,7 @@ provocation.fit.6f <- sem(
   cluster = "country_res_full"
 )
 
-summary(provocation.fit.6f, 
+lavaan_summary(provocation.fit.6f, label = "H5 Provocation 6-Factor", 
         standardized = TRUE,
         fit.measures = TRUE,
         rsquare = TRUE)
@@ -5237,7 +5339,7 @@ provocation.fit.3f <- sem(
   cluster = "country_res_full"
 )
 
-summary(provocation.fit.3f, 
+lavaan_summary(provocation.fit.3f, label = "H5 Provocation 3-Factor", 
         standardized = TRUE,
         fit.measures = TRUE,
         rsquare = TRUE)
